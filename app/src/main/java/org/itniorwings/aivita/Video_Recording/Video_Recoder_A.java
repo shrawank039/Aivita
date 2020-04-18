@@ -13,15 +13,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coremedia.iso.boxes.Container;
 
@@ -55,9 +59,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Video_Recoder_A extends AppCompatActivity implements View.OnClickListener {
+
+
     CameraView cameraView;
     int number=0;
     ArrayList<String> videopaths=new ArrayList<>();
+    TextView txt60,txt18;
     ImageView record_image;
     ImageView done_btn;
     boolean is_recording=false;
@@ -69,15 +76,24 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     public static int Sounds_list_Request_code=1;
     TextView add_sound_txt;
     int sec_passed=0;
+    int selected_time=18;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Hide_navigation();
         setContentView(R.layout.activity_video_recoder);
+
+
         sec_passed=0;
         Variables.Selected_sound_id="null";
+
         cameraView = findViewById(R.id.camera);
         camera_options=findViewById(R.id.camera_options);
+        txt18= findViewById(R.id.txt_15sec);
+        txt60 = findViewById(R.id.txt_60sec);
+
         cameraView.addCameraKitListener(new CameraKitEventListener() {
             @Override
             public void onEvent(CameraKitEvent cameraKitEvent) {
@@ -122,7 +138,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
 
 
-       // this is code hold to record the video
+        // this is code hold to record the video
         final Timer[] timer = {new Timer()};
         record_image.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -140,6 +156,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                                 @Override
                                 public void run() {
                                     if(!is_recording)
+                                        Toast.makeText(Video_Recoder_A.this, "start", Toast.LENGTH_SHORT).show();
                                         Start_or_Stop_Recording();
                                 }
                             });
@@ -151,6 +168,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     timer[0].cancel();
                     if(is_recording){
+                        Toast.makeText(Video_Recoder_A.this, "stop", Toast.LENGTH_SHORT).show();
                         Start_or_Stop_Recording();
                     }
                 }
@@ -160,67 +178,81 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
         });
 
 
+
+
         video_progress=findViewById(R.id.video_progress);
-        video_progress.enableAutoProgressView(18000);
+        video_progress.enableAutoProgressView(selected_time*1000);
         video_progress.setDividerColor(Color.WHITE);
         video_progress.setDividerEnabled(true);
         video_progress.setDividerWidth(4);
         video_progress.setShader(new int[]{Color.CYAN, Color.CYAN, Color.CYAN});
-        video_progress.SetListener(mills -> {
-            sec_passed = (int) (mills/1000);
-            if(sec_passed>17){
-                Start_or_Stop_Recording();
+
+        video_progress.SetListener(new ProgressBarListener() {
+            @Override
+            public void TimeinMill(long mills) {
+                sec_passed = (int) (mills/1000);
+
+                if(sec_passed >= selected_time){
+                    Start_or_Stop_Recording();
+                }
+
             }
         });
+
+
     }
+
+
+
+
     // if the Recording is stop then it we start the recording
     // and if the mobile is recording the video then it will stop the recording
-    public void Start_or_Stop_Recording() {
-        if (!is_recording && sec_passed<18) {
+    public void Start_or_Stop_Recording(){
+
+        if (!is_recording && sec_passed<selected_time ) {
             number=number+1;
+
             is_recording=true;
-            File file = new File(Variables.root+"/"+ "aivita"+(number)+".mp4");
-            videopaths.add(Variables.root+"/"+"aivita"+(number)+".mp4");
+
+            File file = new File(Variables.root + "/" + "myvideo"+(number)+".mp4");
+            videopaths.add(Variables.root + "/" + "myvideo"+(number)+".mp4");
             cameraView.captureVideo(file);
+
+
             if(audio!=null)
-            audio.start();
+                audio.start();
+
+
             video_progress.resume();
+
+
             done_btn.setBackgroundResource(R.drawable.ic_not_done);
             done_btn.setEnabled(false);
+
             record_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_recoding_yes));
+
             camera_options.setVisibility(View.GONE);
             add_sound_txt.setClickable(false);
             rotate_camera.setVisibility(View.GONE);
+
         }
 
         else if (is_recording) {
-
-            is_recording=false;
-
             video_progress.pause();
             video_progress.addDivider();
-
-            if(audio!=null)
-            audio.pause();
-
+             if(audio!=null)
+                audio.pause();
             cameraView.stopVideo();
-
-
             if(sec_passed>5) {
                 done_btn.setBackgroundResource(R.drawable.ic_done);
                 done_btn.setEnabled(true);
             }
-
             record_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_recoding_no));
             camera_options.setVisibility(View.VISIBLE);
-
         }
-
-        else if(sec_passed>17){
+        else if(sec_passed>selected_time-1){
             Functions.Show_Alert(this,"Alert","Video only can be a 18s.");
         }
-
-
 
     }
 
@@ -228,13 +260,18 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
     // this will apped all the videos parts in one  fullvideo
     private boolean append() {
-       final ProgressDialog progressDialog=new ProgressDialog(Video_Recoder_A.this);
+        final ProgressDialog progressDialog=new ProgressDialog(Video_Recoder_A.this);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(() -> {
-                    progressDialog.setMessage("Please wait...");
-                    progressDialog.show();
+
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+
+                        progressDialog.setMessage("Please wait..");
+                        progressDialog.show();
+                    }
                 });
 
                 ArrayList<String> video_list=new ArrayList<>();
@@ -242,10 +279,12 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
                     File file=new File(videopaths.get(i));
                     if(file.exists()) {
+
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                         retriever.setDataSource(Video_Recoder_A.this, Uri.fromFile(file));
                         String hasVideo = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO);
                         boolean isVideo = "yes".equals(hasVideo);
+
                         if (isVideo && file.length() > 3000) {
                             Log.d("resp", videopaths.get(i));
                             video_list.add(videopaths.get(i));
@@ -288,31 +327,39 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                     Container out = new DefaultMp4Builder().build(result);
 
                     String outputFilePath=null;
-                            if(audio!=null){
-                                outputFilePath=Variables.outputfile;
-                            }else {
-                                outputFilePath=Variables.outputfile2;
-                            }
+                    if(audio!=null){
+                        outputFilePath=Variables.outputfile;
+                    }else {
+                        outputFilePath=Variables.outputfile2;
+                    }
 
                     FileOutputStream fos = new FileOutputStream(new File(outputFilePath));
                     out.writeContainer(fos.getChannel());
                     fos.close();
 
-                    runOnUiThread(()->{
-                        progressDialog.dismiss();
-                        if(audio!=null)
-                          Merge_withAudio();
-                        else {
-                            Go_To_preview_Activity();
-                        }
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            progressDialog.dismiss();
 
+                            if(audio!=null)
+                                Merge_withAudio();
+                            else {
+                                Go_To_preview_Activity();
+                            }
+
+                        }
                     });
+
+
 
                 } catch (Exception e) {
 
                 }
             }
         }).start();
+
+
+
         return true;
     }
 
@@ -323,7 +370,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
         String root = Environment.getExternalStorageDirectory().toString();
         String audio_file;
-            audio_file = root + "/"+Variables.SelectedAudio;
+        audio_file = root + "/"+Variables.SelectedAudio;
 
         String video = root + "/"+"output.mp4";
         String finaloutput = root + "/"+"output2.mp4";
@@ -380,16 +427,12 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
                 break;
 
-            case R.id.camera_speed:
-                cameraView.setVideoQuality(0);
-                break;
-
             case R.id.Goback:
                 onBackPressed();
                 break;
 
             case R.id.add_sound_txt:
-                Intent intent =new Intent(this,SoundList_Main_A.class);
+                Intent intent =new Intent(this, SoundList_Main_A.class);
                 startActivityForResult(intent,Sounds_list_Request_code);
                 overridePendingTransition(R.anim.in_from_bottom, R.anim.out_to_top);
                 break;
@@ -406,11 +449,11 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
         if(requestCode==Sounds_list_Request_code){
             if(data!=null){
 
-             if(data.getStringExtra("isSelected").equals("yes")){
-                add_sound_txt.setText(data.getStringExtra("sound_name"));
-                 Variables.Selected_sound_id=data.getStringExtra("sound_id");
-                 PreparedAudio();
-             }
+                if(data.getStringExtra("isSelected").equals("yes")){
+                    add_sound_txt.setText(data.getStringExtra("sound_name"));
+                    Variables.Selected_sound_id=data.getStringExtra("sound_id");
+                    PreparedAudio();
+                }
 
             }
 
@@ -454,7 +497,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                 audio.release();
             }
             cameraView.stop();
-        
+
         }catch (Exception e){
 
         }
@@ -541,29 +584,26 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
         // This work only for android 4.4+
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-        {
 
-            getWindow().getDecorView().setSystemUiVisibility(flags);
+        getWindow().getDecorView().setSystemUiVisibility(flags);
 
-            // Code below is to handle presses of Volume up or Volume down.
-            // Without this, after pressing volume buttons, the navigation bar will
-            // show up and won't hide
-            final View decorView = getWindow().getDecorView();
-            decorView
-                    .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+        // Code below is to handle presses of Volume up or Volume down.
+        // Without this, after pressing volume buttons, the navigation bar will
+        // show up and won't hide
+        final View decorView = getWindow().getDecorView();
+        decorView
+                .setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+                {
+
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility)
                     {
-
-                        @Override
-                        public void onSystemUiVisibilityChange(int visibility)
+                        if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
                         {
-                            if((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0)
-                            {
-                                decorView.setSystemUiVisibility(flags);
-                            }
+                            decorView.setSystemUiVisibility(flags);
                         }
-                    });
-        }
+                    }
+                });
 
     }
 
@@ -572,7 +612,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && hasFocus)
+        if(hasFocus)
         {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -585,5 +625,16 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     }
 
 
+    public void etnClick(View view) {
+        selected_time = 18;
+        txt60.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+        txt18.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+    }
 
+    public void sxtysClick(View view) {
+        selected_time = 60;
+        video_progress.enableAutoProgressView(selected_time*1000);
+        txt60.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+        txt18.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+    }
 }

@@ -213,7 +213,7 @@ public class Discover_F extends RootFragment {
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

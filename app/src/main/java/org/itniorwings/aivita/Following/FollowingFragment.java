@@ -182,7 +182,7 @@ public class FollowingFragment extends Fragment {
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -230,8 +230,6 @@ public class FollowingFragment extends Fragment {
                     item.bio = profile_data.optString("bio");
                     item.username = profile_data.optString("username");
                     item.profile_pic = profile_data.optString("profile_pic");
-
-
                     item.follow = follow_Status.optString("follow");
                     item.follow_status_button = follow_Status.optString("follow_status_button");
 
@@ -250,7 +248,7 @@ public class FollowingFragment extends Fragment {
             } else Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -281,7 +279,7 @@ public class FollowingFragment extends Fragment {
         else send_status = "0";
 
         Functions.Call_Api_For_Follow_or_unFollow(getActivity(),
-                Variables.sharedPreferences.getString(Variables.u_id, ""), item.fb_id, send_status, new API_CallBack() {
+                Variables.sharedPreferences.getString(Variables.u_id, "0"), item.fb_id, send_status, new API_CallBack() {
                     @Override
                     public void ArrayData(ArrayList arrayList) {}
                     @Override

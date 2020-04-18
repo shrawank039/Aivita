@@ -279,7 +279,7 @@ public class Taged_Videos_F extends RootFragment {
 
             }else {
                 progress_bar.setVisibility(View.GONE);
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {

@@ -35,16 +35,40 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:paddingTop="@dimen/_100sdp"
+
                 android:layout_marginRight="10dp"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/sound_image_layout"
 
+                     android:orientation="vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/user_pic"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:scaleType="centerCrop"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:src="@drawable/ic_user" />
+
+                    <ImageView
+                        android:id="@+id/Home_follow_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                          android:src="@drawable/ic_add_circle_black_24dp"/>
+
+                </RelativeLayout>
                 <LinearLayout
                     android:id="@+id/like_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/_20sdp"
                     android:orientation="vertical">
 
                     <ImageView
@@ -53,7 +77,7 @@
                         android:layout_height="@dimen/_25sdp"
                         android:layout_gravity="center"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/ic_like" />
+                        android:src="@drawable/ic_favorite_black_24dp" />
 
                     <TextView
                         android:id="@+id/like_txt"
@@ -75,7 +99,7 @@
                     android:id="@+id/comment_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/_20sdp"
 
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
@@ -105,7 +129,7 @@
                     android:id="@+id/shared_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="@dimen/_20sdp"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -201,54 +225,26 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/sound_image_layout"
-
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="@dimen/_10sdp"
-                android:orientation="vertical">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/user_pic"
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="@dimen/_30sdp"
-
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_user" />
-
-                <ImageView
-                    android:id="@+id/Home_follow_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_add_circle_black_24dp" />
-
-            </RelativeLayout>
-
             <LinearLayout
                 android:id="@+id/sound_image_layout"
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:layout_marginRight="@dimen/_2sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginRight="5dp"
                 android:layout_marginBottom="@dimen/_65sdp"
                 android:background="@drawable/ic_black_disk"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/_15sdp">
+                android:orientation="vertical">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/sound_image"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:src="@drawable/ic_round_music" />
+                    android:layout_width="32dp"
+                    android:layout_height="32dp" />
 
             </LinearLayout>
+
 
         </RelativeLayout>
 

@@ -173,10 +173,12 @@
 
 
         <RelativeLayout
+            android:layout_above="@id/timer_selector"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_15sdp"
-            android:layout_alignParentBottom="true">
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp"
+            android:layout_alignParentBottom="false">
 
             <LinearLayout
                 android:id="@+id/upload_layout"
@@ -223,6 +225,35 @@
                 android:src="@drawable/ic_not_done"/>
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/timer_selector"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/black"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:textSize="13sp"
+                android:id="@+id/txt_15sec"
+                android:onClick="etnClick"
+                android:textColor="@color/colorAccent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="18s"/>
+            <TextView
+                android:textSize="13sp"
+                android:onClick="sxtysClick"
+                android:id="@+id/txt_60sec"
+                android:textColor="@color/white"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="60s"/>
+        </LinearLayout>
 
     </RelativeLayout>
 

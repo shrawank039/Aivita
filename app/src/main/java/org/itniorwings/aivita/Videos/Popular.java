@@ -372,7 +372,7 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -612,10 +612,10 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
         iv.setLayoutParams(lp);
         if(item.liked.equals("1"))
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.likebg));
+                    R.drawable.ic_favorite_black_24dp));
         else
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.likebg));
+                    R.drawable.ic_heart));
 
         mainlayout.addView(iv);
         Animation fadeoutani = AnimationUtils.loadAnimation(context,R.anim.fade_out);

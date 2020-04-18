@@ -670,10 +670,10 @@ public class WatchVideos_F extends AppCompatActivity implements Player.EventList
         iv.setLayoutParams(lp);
         if(item.liked.equals("1"))
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.likebg));
+                    R.drawable.ic_heart));
         else
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.ic_like));
+                    R.drawable.ic_favorite_black_24dp));
 
         mainlayout.addView(iv);
         Animation fadeoutani = AnimationUtils.loadAnimation(context,R.anim.fade_out);

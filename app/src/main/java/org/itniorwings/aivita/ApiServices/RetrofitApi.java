@@ -28,10 +28,13 @@ public interface RetrofitApi {
                                  @Part("email") RequestBody email,
                                  @Part("phone") RequestBody phone,
                                  @Part("password") RequestBody password ,
-
                                  @Part("fileToUpload") RequestBody image
 
     );
+
+
+    @POST("index.php?p=user_registration")
+    Call<String> AddTransport(@Body RequestBody body);
 
 
 }

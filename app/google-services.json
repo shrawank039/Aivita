@@ -36,7 +36,36 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "193352245048-8k6ts2n5df3211n0krei8ldtdnvu7hpg.apps.googleusercontent.com",
+              "client_id": "193352245048-p258k1dsncd575dtm3h5ir32ihv245i5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:193352245048:android:925bd980f09b3dd34f2bcd",
+        "android_client_info": {
+          "package_name": "org.itniorwings.aivita"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "193352245048-8k6ts2n5df3211n0krei8ldtdnvu7hpg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5SzBw149Chauv3Z19JRABI-TUK3-JIBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "193352245048-p258k1dsncd575dtm3h5ir32ihv245i5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

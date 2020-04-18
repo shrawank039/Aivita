@@ -100,12 +100,15 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
         user_bio_edit=view.findViewById(R.id.user_bio_edit);
         firstname_edit.setText(Variables.sharedPreferences.getString(Variables.f_name,""));
         lastname_edit.setText(Variables.sharedPreferences.getString(Variables.l_name,""));
-        Picasso.with(context)
-                .load(Variables.sharedPreferences.getString(Variables.u_pic,""))
-                .placeholder(R.drawable.profile_image_placeholder)
-                .resize(200,200)
-                .centerCrop()
-                .into(profile_image);
+
+        if (!Variables.u_pic.equalsIgnoreCase("")) {
+            Picasso.with(context)
+                    .load(Variables.sharedPreferences.getString(Variables.u_pic, "0"))
+                    .placeholder(R.drawable.profile_image_placeholder)
+                    .resize(200, 200)
+                    .centerCrop()
+                    .into(profile_image);
+        }
         male_btn=view.findViewById(R.id.male_btn);
         female_btn=view.findViewById(R.id.female_btn);
         Call_Api_For_User_Details();
@@ -571,7 +574,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
 
             }
             else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -336,12 +336,12 @@ public class Functions {
                         api_callBack.ArrayData(arrayList);
 
                     }else {
-                        Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
                     api_callBack.OnFail(e.toString());
-                    Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 
@@ -391,12 +391,12 @@ public class Functions {
                         api_callBack.ArrayData(arrayList);
 
                     }else {
-                        Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
                     api_callBack.OnFail(e.toString());
-                    Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -456,12 +456,12 @@ public class Functions {
                     }
 
                     else {
-                        Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (Exception e) {
                     api_callBack.OnFail(e.toString());
-                    Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -499,12 +499,12 @@ public class Functions {
                     }
 
                     else {
-                        Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
+                    //    Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (Exception e) {
                     api_callBack.OnFail(e.toString());
-                    Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -543,14 +543,14 @@ public class Functions {
                     }
 
                     else {
-                        Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
+                    //    Toast.makeText(activity, ""+response.optString("msg"), Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (Exception e) {
                     if(api_callBack!=null)
                         api_callBack.OnFail(e.toString());
 
-                    Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(activity, "Something wrong with Api", Toast.LENGTH_SHORT).show();
 
                     e.printStackTrace();
                 }

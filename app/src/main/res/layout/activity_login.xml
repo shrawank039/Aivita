@@ -88,6 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/standard_white"
+            android:inputType="textPassword"
             android:layout_below="@+id/tv_password"
             android:backgroundTint="@color/dimgray"/>
 

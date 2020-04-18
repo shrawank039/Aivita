@@ -24,23 +24,15 @@ public class ApiRequest {
             Timber.tag(Variables.tag).d(jsonObject.toString());
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Timber.tag(Variables.tag).d(response.toString());
-                        if (callback != null)
-                            callback.Responce(response.toString());
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Timber.tag(Variables.tag).d(error.toString());
-                if (callback != null)
-                    callback.Responce(error.toString());
-            }
-        });
+                response -> {
+                    Timber.tag(Variables.tag).d(response.toString());
+                    if (callback != null)
+                        callback.Responce(response.toString());
+                }, error -> {
+                    Timber.tag(Variables.tag).d(error.toString());
+                    if (callback != null)
+                        callback.Responce(error.toString());
+                });
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(30000,

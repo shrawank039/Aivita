@@ -6,18 +6,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
-public class ApiClient {
-
-    public static final String BASE_URL ="https://infinityfacts.com/aivita/API/";
+public class ApiClient{
+    public static final String BASE_URL ="https://aivita.club/aivita/API/";
     private static Retrofit retrofit;
 
     static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
     static OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
-
-
-    public static Retrofit getClient(){
-        if(retrofit == null){
+    public static Retrofit getClient() {
+        if(retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
@@ -26,8 +23,8 @@ public class ApiClient {
         return retrofit;
     }
 
-    public static Retrofit getRawClient(){
-        if(retrofit == null){
+    public static Retrofit getRawClient() {
+        if(retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(client)

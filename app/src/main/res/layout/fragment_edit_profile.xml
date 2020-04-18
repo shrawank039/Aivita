@@ -206,8 +206,8 @@
                         android:padding="10dp"
                         android:elevation="0.5dp"
                         android:textStyle="italic"
-                        android:background="@color/app_color"
-                        android:textColor="@color/dimgray"/>
+                        android:background="@color/transparent"
+                        android:textColor="@color/white"/>
 
 
                     <RadioGroup
@@ -233,11 +233,7 @@
                             android:theme="@style/RadioButton"
                             android:textColor="@color/standard_white"/>
                     </RadioGroup>
-
                 </LinearLayout>
-
-
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -251,8 +247,8 @@
                         android:padding="10dp"
                         android:elevation="0.5dp"
                         android:textStyle="italic"
-                        android:background="@color/app_color"
-                        android:textColor="@color/dimgray"/>
+                        android:background="@color/transparent"
+                        android:textColor="@color/white"/>
 
                     <EditText
                         android:layout_width="match_parent"
@@ -280,11 +276,12 @@
                         android:layout_height="wrap_content"
                         android:text="You tube link"
                         android:textSize="16dp"
+                        android:drawableRight="@drawable/ic_youtube"
                         android:padding="10dp"
                         android:elevation="0.5dp"
                         android:textStyle="italic"
                         android:background="@color/transparent"
-                        android:textColor="@color/dimgray"/>
+                        android:textColor="@color/white"/>
 
                     <EditText
                         android:layout_width="match_parent"
@@ -315,8 +312,9 @@
                         android:padding="10dp"
                         android:elevation="0.5dp"
                         android:textStyle="italic"
+                        android:drawableRight="@drawable/ic_instagram"
                         android:background="@color/transparent"
-                        android:textColor="@color/dimgray"/>
+                        android:textColor="@color/white"/>
 
                     <EditText
                         android:layout_width="match_parent"
@@ -348,7 +346,7 @@
                         android:elevation="0.5dp"
                         android:textStyle="italic"
                         android:background="@color/transparent"
-                        android:textColor="@color/dimgray"/>
+                        android:textColor="@color/white"/>
 
                     <EditText
                         android:layout_width="match_parent"
@@ -356,6 +354,7 @@
                         android:minLines="2"
                         android:hint="@string/facebooklink"
                         android:paddingTop="5dp"
+                        android:drawableRight="@drawable/ic_facebookk"
                         android:paddingLeft="15dp"
                         android:textSize="15dp"
                         android:imeOptions="flagNavigateNext"

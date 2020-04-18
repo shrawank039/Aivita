@@ -106,10 +106,10 @@ public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.CustomVi
 
 
             if(item.liked.equals("1")){
-                holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.likebg));
+                holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_heart));
             }
             else {
-                holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.likebg));
+                holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
             }
 
 

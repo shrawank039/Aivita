@@ -76,30 +76,15 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
     public  ImageView imageView;
     private LinearLayout instagram,facebook,youttube;
     public  TextView follow_count_txt,fans_count_txt,heart_count_txt;
-
     ImageView setting_btn;
-
-
     Bundle bundle;
-
     protected TabLayout tabLayout;
-
     protected ViewPager pager;
-
     private ViewPagerAdapter adapter;
-
     public boolean isdataload=false;
-
-
     RelativeLayout tabs_main_layout;
-
     LinearLayout top_layout;
-
-
-
     public  static String pic_url;
-
-
     public  LinearLayout create_popup_layout;
 
     public Profile_Tab_F() {
@@ -118,55 +103,31 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
         youttube=view.findViewById(R.id.youtube_icon);
 
 
-        String url_get_user_data="https://infinityfacts.com/aivita/API/index.php?p=get_user_data";
-        StringRequest stringRequest=new StringRequest(url_get_user_data, response -> {
 
-            try {
-                JSONArray jsonArray=new JSONArray(response);
-                JSONObject jsonObject=jsonArray.getJSONObject(0);
-                String instagram_link=jsonObject.getString("instagram_url");
-                String facebook_link=jsonObject.getString("fb_url");
-                String youtube_link=jsonObject.getString("youtube_url");
+
+
                 instagram.setOnClickListener(v -> {
-                    Log.e("facebook_link",facebook_link);
-                    Log.e("u_id",Variables.u_id);
-                    Log.e("u_id",Variables.sharedPreferences.getString(Variables.u_id,""));
-
                     Log.e("instagramlink",Variables.sharedPreferences.getString(Variables.instagramlink, ""));
                     Intent viewIntent =
                             new Intent("android.intent.action.VIEW",
-                                    Uri.parse(instagram_link));
+                                    Uri.parse("https://www.instagram.com/"));
                     startActivity(viewIntent);
                 });
                 facebook.setOnClickListener(v -> {
                     Intent viewIntent =
                             new Intent("android.intent.action.VIEW",
-                                    Uri.parse(facebook_link));
+                                    Uri.parse("https://www.facebook.com/?stype=lo&jlou=AffhHFR7NhkhaiP3A-N8LWPya8J5py8R2v1fKDtc7aAHByXOsw1Vpp8ZmWZVr8w3cGwiy3M0YvnfK-C2B8MIksNZdsahzzUaUTgvq0_-AumWIA&smuh=23710&lh=Ac8SwyeTOPq96INf"));
                     startActivity(viewIntent);
                 });
 
                 youttube.setOnClickListener(v -> {
                     Intent viewIntent =
                             new Intent("android.intent.action.VIEW",
-                                    Uri.parse(youtube_link));
+                                    Uri.parse("https://www.youtube.com/"));
                     startActivity(viewIntent);
                 });
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
-        }, error -> {
 
-        }){
-                @Override
-                protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id,""));
-                return params;
-            }
-        };
-        RequestQueue requestQueue= Volley.newRequestQueue(context);
-        requestQueue.add(stringRequest);
 
         return init();
     }
@@ -290,12 +251,9 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
         view.findViewById(R.id.fans_layout).setOnClickListener(this);
 
         isdataload=true;
-
-
         update_profile();
 
         Call_Api_For_get_Allvideos();
-
         return view;
     }
 
@@ -484,15 +442,17 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 JSONArray msgArray=jsonObject.getJSONArray("msg");
                 JSONObject data=msgArray.getJSONObject(0);
                 JSONObject user_info=data.optJSONObject("user_info");
+
                 username.setText("@aivita"+Objects.requireNonNull(user_info).optString("first_name")+user_info.optString("last_name"));
                 username1.setText(Objects.requireNonNull(user_info).optString("first_name")+" "+user_info.optString("last_name"));
 
                 ProfileFragment.pic_url=user_info.optString("profile_pic");
-                Picasso.with(context)
-                        .load(ProfileFragment.pic_url)
-                        .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
-                        .resize(200,200).centerCrop().into(imageView);
-
+                if (!ProfileFragment.pic_url.equals("")) {
+                    Picasso.with(context)
+                            .load(ProfileFragment.pic_url)
+                            .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
+                            .resize(200, 200).centerCrop().into(imageView);
+                }
                 follow_count_txt.setText(data.optString("total_following"));
                 fans_count_txt.setText(data.optString("total_fans"));
                 heart_count_txt.setText(data.optString("total_heart"));
@@ -503,23 +463,19 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 if(!user_videos.toString().equals("["+"0"+"]")){
                     video_count_txt.setText(user_videos.length()+"Videos");
                     create_popup_layout.setVisibility(View.GONE);
-
                 }
                 else {
-
                     create_popup_layout.setVisibility(View.VISIBLE);
                     Animation aniRotate = AnimationUtils.loadAnimation(context,R.anim.up_and_down_animation);
                     create_popup_layout.startAnimation(aniRotate);
-
                 }
 
-
             }else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+         //   Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

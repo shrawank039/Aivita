@@ -42,7 +42,7 @@
                     android:textSize="14dp"
                     android:id="@+id/search_edit"
                     android:textColorHint="@color/standard_white"
-                    android:textColor="@color/lightblack"
+                    android:textColor="@color/standard_white"
                     android:layout_toEndOf="@+id/search"
                     android:backgroundTint="@color/transparent"
                     />

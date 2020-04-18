@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaScannerConnection;
@@ -35,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -86,7 +88,10 @@ import org.itniorwings.aivita.SimpleClasses.Functions;
 import org.itniorwings.aivita.SimpleClasses.Variables;
 import org.itniorwings.aivita.SoundLists.FavouriteSounds.Favourite_Sound_F;
 import org.itniorwings.aivita.Taged.Taged_Videos_F;
+import org.itniorwings.aivita.VideoAction.VideoAction_F;
+import org.itniorwings.aivita.Video_Recording.Video_Recoder_A;
 import org.itniorwings.aivita.Videos.Followings;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -100,6 +105,7 @@ import java.util.Objects;
 import timber.log.Timber;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static org.itniorwings.aivita.SimpleClasses.Variables.sharedPreferences;
 
 // this is the main view which is show all  the video in list
 public class HomeFragment extends RootFragment implements Player.EventListener, Fragment_Data_Send {
@@ -114,7 +120,9 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     private ProgressBar p_bar;
     private SwipeRefreshLayout swiperefresh;
     private int swipe_count = 0;
-    public HomeFragment() {}
+    public HomeFragment() {
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -130,27 +138,17 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
-        tv_following.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Open_Following();
-            }
-        });
-        popular.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Open_Following();
-            }
-        });
+        tv_following.setOnClickListener(v -> Open_Following());
+        popular.setOnClickListener(v -> Open_Following());
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 final int scrollOffset = recyclerView.computeVerticalScrollOffset();
                 final int height = recyclerView.getHeight();
@@ -169,12 +167,9 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         swiperefresh.setProgressViewOffset(false, 0, 200);
 
         swiperefresh.setColorSchemeResources(R.color.black);
-        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentPage = -1;
-                Call_Api_For_get_Allvideos();
-            }
+        swiperefresh.setOnRefreshListener(() -> {
+            currentPage = -1;
+            Call_Api_For_get_Allvideos();
         });
 
         Call_Api_For_get_Allvideos();
@@ -185,25 +180,21 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
     private void Open_Following() {
 
-        Followings following_f = new Followings(new Fragment_Callback() {
-            @Override
-            public void Responce(Bundle bundle) {
-                Call_Api_For_get_Allvideos();
-            }
-        });
+        Followings following_f = new Followings(bundle -> Call_Api_For_get_Allvideos());
 
         FragmentTransaction transaction = Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.in_from_bottom, R.anim.out_to_top, R.anim.in_from_top, R.anim.out_from_bottom);
         Bundle args = new Bundle();
-        args.putString("id", Variables.sharedPreferences.getString(Variables.u_id, ""));
+        args.putString("id", sharedPreferences.getString(Variables.u_id, ""));
         args.putString("from_where", "following");
         following_f.setArguments(args);
         transaction.addToBackStack(null);
-        transaction.replace(R.id.MainMenuFragment, following_f).commit();
+        transaction.replace(R.id.MainMenuFragment, following_f);
+        transaction.commit();
 
     }
 
-    HomeAdapter adapter;
+    private HomeAdapter adapter;
 
     private void Set_Adapter() {
 
@@ -214,13 +205,18 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 switch (view.getId()) {
 
                     case R.id.Home_follow_btn :
-                        Follow_unFollow_User(item);
-                        Toast.makeText(context, "You followed user", Toast.LENGTH_SHORT).show();
+                        if (Variables.sharedPreferences.getBoolean(Variables.islogin, false)){
+                            Follow_unFollow_User(item);
+                            Toast.makeText(context, "You followed user", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                            Toast.makeText(context, "Please login in to app", Toast.LENGTH_SHORT).show();
+
                         break;
 
                     case  R.id.sound_image_layout :
                         AddedToFavourite(item);
-                        Toast.makeText(context, "Added to Favourite", Toast.LENGTH_SHORT).show();
+
                         break;
                     case R.id.user_pic:
                         onPause();
@@ -233,7 +229,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                         break;
 
                     case R.id.like_layout:
-                        if (Variables.sharedPreferences.getBoolean(Variables.islogin, false)) Like_Video(postion, item);
+                        if (sharedPreferences.getBoolean(Variables.islogin, false)) Like_Video(postion, item);
                         else Toast.makeText(context, "Please Login.", Toast.LENGTH_SHORT).show();
                         break;
 
@@ -241,13 +237,9 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                         OpenComment(item);
                         break;
 
-            /*        case R.id.shared_layout:
-                        if (!is_add_show && mInterstitialAd.isLoaded()) {
-                            mInterstitialAd.show();
-                            is_add_show = true;
-                        } else{
-                            is_add_show=false;
-                            final VideoAction_F fragment = new VideoAction_F(item.video_id, new Fragment_Callback() {
+                    case R.id.shared_layout:
+
+                             final VideoAction_F fragment = new VideoAction_F(item.video_id, new Fragment_Callback() {
                                 @Override
                                 public void Responce(Bundle bundle) {
 
@@ -257,9 +249,9 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                                 }
                             });
                             fragment.show(getChildFragmentManager(), "");
-                        }
 
-                        break;*/
+
+                        break;
                 }
 
             }
@@ -271,26 +263,26 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     private void AddedToFavourite(final HomeModel item) {
-        Log.e("fb_id",Variables.sharedPreferences.getString(Variables.u_id, "0"));
-        Log.e("sound_id",item.sound_id);
+        Timber.e(sharedPreferences.getString(Variables.u_id, "0"));
+        Timber.e(item.sound_id);
+        String fav_soundUrl="https://aivita.club/aivita/API/index.php?p=fav_sound";
+        StringRequest stringRequest =new StringRequest(Request.Method.POST,fav_soundUrl, response -> {
+            Timber.e(response);
+            Timber.e(item.sound_id);
+            Timber.e(sharedPreferences.getString(Variables.u_id, ""));
+                //  Timber.e(response);
 
+                   startActivity(new Intent(getActivity(), Video_Recoder_A.class));
+                    Toast.makeText(context, "Added to Favourite", Toast.LENGTH_SHORT).show();
+                   //  Toast.makeText(context, "Sorry this song is not belongs to aivita", Toast.LENGTH_SHORT).show();
 
-        String fav_soundUrl="https://infinityfacts.com/aivita/API/index.php?p=fav_sound";
-        StringRequest stringRequest =new StringRequest(fav_soundUrl, response -> {
-               Log.e("response",response);
-             Fragment fragment = new Favourite_Sound_F();
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.framelayout_homef, fragment);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
          }, error -> {
 
         }){
             @Override
             protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id, "0"));
+                Map<String,String> params = new HashMap<>();
+                params.put("fb_id", sharedPreferences.getString(Variables.u_id,""));
                 params.put("sound_id",item.sound_id);
                 return params;
             }
@@ -304,9 +296,9 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         Log.d(Variables.tag, MainMenuActivity.token);
         JSONObject parameters = new JSONObject();
         try {
-            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id, "0"));
+            parameters.put("fb_id", sharedPreferences.getString(Variables.u_id, "0"));
             //parameters.put("token",MainMenuActivity.token);
-            parameters.put("token", Variables.sharedPreferences.getString(Variables.device_token, "Null"));
+            parameters.put("token", sharedPreferences.getString(Variables.device_token, "Null"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -336,12 +328,15 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
                     JSONObject user_info = itemdata.optJSONObject("user_info");
 
+
                     item.first_name = user_info.optString("first_name");
                     item.last_name = user_info.optString("last_name");
                     item.profile_pic = user_info.optString("profile_pic");
 
                     JSONObject sound_data = itemdata.optJSONObject("sound");
                     item.sound_id = sound_data.optString("id");
+                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                    editor.putString(Variables.sid,sound_data.optString("id"));
                     item.sound_name = sound_data.optString("sound_name");
                     item.sound_pic = sound_data.optString("thum");
 
@@ -365,11 +360,11 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 Set_Adapter();
 
             } else {
-                Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -381,7 +376,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
         JSONObject parameters = new JSONObject();
         try {
-            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id, "0"));
+            parameters.put("fb_id", sharedPreferences.getString(Variables.u_id, "0"));
             //parameters.put("token",Variables.sharedPreferences.getString(Variables.device_token,"Null"));
             parameters.put("video_id", data_list.get(postion).video_id);
 
@@ -445,7 +440,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
 
             } else {
-                Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
@@ -531,7 +526,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
                     if (!player.getPlayWhenReady()) privious_player.setPlayWhenReady(true);
 
-                    if (Variables.sharedPreferences.getBoolean(Variables.islogin, false)) {
+                    if (sharedPreferences.getBoolean(Variables.islogin, false)) {
                         Show_heart_on_DoubleTap(item, mainlayout, e);
                         Like_Video(currentPage, item);
                     } else Toast.makeText(context, "Please Login into app", Toast.LENGTH_SHORT).show();
@@ -548,14 +543,11 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         });
 
         TextView desc_txt = layout.findViewById(R.id.desc_txt);
-        HashTagHelper.Creator.create(context.getResources().getColor(R.color.maincolor), new HashTagHelper.OnHashTagClickListener() {
-            @Override
-            public void onHashTagClicked(String hashTag) {
+        HashTagHelper.Creator.create(context.getResources().getColor(R.color.maincolor), hashTag -> {
 
-                onPause();
-                OpenHashtag(hashTag);
+            onPause();
+            OpenHashtag(hashTag);
 
-            }
         }).handle(desc_txt);
 
 
@@ -563,7 +555,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         Animation sound_animation = AnimationUtils.loadAnimation(context, R.anim.d_clockwise_rotation);
         soundimage.startAnimation(sound_animation);
 
-        if (Variables.sharedPreferences.getBoolean(Variables.islogin, false))
+        if (sharedPreferences.getBoolean(Variables.islogin, false))
             Functions.Call_Api_For_update_view(getActivity(), item.video_id);
 
         swipe_count++;
@@ -588,10 +580,10 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         iv.setLayoutParams(lp);
         if (item.liked.equals("1"))
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.likebg));
+                    R.drawable.ic_heart));
         else
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.ic_like));
+                    R.drawable.ic_favorite_black_24dp));
 
         mainlayout.addView(iv);
         Animation fadeoutani = AnimationUtils.loadAnimation(context, R.anim.fade_out);
@@ -712,12 +704,13 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         transaction.replace(R.id.MainMenuFragment, comment_f).commit();
 
 
+
     }
 
 
     // this will open the profile of user which have uploaded the currenlty running video
     private void OpenProfile(HomeModel item, boolean from_right_to_left) {
-        if (Variables.sharedPreferences.getString(Variables.u_id, "0").equals(item.fb_id)) {
+        if (sharedPreferences.getString(Variables.u_id, "0").equals(item.fb_id)) {
 
             TabLayout.Tab profile = MainMenuFragment.tabLayout.getTabAt(4);
             profile.select();
@@ -771,21 +764,14 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
         builder.setTitle(null);
 
-        builder.setItems(options, new DialogInterface.OnClickListener() {
+        builder.setItems(options, (dialog, item) -> {
+            if (options[item].equals("Save Video")) {
+                if (Functions.Checkstoragepermision(getActivity()))
+                    Save_Video(home_get_set);
 
-            @Override
+            } else if (options[item].equals("Cancel")) {
 
-            public void onClick(DialogInterface dialog, int item) {
-
-                if (options[item].equals("Save Video")) {
-                    if (Functions.Checkstoragepermision(getActivity()))
-                        Save_Video(home_get_set);
-
-                } else if (options[item].equals("Cancel")) {
-
-                    dialog.dismiss();
-
-                }
+                dialog.dismiss();
 
             }
 
@@ -796,7 +782,6 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     public void Save_Video(final HomeModel item) {
-
         Functions.Show_determinent_loader(context, false, false);
         PRDownloader.initialize(getActivity().getApplicationContext());
         DownloadRequest prDownloader = PRDownloader.download(item.video_url, Environment.getExternalStorageDirectory() + "/Aivita/", item.video_id + "no_watermark" + ".mp4")
@@ -849,7 +834,6 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
     public void Applywatermark(final HomeModel item) {
 
-        String user_nameWm = "@" + item.last_name;
 
         Bitmap myLogo = ((BitmapDrawable) getResources().getDrawable(R.drawable.ic_watermark_image)).getBitmap();
         Bitmap bitmap_resize = Bitmap.createScaledBitmap(myLogo, 200, 200, false);
@@ -1037,9 +1021,29 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     @Override
     public void onSeekProcessed(){}
 
+
+
     private void Follow_unFollow_User(final HomeModel item) {
+        StringRequest stringRequest=new StringRequest(Request.Method.POST, Variables.edit_profile, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.e("response",response);
+
+            }
+        }, error -> {
+
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<>();
+                params.put("fb_id", sharedPreferences.getString(Variables.u_id,""));
+                return params;
+            }
+        };
+        RequestQueue requestQueue= Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
         Functions.Call_Api_For_Follow_or_unFollow(getActivity(),
-                Variables.sharedPreferences.getString(Variables.user_id, ""), item.fb_id, "1", new API_CallBack() {
+                sharedPreferences.getString(Variables.u_id, "0"), item.fb_id, "1", new API_CallBack() {
                     @Override
                     public void ArrayData(ArrayList arrayList) {}
                     @Override

@@ -207,11 +207,11 @@ public class UserVideo_F extends Fragment {
                 adapter.notifyDataSetChanged();
 
             }else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

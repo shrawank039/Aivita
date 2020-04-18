@@ -1,44 +1,89 @@
 package org.itniorwings.aivita.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class LoginModel {
 
-
+    @SerializedName("id")
+    @Expose
+    private String id;
+    @SerializedName("u_id")
+    @Expose
+    private String uId;
+    @SerializedName("username")
+    @Expose
     private String username;
+    @SerializedName("first_name")
+    @Expose
     private String firstName;
+    @SerializedName("last_name")
+    @Expose
     private String lastName;
+    @SerializedName("gender")
+    @Expose
     private String gender;
+    @SerializedName("bio")
+    @Expose
     private Object bio;
+    @SerializedName("profile_pic")
+    @Expose
     private String profilePic;
+    @SerializedName("block")
+    @Expose
     private String block;
+    @SerializedName("version")
+    @Expose
     private String version;
+    @SerializedName("device")
+    @Expose
     private String device;
+    @SerializedName("signup_type")
+    @Expose
     private String signupType;
+    @SerializedName("tokon")
+    @Expose
     private Object tokon;
+    @SerializedName("created")
+    @Expose
     private String created;
+    @SerializedName("email")
+    @Expose
     private String email;
+    @SerializedName("phone")
+    @Expose
     private String phone;
+    @SerializedName("password")
+    @Expose
     private String password;
+    @SerializedName("fb_url")
+    @Expose
+    private Object fbUrl;
+    @SerializedName("youtube_url")
+    @Expose
+    private Object youtubeUrl;
+    @SerializedName("instagram_url")
+    @Expose
+    private Object instagramUrl;
+    @SerializedName("m_code")
+    @Expose
+    private String mCode;
 
-    public LoginModel(String id, Object fbId, String username, String firstName, String lastName, String gender, Object bio, String profilePic, String block, String version, String device, String signupType, Object tokon, String created, String email, String phone, String password) {
-
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.gender = gender;
-        this.bio = bio;
-        this.profilePic = profilePic;
-        this.block = block;
-        this.version = version;
-        this.device = device;
-        this.signupType = signupType;
-        this.tokon = tokon;
-        this.created = created;
-        this.email = email;
-        this.phone = phone;
-        this.password = password;
+    public String getId() {
+        return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
+    public String getUId() {
+        return uId;
+    }
+
+    public void setUId(String uId) {
+        this.uId = uId;
+    }
 
     public String getUsername() {
         return username;
@@ -159,4 +204,37 @@ public class LoginModel {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Object getFbUrl() {
+        return fbUrl;
+    }
+
+    public void setFbUrl(Object fbUrl) {
+        this.fbUrl = fbUrl;
+    }
+
+    public Object getYoutubeUrl() {
+        return youtubeUrl;
+    }
+
+    public void setYoutubeUrl(Object youtubeUrl) {
+        this.youtubeUrl = youtubeUrl;
+    }
+
+    public Object getInstagramUrl() {
+        return instagramUrl;
+    }
+
+    public void setInstagramUrl(Object instagramUrl) {
+        this.instagramUrl = instagramUrl;
+    }
+
+    public String getMCode() {
+        return mCode;
+    }
+
+    public void setMCode(String mCode) {
+        this.mCode = mCode;
+    }
+
 }

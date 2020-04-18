@@ -199,7 +199,7 @@ public class Favourite_Sound_F extends RootFragment implements Player.EventListe
                     item.id=itemdata.optString("id");
 
                     JSONObject audio_path=itemdata.optJSONObject("audio_path");
-                    //item.mp3_path=audio_path.optString("mp3");
+//                    item.mp3_path=audio_path.optString("mp3");
                     item.acc_path=audio_path.optString("acc");
 
 
@@ -216,7 +216,7 @@ public class Favourite_Sound_F extends RootFragment implements Player.EventListe
 
 
             }else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
@@ -256,7 +256,7 @@ public class Favourite_Sound_F extends RootFragment implements Player.EventListe
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                    Util.getUserAgent(context, "TikTok"));
+                    Util.getUserAgent(context, "Aivita"));
 
             MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(Uri.parse(item.acc_path));
@@ -302,7 +302,7 @@ public class Favourite_Sound_F extends RootFragment implements Player.EventListe
 
         running_sound_id="null";
 
-        if(player!=null){
+        if(player!=null) {
             player.setPlayWhenReady(false);
             player.removeListener(this);
             player.release();
@@ -315,7 +315,7 @@ public class Favourite_Sound_F extends RootFragment implements Player.EventListe
 
 
 
-    public void Show_Run_State(){
+    public void Show_Run_State() {
 
         if (previous_view != null) {
             previous_view.findViewById(R.id.loading_progress).setVisibility(View.GONE);

@@ -68,10 +68,11 @@ class Favourite_Sound_Adapter extends RecyclerView.Adapter<Favourite_Sound_Adapt
                     .into(holder.sound_image);
             holder.bind(i, datalist.get(i), listener);
 
-           /* if(SoundList_A.running_sound_id.equals(datalist.get(i).id)){
+         /*   if(SoundList_A.running_sound_id.equals(datalist.get(i).id)){
                 holder.itemView.findViewById(R.id.pause_btn).setVisibility(View.VISIBLE);
                 holder.itemView.findViewById(R.id.done).setVisibility(View.VISIBLE);
-            }*/
+            }
+*/
 
         }catch (Exception e){
 
@@ -87,7 +88,7 @@ class Favourite_Sound_Adapter extends RecyclerView.Adapter<Favourite_Sound_Adapt
 
         public CustomViewHolder(View view) {
             super(view);
-            //  image=view.findViewById(R.id.image);
+//              image=view.findViewById(R.id.image);
             done=view.findViewById(R.id.done);
             fav_btn=view.findViewById(R.id.fav_btn);
 

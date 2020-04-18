@@ -368,11 +368,11 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
                 Set_Adapter();
 
             }else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -451,7 +451,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
 
 
             }else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
@@ -474,7 +474,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
         final SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, "TikTok"));
+                Util.getUserAgent(context, "Aivita"));
 
         MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(Uri.parse(item.video_url));
@@ -612,10 +612,10 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
         iv.setLayoutParams(lp);
         if(item.liked.equals("1"))
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.likebg));
+                    R.drawable.ic_heart));
         else
             iv.setImageDrawable(getResources().getDrawable(
-                    R.drawable.ic_like));
+                    R.drawable.ic_favorite_black_24dp));
 
         mainlayout.addView(iv);
         Animation fadeoutani = AnimationUtils.loadAnimation(context,R.anim.fade_out);

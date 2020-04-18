@@ -101,10 +101,10 @@ public class Watch_Videos_Adapter extends RecyclerView.Adapter<Watch_Videos_Adap
 
 
         if(item.liked.equals("1")){
-            holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.likebg));
+            holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_heart));
         }
        else {
-            holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_like));
+            holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
         }
 
 

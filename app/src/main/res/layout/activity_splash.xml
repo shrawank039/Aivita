@@ -10,21 +10,11 @@
 
     <ImageView
         android:id="@+id/aivita_iv"
-        android:layout_width="@dimen/_320sdp"
-        android:layout_height="@dimen/_320sdp"
-        android:layout_marginLeft="@dimen/_20sdp"
-        android:src="@drawable/aivitalogo"
+        android:layout_width="@dimen/_300sdp"
+        android:layout_height="@dimen/_350sdp"
+         android:src="@drawable/aivita"
         android:scaleType="centerCrop"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/aivita_iv"
-        android:layout_centerInParent="true"
-        android:fontFamily="serif"
-        android:text="Aivita Love Life"
-        android:textColor="@color/maincolor"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+
 
 </RelativeLayout>

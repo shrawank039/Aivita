@@ -28,8 +28,11 @@ public class Variables {
     public static SharedPreferences sharedPreferences;
     public static String pref_name = "pref_name";
     public static String u_id = "u_id";
+    public static String sid = "id";
+    public static String email="email";
+    public static String phone="phone";
     public static String u_name = "u_name";
-    public static String u_pic = "u_pic";
+    public static String u_pic = "";
     public static String f_name = "f_name";
     public static String l_name = "l_name";
     public static String youtubelink="youtube_url";
@@ -61,10 +64,11 @@ public class Variables {
 
     public static String gif_api_key1 ="giphy_api_key_here";
 
-    public static String domain = "https://infinityfacts.com/aivita/API/index.php?p=";
-    public static String base_url = "https://infinityfacts.com/aivita/API/";
+    public static String domain = "https://aivita.club/aivita/API/index.php?p=";
+    public static String base_url = "https://aivita.club/aivita/API/";
 
     public static String SignUp = domain + "signup";
+    public static String user_login = domain + "user_login";
     public static String uploadVideo = domain + "uploadVideo";
     public static String showAllVideos = domain + "showAllVideos";
     public static String showMyAllVideos = domain + "showMyAllVideos";
@@ -86,5 +90,6 @@ public class Variables {
     public static String sendPushNotification = domain + "sendPushNotification";
     public static String uploadImage = domain + "uploadImage";
     public static String DeleteVideo = domain + "DeleteVideo";
-
+//https://aivita.club/aivita/API/index.php?p=allSounds
+    //https://infinityfacts.com/aivita/API/index.php?p=get_user_data
 }
