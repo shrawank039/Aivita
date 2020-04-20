@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <org.itniorwings.aivita.Main_Menu.Custom_ViewPager
+        <com.matrixdeveloper.aivita.Main_Menu.Custom_ViewPager
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

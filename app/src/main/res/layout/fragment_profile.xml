@@ -383,7 +383,7 @@
                         app:tabSelectedTextColor="@color/white"
                         app:tabTextColor="@color/black" />
 
-                    <org.itniorwings.aivita.Main_Menu.Custom_ViewPager
+                    <com.matrixdeveloper.aivita.Main_Menu.Custom_ViewPager
                         android:id="@+id/pager"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

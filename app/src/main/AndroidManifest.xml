@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.itniorwings.aivita"
+    package="com.matrixdeveloper.aivita"
     tools:ignore="ProtectedPermissions">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,17 +27,18 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:usesCleartextTraffic="true"
         android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher"
         android:screenOrientation="portrait"
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity, InnerclassSeparator"
         tools:replace="allowBackup,supportsRtl"
         tools:targetApi="n">
-        <activity android:name=".Notifications.NotificationActivity"></activity>
+
+        <activity android:name=".Notifications.NotificationActivity" />
         <activity android:name=".Accounts.SignUpActivity" />
 
         <uses-library
@@ -86,7 +87,7 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.itniorwings.aivita.Main_Menu.MainMenuActivity" />
+                android:value="org.itniorwings.aivita.com.itniorwings.aivita.Main_Menu.MainMenuActivity" />
 
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -130,6 +131,8 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+        <activity android:name=".PhoneAuth.NewPassword" />
+        <activity android:name=".PhoneAuth.PhoneAuth" />
         <activity
             android:name=".Video_Recording.Video_Recoder_A"
             android:screenOrientation="portrait" />

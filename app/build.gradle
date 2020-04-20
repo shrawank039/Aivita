@@ -6,11 +6,11 @@ android {
 
 
     defaultConfig {
-        applicationId "org.Itniorwings.aivita"
+        applicationId "com.matrixdeveloper.aivita"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 18
-        versionName "2.7"
+        versionCode 1
+        versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         compileSdkVersion 29
     }
@@ -33,6 +33,14 @@ android {
         }
     }
 
+    //    signingConfigs {
+//        release {
+//            storeFile file("E:\\ANDROID\\key\\aivita.org\\aivita\\key.jks")
+//            storePassword "123456"
+//            keyAlias "key0"
+//            keyPassword "123456"
+//        }
+//    }
 
 }
 

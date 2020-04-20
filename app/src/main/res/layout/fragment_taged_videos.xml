@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/lightblack"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="org.itniorwings.aivita.Taged.Taged_Videos_F">
+    tools:context="org.itniorwings.aivita.com.itniorwings.aivita.Taged.Taged_Videos_F">
 
 
     <RelativeLayout

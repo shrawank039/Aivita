@@ -92,17 +92,31 @@
             android:layout_below="@+id/tv_password"
             android:backgroundTint="@color/dimgray"/>
 
+        <TextView
+            android:layout_marginTop="5dp"
+            android:id="@+id/forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_below="@+id/password"
+            android:layout_marginRight="30dp"
+            android:onClick="forgotPassword"
+            android:layout_alignParentRight="true"
+            android:text="Forgot Password?"
+            android:textAlignment="center"
+            android:textColor="@color/app_color" />
+
+
         <Button
             android:id="@+id/login_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/password"
+            android:layout_below="@+id/forgot_password"
             android:layout_marginLeft="@dimen/_15sdp"
             android:layout_marginTop="@dimen/_30sdp"
             android:layout_marginRight="@dimen/_15sdp"
             android:backgroundTint="@color/app_color"
             android:text="@string/login"
-
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textStyle="bold" />

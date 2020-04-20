@@ -14,7 +14,7 @@
         android:visibility="gone"
         android:id="@+id/datetxt"/>
 
-    <org.itniorwings.aivita.Chat.RoundCornersImageView
+    <com.matrixdeveloper.aivita.Chat.RoundCornersImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:id="@+id/chatimage"

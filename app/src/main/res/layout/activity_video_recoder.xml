@@ -26,7 +26,7 @@
             android:layout_margin="5dp">
 
 
-            <org.itniorwings.aivita.SegmentProgress.SegmentedProgressBar
+            <com.matrixdeveloper.aivita.SegmentProgress.SegmentedProgressBar
                 android:id="@+id/video_progress"
                 android:layout_width="match_parent"
                 android:layout_height="5dp"

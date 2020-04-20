@@ -7,6 +7,7 @@
     <color name="maincolor">#E25E14</color>
     <color name="facebookcolor">#416BC1</color>
 
+    <color name="gray_background">#03000000</color>
     <color name="white">#ffffff</color>
     <color name="colorwhite_50">#CCffffff</color>
     <color name="colorwhite_10">#1Affffff</color>

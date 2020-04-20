@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.itniorwings.aivita.Video_Recording.GallerySelectedVideo.GallerySelectedVideo_A">
+    tools:context="org.itniorwings.aivita.com.itniorwings.aivita.Video_Recording.GallerySelectedVideo.GallerySelectedVideo_A">
 
     <RelativeLayout
         android:layout_width="match_parent"

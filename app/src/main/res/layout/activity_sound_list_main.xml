@@ -70,14 +70,14 @@
                 android:layout_marginLeft="-1dp"
                 app:tabIndicatorColor="@color/black"/>
 
-            <org.itniorwings.aivita.Main_Menu.Custom_ViewPager
+            <com.matrixdeveloper.aivita.Main_Menu.Custom_ViewPager
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/viewpager"
                 android:background="@color/lightblack"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_below="@+id/groups_tab">
-            </org.itniorwings.aivita.Main_Menu.Custom_ViewPager>
+            </com.matrixdeveloper.aivita.Main_Menu.Custom_ViewPager>
 
 
         </RelativeLayout>

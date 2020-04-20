@@ -4,7 +4,7 @@
     android:layout_height="120dp"
     android:gravity="center">
 
-    <org.itniorwings.aivita.Chat.RoundCornersImageView
+    <com.matrixdeveloper.aivita.Chat.RoundCornersImageView
         android:layout_width="100dp"
         android:layout_height="60dp"
         android:id="@+id/gif_image"
