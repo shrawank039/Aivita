@@ -634,4 +634,8 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
         txt60.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
         txt18.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
     }
+
+    public void close(View view) {
+        onBackPressed();
+    }
 }

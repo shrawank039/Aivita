@@ -5,9 +5,8 @@
     android:id="@+id/scrollView"
     xmlns:android="http://schemas.android.com/apk/res/android">
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/dimgray"
     android:gravity="center"
     android:padding="0dp">
@@ -142,12 +141,34 @@
             android:layout_below="@+id/tv_password"
             android:backgroundTint="@color/dimgray"/>
 
+        <TextView
+            android:layout_below="@id/password"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:text="Referral code"
+            android:id="@+id/tv_referral"
+            android:textColor="@color/dimgray" />
+
+
+        <EditText
+            android:id="@+id/referral"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:layout_marginLeft="@dimen/_20sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/standard_white"
+            android:layout_below="@+id/tv_referral"
+            android:backgroundTint="@color/dimgray"/>
+
         <LinearLayout
             android:id="@+id/imageshow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_10sdp"
-            android:layout_below="@id/password"
+            android:layout_below="@id/referral"
             android:orientation="horizontal"
 
             android:weightSum="5">

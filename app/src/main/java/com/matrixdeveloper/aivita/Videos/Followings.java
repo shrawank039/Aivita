@@ -372,7 +372,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

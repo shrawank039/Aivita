@@ -219,7 +219,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_25sdp"
-                        android:gravity="center_horizontal"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -324,6 +324,33 @@
                                 android:textStyle="bold" />
 
                         </LinearLayout>
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginLeft="10dp"-->
+<!--                            android:gravity="center_horizontal"-->
+<!--                            android:orientation="vertical">-->
+
+<!--                            <ImageView-->
+<!--                                android:layout_gravity="center"-->
+<!--                                android:layout_width="30dp"-->
+<!--                                android:layout_height="30dp"-->
+<!--                                android:src="@drawable/wallet"/>-->
+
+<!--                            <TextView-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:paddingLeft="15dp"-->
+<!--                                android:paddingTop="5dp"-->
+<!--                                android:paddingRight="15dp"-->
+<!--                                android:paddingBottom="5dp"-->
+<!--                                android:text="Wallet"-->
+<!--                                android:textColor="@color/darkgray"-->
+<!--                                android:textSize="13dp"-->
+<!--                                android:textStyle="bold" />-->
+
+<!--                        </LinearLayout>-->
 
                     </LinearLayout>
 

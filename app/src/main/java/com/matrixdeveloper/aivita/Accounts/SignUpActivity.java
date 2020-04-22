@@ -28,6 +28,9 @@ import com.matrixdeveloper.aivita.ApiServices.RetrofitApi;
  import com.matrixdeveloper.aivita.SimpleClasses.Variables;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 
 import java.util.Objects;
@@ -42,7 +45,7 @@ import retrofit2.Response;
  import static com.matrixdeveloper.aivita.SimpleClasses.Variables.sharedPreferences;
 
 public class SignUpActivity extends AppCompatActivity {
-    EditText tv_username, tv_useremail, txtphone, password;
+    EditText tv_username, tv_useremail, txtphone, password,referral;
     String id;
     Button btnSignUp;
     ImageView imageView;
@@ -62,6 +65,7 @@ public class SignUpActivity extends AppCompatActivity {
         tv_username = findViewById(R.id.simpleEditText);
         tv_useremail = findViewById(R.id.edtemail);
         password = findViewById(R.id.password);
+        referral = findViewById(R.id.password);
         txtphone = findViewById(R.id.edtphone);
         btnSignUp = findViewById(R.id.btnSignUp);
         btn_take_photo = findViewById(R.id.btn_take_photo);
@@ -86,43 +90,52 @@ public class SignUpActivity extends AppCompatActivity {
                     .addFormDataPart("username", Objects.requireNonNull(tv_username.getText().toString()))
                     .addFormDataPart("email", Objects.requireNonNull(tv_useremail.getText().toString()))
                     .addFormDataPart("phone", Objects.requireNonNull(txtphone.getText().toString()))
-                    .addFormDataPart("password ", Objects.requireNonNull(password.getText().toString()));
+                    .addFormDataPart("password ", Objects.requireNonNull(password.getText().toString()))
+                    .addFormDataPart("referral_key ", Objects.requireNonNull(referral.getText().toString()));
             RetrofitApi apiService = ApiClient.getRawClient().create(RetrofitApi.class);
             apiService.AddTransport(builder.build()).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    if(response.errorBody()==null&&response.body()!=null ){
                         Gson newq =new Gson();
 
-                        Log.d("SignUpA","SignUp : "+ response.body().toString());
-                        Toast.makeText(SignUpActivity.this, response.body(), Toast.LENGTH_SHORT).show();
-                        System.out.println("**************** resp "+newq.toJson(response.body())+"    "+ response.body() + "   "+response.body().toString());
+                        try {
+                            assert response.body() != null;
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            JSONObject dataObj = jsonObject.optJSONObject("data");
+                            if (dataObj.optString("status").equalsIgnoreCase("error")){
+                                String a = dataObj.optString("reason");
+                                Toast.makeText(SignUpActivity.this, a, Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                Log.d("SignUpA","SignUp : "+ response.body().toString());
+                             //   Toast.makeText(SignUpActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                                System.out.println("**************** resp "+newq.toJson(response.body())+"    "+ response.body() + "   "+response.body().toString());
 
-                        SharedPreferences.Editor editor=sharedPreferences.edit();
-                        editor.putString(Variables.username, String.valueOf(tv_username));
-                        editor.putString(Variables.email,String.valueOf(tv_useremail));
-                        editor.putString(Variables.phone, String.valueOf(txtphone));
-                        editor.putString(Variables.password,String.valueOf(password));
-                        editor.putString(Variables.u_pic,String.valueOf(imageView));
-                        editor.putString(Variables.u_id,String.valueOf(id));
+                                SharedPreferences.Editor editor=sharedPreferences.edit();
+                                editor.putString(Variables.username, String.valueOf(tv_username));
+                                editor.putString(Variables.email,String.valueOf(tv_useremail));
+                                editor.putString(Variables.phone, String.valueOf(txtphone));
+                                editor.putString(Variables.password,String.valueOf(password));
+                                editor.putString(Variables.u_pic,String.valueOf(imageView));
+                                editor.putString(Variables.u_id,String.valueOf(id));
 
-                        editor.putBoolean(Variables.islogin,true);
-                        editor.apply();
+                                editor.putBoolean(Variables.islogin,true);
+                                editor.apply();
 
-                        Variables.sharedPreferences=getSharedPreferences(Variables.pref_name,MODE_PRIVATE);
+                                Variables.sharedPreferences=getSharedPreferences(Variables.pref_name,MODE_PRIVATE);
 
-                        //  Variables.user_id=Variables.sharedPreferences.getString(Variables.u_id,"");
-                        System.out.println("******** shar pref "+ Variables.sharedPreferences.getString(Variables.username, "")+ " pass value "+
-                                Variables.sharedPreferences.getString(Variables.password, ""));
+                                //  Variables.user_id=Variables.sharedPreferences.getString(Variables.u_id,"");
+                                System.out.println("******** shar pref "+ Variables.sharedPreferences.getString(Variables.username, "")+ " pass value "+
+                                        Variables.sharedPreferences.getString(Variables.password, ""));
 
+                                Toast.makeText(getApplicationContext(),"Register Successfull",Toast.LENGTH_LONG).show();
 
-                        startActivity(new Intent(SignUpActivity.this,Login_A.class));
-                     //   Toast.makeText(getApplicationContext(),"Register Successfull",Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(SignUpActivity.this,Login_A.class));
+                            }
 
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Check Your Credentials",Toast.LENGTH_LONG).show();
-                    }
-
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                 }
 
                 @Override

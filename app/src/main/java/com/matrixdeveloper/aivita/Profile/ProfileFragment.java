@@ -393,8 +393,11 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
 
                 JSONObject data = msgArray.getJSONObject(0);
                 JSONObject user_info = data.optJSONObject("user_info");
-                username.setText(user_info.optString("first_name") + " " + user_info.optString("last_name"));
-                username1.setText("@aivita"+user_info.optString("first_name")+ user_info.optString("last_name"));
+                assert user_info != null;
+                String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
+                username.setText(a);
+                String b="@aivita"+user_info.optString("username");
+                username1.setText(b);
 
                 ProfileFragment.pic_url = user_info.optString("profile_pic");
                 Picasso.with(context)

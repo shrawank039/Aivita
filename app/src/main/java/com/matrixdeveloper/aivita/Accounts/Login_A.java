@@ -561,9 +561,9 @@ public class Login_A extends Activity {
             public void Responce(String resp) {
                 iosDialog.cancel();
                 Log.d(TAG, "login :- "+resp);
-                AuthBean authBean = new AuthBean();
-                LoginParser loginParser = new LoginParser();
-                authBean = loginParser.parseLoginResponse(resp);
+//                AuthBean authBean = new AuthBean();
+//                LoginParser loginParser = new LoginParser();
+//                authBean = loginParser.parseLoginResponse(resp);
                // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
                 Parse_login_data(resp);
 
@@ -599,6 +599,8 @@ public class Login_A extends Activity {
                 top_view.setVisibility(View.GONE);
                 finish();
                 startActivity(new Intent(this, MainMenuActivity.class));
+            }else {
+                Toast.makeText(this, userdata.optString("msg"), Toast.LENGTH_LONG).show();
             }
 
 
