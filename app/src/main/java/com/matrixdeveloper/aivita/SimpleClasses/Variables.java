@@ -54,7 +54,7 @@ public class Variables {
     public static SimpleDateFormat df2 = new SimpleDateFormat("dd-MM-yyyy HH:mmZZ", Locale.ENGLISH);
 
     public static String user_id;
-    public static String user_name;
+    public static String user_name="";
     public static String user_pic;
 
     public final static int permission_camera_code = 786;

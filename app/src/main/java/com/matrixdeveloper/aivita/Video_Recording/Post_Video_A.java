@@ -13,8 +13,11 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.matrixdeveloper.aivita.Main_Menu.MainMenuActivity;
@@ -26,6 +29,7 @@ import com.matrixdeveloper.aivita.SimpleClasses.Variables;
 import com.matrixdeveloper.aivita.R;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Post_Video_A extends AppCompatActivity implements ServiceCallback {
 
@@ -37,8 +41,7 @@ public class Post_Video_A extends AppCompatActivity implements ServiceCallback {
     ProgressDialog progressDialog;
 
     ServiceCallback serviceCallback;
-
-
+    String mode="public";
     EditText description_edit;
 
     @Override
@@ -90,6 +93,26 @@ public class Post_Video_A extends AppCompatActivity implements ServiceCallback {
         }
     });
 
+
+        Spinner spinner = findViewById(R.id.spinner);
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("public");
+        arrayList.add("private");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, arrayList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String mode = parent.getItemAtPosition(position).toString();
+                Toast.makeText(parent.getContext(), "Selected: " + mode,          Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView <?> parent) {
+
+            }
+        });
 
 
 }

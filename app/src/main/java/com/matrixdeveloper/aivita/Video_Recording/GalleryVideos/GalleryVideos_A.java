@@ -53,7 +53,6 @@ public class GalleryVideos_A extends AppCompatActivity {
     public  RecyclerView recyclerView;
     GalleryVideos_Adapter adapter;
     Boolean isScrolling = false;
-    Boolean ok=true;
     int currentItems, totalItems, scrollOutItems;
     GridLayoutManager layoutManager;
     int a=0,b=0,c=0,totalLength;
@@ -144,13 +143,9 @@ public class GalleryVideos_A extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (ok) {
                                 if (c==-1){
-                                  //  Toast.makeText(GalleryVideos_A.this, Integer.toString(totalItems), Toast.LENGTH_SHORT).show();
-                                    getAllVideoPath(GalleryVideos_A.this, 1, cursor);
-                                   // ok=false;
+                                     getAllVideoPath(GalleryVideos_A.this, 1, cursor);
                                 }
-                            }
                         }
                     },300);
 

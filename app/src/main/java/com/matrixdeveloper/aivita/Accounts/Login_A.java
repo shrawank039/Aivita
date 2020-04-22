@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.matrixdeveloper.aivita.ApiServices.PrefManager;
 import com.matrixdeveloper.aivita.Main_Menu.MainMenuActivity;
+import com.matrixdeveloper.aivita.Net.parser.LoginParser;
 import com.matrixdeveloper.aivita.PhoneAuth.PhoneAuth;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
@@ -56,6 +57,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.matrixdeveloper.aivita.model.AuthBean;
 
 
 import org.json.JSONArray;
@@ -74,6 +76,7 @@ public class Login_A extends Activity {
     TextView createAccount;
     View top_view;
     Button login_btn;
+    String TAG="Login_A";
     EditText tv_username, password;
     private PrefManager prefManager;
 
@@ -557,6 +560,11 @@ public class Login_A extends Activity {
             @Override
             public void Responce(String resp) {
                 iosDialog.cancel();
+                Log.d(TAG, "login :- "+resp);
+                AuthBean authBean = new AuthBean();
+                LoginParser loginParser = new LoginParser();
+                authBean = loginParser.parseLoginResponse(resp);
+               // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
                 Parse_login_data(resp);
 
             }
@@ -569,22 +577,29 @@ public class Login_A extends Activity {
     public void Parse_login_data(String loginData) {
         try {
             JSONObject userdata = new JSONObject(loginData);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(Variables.username, userdata.optString("username"));
-            editor.putString(Variables.password, userdata.optString("password"));
-            editor.putString(Variables.u_id, userdata.optString("fb_id"));
-            editor.putString(Variables.f_name, userdata.optString("first_name"));
-            editor.putString(Variables.l_name, userdata.optString("last_name"));
-            editor.putString(Variables.u_name, userdata.optString("first_name") + " " + userdata.optString("last_name"));
-            editor.putString(Variables.gender, userdata.optString("gender"));
-            editor.putString(Variables.u_pic, userdata.optString("profile_pic"));
-            editor.putBoolean(Variables.islogin, true);
-            editor.apply();
-            Variables.sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
-            Variables.user_id = Variables.sharedPreferences.getString(Variables.u_id, "0");
-            top_view.setVisibility(View.GONE);
-            finish();
-            startActivity(new Intent(this, MainMenuActivity.class));
+            if (userdata.optString("status").equalsIgnoreCase("success")) {
+                JSONObject dataObj = userdata.optJSONObject("data");
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                assert dataObj != null;
+                editor.putString(Variables.username, dataObj.optString("username"));
+
+                String a = Variables.sharedPreferences.getString(Variables.username,null);
+                Toast.makeText(Login_A.this, dataObj.optString("username")+a, Toast.LENGTH_SHORT).show();
+                editor.putString(Variables.password, dataObj.optString("password"));
+                editor.putString(Variables.u_id, dataObj.optString("fb_id"));
+                editor.putString(Variables.f_name, dataObj.optString("first_name"));
+                editor.putString(Variables.l_name, dataObj.optString("last_name"));
+                editor.putString(Variables.u_name, dataObj.optString("first_name") + " " + dataObj.optString("last_name"));
+                editor.putString(Variables.gender, dataObj.optString("gender"));
+                editor.putString(Variables.u_pic, dataObj.optString("profile_pic"));
+                editor.putBoolean(Variables.islogin, true);
+                editor.apply();
+                Variables.sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
+                Variables.user_id = Variables.sharedPreferences.getString(Variables.u_id, "0");
+                top_view.setVisibility(View.GONE);
+                finish();
+                startActivity(new Intent(this, MainMenuActivity.class));
+            }
 
 
         } catch (JSONException e) {

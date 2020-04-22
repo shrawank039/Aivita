@@ -481,6 +481,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
             parameters.put("youtube_url",et_youtubelink.getText().toString());
             parameters.put("instagram_url",et_instagramlink.getText().toString());
 
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
