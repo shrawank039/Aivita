@@ -7,6 +7,10 @@
             android:title="Edit Profile"/>
 
         <item
+            android:id="@+id/referral_id"
+            android:title="Refer &amp; Earn"/>
+
+        <item
             android:id="@+id/logout_id"
             android:title="Logout"/>
 

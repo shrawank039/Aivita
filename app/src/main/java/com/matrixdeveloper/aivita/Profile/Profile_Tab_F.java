@@ -443,6 +443,8 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 JSONObject user_info=data.optJSONObject("user_info");
 
                 assert user_info != null;
+                Variables.referral_code=user_info.optString("referral_code");
+                assert user_info != null;
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
                 String b="@aivita"+user_info.optString("username");
                 username.setText(b);
@@ -543,6 +545,15 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                         Open_Edit_profile();
                         break;
 
+                    case R.id.referral_id:
+                        Intent shareRide = new Intent();
+                        shareRide.setAction(Intent.ACTION_SEND);
+                        shareRide.putExtra(Intent.EXTRA_TEXT, "Use this referral code \"" +Variables.referral_code+
+                                "\" while registering in Aivita to get 100 Aivita Coin.");
+                        shareRide.setType("text/plain");
+                        Intent shareIntent = Intent.createChooser(shareRide, "Share Now");
+                        startActivity(shareIntent);
+                        break;
                     case R.id.logout_id:
                         Logout();
                         break;

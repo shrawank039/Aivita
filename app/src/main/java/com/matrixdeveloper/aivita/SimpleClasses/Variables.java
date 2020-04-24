@@ -18,6 +18,7 @@ public class Variables {
     public static String outputfile=root + "/output.mp4";
     public static String outputfile2=root + "/output2.mp4";
     public static String output_filter_file=root + "/output-filtered.mp4";
+    public static String referral_code="";
 
 
     public static String gallery_trimed_video = root + "/gallery_trimed_video.mp4";
@@ -92,8 +93,10 @@ public class Variables {
     public static String DeleteVideo = domain + "DeleteVideo";
     public static String CHANGE_PASS = domain + "set_forgot_password";
     public static String CHECK_AVAIL = domain + "forgot_password";
+    public static String CONVERT_COIN = domain + "convert_coin";
+    public static String AVAILABLE_BALANCE = domain + "available_balance";
 
 
-//https://aivita.club/aivita/API/index.php?p=allSounds
+//https://aivita.club/aivita/API/index.php?p=available_balance
     //https://infinityfacts.com/aivita/API/index.php?p=get_user_data
 }
