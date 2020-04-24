@@ -10,12 +10,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +36,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.MediaType;
@@ -53,6 +59,8 @@ public class SignUpActivity extends AppCompatActivity {
     private static final int SELECT_PHOTO = 200;
     private static final int CAMERA_REQUEST = 1888;
     final int MY_PERMISSIONS_REQUEST_WRITE = 103;
+    Spinner spinnerCountryCodes;
+    String mode ="+91";
     IOSDialog iosDialog;
     MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
@@ -81,6 +89,27 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        spinnerCountryCodes = (Spinner) findViewById(R.id.spinner_country_code);
+       // ArrayList<String> arrayList = new ArrayList<>();
+        List<String> Lines = Arrays.asList(getResources().getStringArray(R.array.countrycodes));
+//        arrayList.add("+91");
+//        arrayList.add("private");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, Lines);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCountryCodes.setAdapter(arrayAdapter);
+        spinnerCountryCodes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
+                mode = parent.getItemAtPosition(position).toString();
+               // Toast.makeText(parent.getContext(), "Selected: " + mode, Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView <?> parent) {
+
+            }
+        });
 
 
 
@@ -89,7 +118,7 @@ public class SignUpActivity extends AppCompatActivity {
             builder
                     .addFormDataPart("username", Objects.requireNonNull(tv_username.getText().toString()))
                     .addFormDataPart("email", Objects.requireNonNull(tv_useremail.getText().toString()))
-                    .addFormDataPart("phone", Objects.requireNonNull(txtphone.getText().toString()))
+                    .addFormDataPart("phone", mode+Objects.requireNonNull(txtphone.getText().toString()))
                     .addFormDataPart("password ", Objects.requireNonNull(password.getText().toString()))
                     .addFormDataPart("referral_key ", Objects.requireNonNull(referral.getText().toString()));
             RetrofitApi apiService = ApiClient.getRawClient().create(RetrofitApi.class);

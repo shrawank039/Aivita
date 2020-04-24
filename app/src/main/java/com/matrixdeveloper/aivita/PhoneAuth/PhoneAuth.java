@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -254,7 +255,6 @@ public class PhoneAuth extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         try {
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("type", "customer");
             jsonBody.put("phone", editTextPhone.getText().toString().trim());
             final String requestBody = jsonBody.toString();
 
@@ -266,8 +266,8 @@ public class PhoneAuth extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         JSONObject object = new JSONObject(response);
                         String status = object.getString("status");
-                        Toast.makeText(PhoneAuth.this, status, Toast.LENGTH_SHORT).show();
-                        if (Integer.parseInt(status)<=3) {
+                       // Toast.makeText(PhoneAuth.this, status, Toast.LENGTH_SHORT).show();
+                        if (status.equalsIgnoreCase("success")) {
                             sendVerificationCode(phonenumber);
                             updateCountDownText();
                             startTimer();
@@ -313,6 +313,10 @@ public class PhoneAuth extends AppCompatActivity {
                     }
                 }
             };
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             stringRequest.setShouldCache(false);
             MySingleton.getInstance(PhoneAuth.this).addToRequestQueue(stringRequest);
 

@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.util.Base64;
 import android.util.Log;
@@ -22,9 +23,11 @@ import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.matrixdeveloper.aivita.ApiServices.PrefManager;
 import com.matrixdeveloper.aivita.Main_Menu.MainMenuActivity;
 import com.matrixdeveloper.aivita.Net.parser.LoginParser;
@@ -76,9 +79,11 @@ public class Login_A extends Activity {
     TextView createAccount;
     View top_view;
     Button login_btn;
-    String TAG="Login_A";
+    String TAG = "Login_A";
     EditText tv_username, password;
     private PrefManager prefManager;
+    String email;
+    CoordinatorLayout rl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +105,7 @@ public class Login_A extends Activity {
 
 
         setContentView(R.layout.activity_login);
+        rl = findViewById(R.id.coordinatorLayout);
         createAccount = findViewById(R.id.tc_createaccount);
         login_btn = findViewById(R.id.login_btn);
         password = findViewById(R.id.password);
@@ -107,19 +113,59 @@ public class Login_A extends Activity {
 
         login_btn.setOnClickListener(v -> {
 
-
             if (tv_username.getText().toString().trim().isEmpty()) {
-                tv_username.setError("Email or Phone is required!");
+                tv_username.setError("Email or Username is required!");
                 tv_username.requestFocus();
             } else if (password.getText().toString().trim().isEmpty()) {
                 password.setError("password is required!");
                 password.requestFocus();
             } else {
-                String username = tv_username.getText().toString().trim();
-                String password1 = password.getText().toString().trim();
+                email = tv_username.getText().toString();
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
 
-                // Login(username,password1);
-                login(username, password1);
+                    if (email.length() <= 9) {
+                        try {
+                            double num = Double.parseDouble(tv_username.getText().toString());
+//                                Snackbar.make(rl, "Please enter country code with phone! (e.g. +91)", Snackbar.LENGTH_LONG)
+//                                        .show();
+                            Toast.makeText(this, "Please enter valid phone number or email!", Toast.LENGTH_LONG).show();
+                        } catch (NumberFormatException e) {
+                            String password1 = password.getText().toString().trim();
+                            login(email, password1);
+                        }
+//                            Snackbar.make(rl, "Please enter valid phone number or email", Snackbar.LENGTH_LONG)
+//                                    .show();
+                    } else if (email.length() == 10) {
+                        try {
+                            double n = Double.parseDouble(tv_username.getText().toString());
+//                                Snackbar.make(rl, "Please enter country code with phone! (e.g. +91)", Snackbar.LENGTH_LONG)
+//                                        .show();
+                            Toast.makeText(this, "Please enter country code with phone! (eg- +91)", Toast.LENGTH_LONG).show();
+                        } catch (NumberFormatException e) {
+                          //  Toast.makeText(this, "String", Toast.LENGTH_LONG).show();
+                                String password1 = password.getText().toString().trim();
+                                login(email, password1);
+                        }
+
+                    } else if (email.length() == 12) {
+                        try {
+                            int num = Integer.parseInt(email);
+                            email = "+" + email;
+                            String password1 = password.getText().toString().trim();
+                            // Login(username,password1);
+                            login(email, password1);
+                        } catch (NumberFormatException e) {
+                        }
+                    } else {
+                        String password1 = password.getText().toString().trim();
+                        // Login(username,password1);
+                        login(email, password1);
+                    }
+                } else {
+                    String password1 = password.getText().toString().trim();
+                    // Login(username,password1);
+                    login(email, password1);
+                }
 
                 // TODO Auto-generated method stub
 //                loading.setVisibility(View.VISIBLE);
@@ -560,11 +606,11 @@ public class Login_A extends Activity {
             @Override
             public void Responce(String resp) {
                 iosDialog.cancel();
-                Log.d(TAG, "login :- "+resp);
+                Log.d(TAG, "login :- " + resp);
 //                AuthBean authBean = new AuthBean();
 //                LoginParser loginParser = new LoginParser();
 //                authBean = loginParser.parseLoginResponse(resp);
-               // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
                 Parse_login_data(resp);
 
             }
@@ -583,8 +629,8 @@ public class Login_A extends Activity {
                 assert dataObj != null;
                 editor.putString(Variables.username, dataObj.optString("username"));
 
-                String a = Variables.sharedPreferences.getString(Variables.username,null);
-                Toast.makeText(Login_A.this, dataObj.optString("username")+a, Toast.LENGTH_SHORT).show();
+                String a = Variables.sharedPreferences.getString(Variables.username, null);
+                Toast.makeText(Login_A.this, dataObj.optString("username") + a, Toast.LENGTH_SHORT).show();
                 editor.putString(Variables.password, dataObj.optString("password"));
                 editor.putString(Variables.u_id, dataObj.optString("fb_id"));
                 editor.putString(Variables.f_name, dataObj.optString("first_name"));
@@ -599,7 +645,7 @@ public class Login_A extends Activity {
                 top_view.setVisibility(View.GONE);
                 finish();
                 startActivity(new Intent(this, MainMenuActivity.class));
-            }else {
+            } else {
                 Toast.makeText(this, userdata.optString("msg"), Toast.LENGTH_LONG).show();
             }
 

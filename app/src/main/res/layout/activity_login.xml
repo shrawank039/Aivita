@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:padding="0dp">
+    android:layout_marginTop="@dimen/_90sdp"
+    android:background="@color/transparent"
+    android:gravity="center">
+
+    <ScrollView
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:background="@drawable/d_top_left_right_radius"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="0dp">
+
     <LinearLayout
         android:id="@+id/top_view"
         android:layout_width="match_parent"
@@ -18,9 +32,7 @@
         android:id="@+id/login_details_RL1_id"
         android:layout_width="match_parent"
         android:gravity="center"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/_90sdp"
-        android:background="@drawable/d_top_left_right_radius">
+        android:layout_height="match_parent">
         <ImageView
             android:id="@+id/Goback"
             android:layout_width="32dp"
@@ -174,6 +186,7 @@
         </FrameLayout>
 
         <LinearLayout
+            android:layout_marginBottom="@dimen/_30sdp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/FrameLayout2"
@@ -202,5 +215,6 @@
                 android:textColor="@color/app_color" />
         </LinearLayout>
     </RelativeLayout>
-
-</RelativeLayout>
+    </RelativeLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

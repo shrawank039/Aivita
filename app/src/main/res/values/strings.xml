@@ -24,5 +24,20 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="change_pass_caption">Please, Enter the Registered mobile number to get OTP. If you are not registered, then please sign up first.</string>
 
+    <string name="Rs">\u20B9</string>
+    <string-array name="countrycodes">
+        <item>+91</item>
+        <item>+61</item>
+        <item>+27</item>
+        <item>+1</item>
+        <item>+92</item>
+        <item>+86</item>
+        <item>+33</item>
+        <item>+39</item>
+        <item>+49</item>
+        <item>+54</item>
+        <item>+81</item>
+        <item>+7</item>
+    </string-array>
 
 </resources>

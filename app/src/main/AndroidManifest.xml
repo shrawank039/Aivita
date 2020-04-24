@@ -37,7 +37,10 @@
         tools:ignore="LockedOrientationActivity, InnerclassSeparator"
         tools:replace="allowBackup,supportsRtl"
         tools:targetApi="n">
-
+        <activity android:name=".Wallet.WithdrawConvert"></activity>
+        <activity
+            android:name=".Wallet.WalletActivity"
+            android:theme="@style/black_status" />
         <activity android:name=".Notifications.NotificationActivity" />
         <activity android:name=".Accounts.SignUpActivity" />
 

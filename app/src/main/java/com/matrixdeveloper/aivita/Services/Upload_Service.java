@@ -88,7 +88,7 @@ public class Upload_Service extends Service{
 
     String video_base64="",thumb_base_64="",Gif_base_64="";
 
-    String description;
+    String description,postType;
 
     SharedPreferences sharedPreferences;
 
@@ -123,6 +123,7 @@ public class Upload_Service extends Service{
             String uri_string= intent.getStringExtra("uri");
             uri = Uri.parse(uri_string);
             description=intent.getStringExtra("desc");
+            postType = intent.getStringExtra("post_type");
 
             new Thread(new Runnable() {
                 @Override
@@ -176,6 +177,7 @@ public class Upload_Service extends Service{
                 parameters.put("fb_id", sharedPreferences.getString(Variables.u_id,""));
                 parameters.put("sound_id", Variables.Selected_sound_id);
                 parameters.put("description",description);
+                parameters.put("post_type",postType);
 
                 JSONObject vidoefiledata=new JSONObject();
                 vidoefiledata.put("file_data",video_base64);

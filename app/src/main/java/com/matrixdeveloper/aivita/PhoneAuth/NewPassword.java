@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -76,7 +77,6 @@ public class NewPassword extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         try {
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("type", "customer");
             jsonBody.put("phone", phone);
             jsonBody.put("password", pass);
             final String requestBody = jsonBody.toString();
@@ -124,6 +124,10 @@ public class NewPassword extends AppCompatActivity {
                     }
                 }
             };
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             stringRequest.setShouldCache(false);
             MySingleton.getInstance(NewPassword.this).addToRequestQueue(stringRequest);
 

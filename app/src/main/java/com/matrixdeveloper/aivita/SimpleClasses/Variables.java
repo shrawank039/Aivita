@@ -35,9 +35,9 @@ public class Variables {
     public static String u_pic = "";
     public static String f_name = "f_name";
     public static String l_name = "l_name";
-    public static String youtubelink="youtube_url";
-    public static String instagramlink="instagram_url";
-    public static String facebooklink="fb_url";
+    public static String youtubelink="https://www.youtube.com/";
+    public static String instagramlink="https://www.instagram.com/";
+    public static String facebooklink="https://www.facebook.com/";
     public static String gender = "u_gender";
     public static String islogin = "is_login";
     public static String device_token = "device_token";
@@ -90,8 +90,10 @@ public class Variables {
     public static String sendPushNotification = domain + "sendPushNotification";
     public static String uploadImage = domain + "uploadImage";
     public static String DeleteVideo = domain + "DeleteVideo";
-    public static String CHANGE_PASS = domain + "change_password";
-    public static String CHECK_AVAIL = domain + "check_account";
+    public static String CHANGE_PASS = domain + "set_forgot_password";
+    public static String CHECK_AVAIL = domain + "forgot_password";
+
+
 //https://aivita.club/aivita/API/index.php?p=allSounds
     //https://infinityfacts.com/aivita/API/index.php?p=get_user_data
 }

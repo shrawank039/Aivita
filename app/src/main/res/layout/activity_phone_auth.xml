@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_background">
+    android:background="@color/lightblack">
 
 
     <LinearLayout
@@ -17,12 +18,11 @@
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="15dp"
             android:onClick="callOnbackpressed"
-            android:src="@drawable/ic_action_navigation_chevron_left" />
+            android:src="@drawable/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginTop="10dp"
             android:text="CHANGE PASSWORD"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -40,6 +40,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="30dp"
+            android:textColor="@color/white"
             android:textSize="11sp"
             android:text="@string/change_pass_caption" />
 
@@ -141,6 +142,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <TextView
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Don't have an account?"
@@ -169,12 +171,12 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:onClick="callOnbackpressed"
-            android:src="@drawable/ic_action_navigation_chevron_left"
+            android:src="@drawable/ic_back"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -194,7 +196,7 @@
                 android:fontFamily="sans-serif"
                 android:text="WAIT FOR OTP "
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -205,12 +207,14 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
                     android:text="Enter OTP sent to mobile number" />
 
                 <TextView
+                    android:textColor="@color/app_color"
                     android:id="@+id/phoneText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -236,7 +240,7 @@
                 android:layout_marginRight="30dp"
                 app:cardCornerRadius="7dp">
 
-                <com.akshcabs.aksh.widgets.CustomEditText
+                <EditText
                     android:id="@+id/editTextCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -257,14 +261,14 @@
 
             </androidx.cardview.widget.CardView>
 
-            <com.akshcabs.aksh.widgets.CustomButton
+            <Button
                 android:id="@+id/buttonSignIn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
                 android:background="@drawable/input_textlayout_with_senicircle_edge"
-                android:backgroundTint="@color/colorPrimary"
+                android:backgroundTint="@color/colorAccent"
                 android:onClick="veifyOtp"
                 android:text="verify"
                 android:minHeight="45dp"
@@ -287,7 +291,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorAccent"
                 android:textSize="12sp" />
 
             <Button
@@ -296,7 +300,7 @@
                 android:layout_height="25dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
-                android:background="@color/colorPrimary"
+                android:background="@color/colorAccent"
                 android:text="resend"
                 android:textColor="@color/white"
                 android:textSize="9sp"

@@ -47,6 +47,7 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.matrixdeveloper.aivita.Wallet.WalletActivity;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +76,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
     private ViewPagerAdapter adapter;
     public boolean isdataload=false;
     RelativeLayout tabs_main_layout;
-    LinearLayout top_layout;
+    LinearLayout top_layout,ll_wallet;
     public  static String pic_url;
     public  LinearLayout create_popup_layout;
 
@@ -93,29 +94,35 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
         instagram=view.findViewById(R.id.insta_icon);
         facebook=view.findViewById(R.id.facebook_icon);
         youttube=view.findViewById(R.id.youtube_icon);
+        ll_wallet = view.findViewById(R.id.ll_wallet);
 
 
 
+        ll_wallet.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), WalletActivity.class));
+        });
 
 
                 instagram.setOnClickListener(v -> {
-                    Log.e("instagramlink",Variables.sharedPreferences.getString(Variables.instagramlink, ""));
+                    String insta=Variables.sharedPreferences.getString(Variables.instagramlink, "https://www.instagram.com/");
+                   // Log.e("instagramlink",Variables.sharedPreferences.getString(Variables.instagramlink, ""));
                     Intent viewIntent =
                             new Intent("android.intent.action.VIEW",
-                                    Uri.parse("https://www.instagram.com/"));
+                                    Uri.parse(insta));
                     startActivity(viewIntent);
                 });
                 facebook.setOnClickListener(v -> {
-                    Intent viewIntent =
-                            new Intent("android.intent.action.VIEW",
-                                    Uri.parse("https://www.facebook.com/?stype=lo&jlou=AffhHFR7NhkhaiP3A-N8LWPya8J5py8R2v1fKDtc7aAHByXOsw1Vpp8ZmWZVr8w3cGwiy3M0YvnfK-C2B8MIksNZdsahzzUaUTgvq0_-AumWIA&smuh=23710&lh=Ac8SwyeTOPq96INf"));
+                    String facebook=Variables.sharedPreferences.getString(Variables.facebooklink, "https://www.facebook.com/");
+                    Intent viewIntent = new Intent("android.intent.action.VIEW",
+                                    Uri.parse(facebook));
                     startActivity(viewIntent);
                 });
 
                 youttube.setOnClickListener(v -> {
+                    String youtube=Variables.sharedPreferences.getString(Variables.youtubelink, "https://www.youtube.com/");
                     Intent viewIntent =
                             new Intent("android.intent.action.VIEW",
-                                    Uri.parse("https://www.youtube.com/"));
+                                    Uri.parse(youtube));
                     startActivity(viewIntent);
                 });
 
