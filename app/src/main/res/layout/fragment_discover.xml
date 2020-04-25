@@ -39,6 +39,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Search"
                     android:padding="7dp"
+                    android:textCursorDrawable="@color/white"
                     android:textSize="14dp"
                     android:id="@+id/search_edit"
                     android:textColorHint="@color/standard_white"

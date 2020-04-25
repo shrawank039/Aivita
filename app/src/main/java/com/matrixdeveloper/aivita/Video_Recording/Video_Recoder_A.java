@@ -73,15 +73,17 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     public static int Sounds_list_Request_code=1;
     TextView add_sound_txt;
     int sec_passed=0;
+    File file;
+    int recording_status =0;  // 0>record 1>paused >2 resumed
     int selected_time=18;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Hide_navigation();
         setContentView(R.layout.activity_video_recoder);
-
 
         sec_passed=0;
         Variables.Selected_sound_id="null";
@@ -196,7 +198,6 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-
     }
 
 
@@ -205,13 +206,14 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     // if the Recording is stop then it we start the recording
     // and if the mobile is recording the video then it will stop the recording
     public void Start_or_Stop_Recording(){
+        number=number+1;
+        file = new File(Variables.root + "/" + "myvideo"+(number)+".mp4");
 
-        if (!is_recording && sec_passed<selected_time ) {
-            number=number+1;
+        if (!is_recording && sec_passed<selected_time && recording_status ==0) {
+            recording_status =1;
 
             is_recording=true;
 
-            File file = new File(Variables.root + "/" + "myvideo"+(number)+".mp4");
             videopaths.add(Variables.root + "/" + "myvideo"+(number)+".mp4");
             cameraView.captureVideo(file);
 
@@ -219,13 +221,11 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
             if(audio!=null)
                 audio.start();
 
-
             video_progress.resume();
 
 
             done_btn.setBackgroundResource(R.drawable.ic_not_done);
             done_btn.setEnabled(false);
-
             record_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_recoding_yes));
 
             camera_options.setVisibility(View.GONE);
@@ -234,11 +234,14 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
         }
 
-        else if (is_recording) {
+        else if (is_recording && recording_status ==1) {
+            Toast.makeText(this, "pause", Toast.LENGTH_SHORT).show();
+            recording_status=2;
             video_progress.pause();
-            video_progress.addDivider();
+          //  video_progress.addDivider();
              if(audio!=null)
                 audio.pause();
+
             cameraView.stopVideo();
             if(sec_passed>5) {
                 done_btn.setBackgroundResource(R.drawable.ic_done);
@@ -246,6 +249,25 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
             }
             record_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_recoding_no));
             camera_options.setVisibility(View.VISIBLE);
+        }
+        else if (recording_status==2) {
+            Toast.makeText(this, "resume", Toast.LENGTH_SHORT).show();
+            recording_status =1;
+            video_progress.resume();
+            if(audio!=null)
+                audio.start();
+           // File file = new File(Variables.root + "/" + "myvideo"+(number)+".mp4");
+            videopaths.add(Variables.root + "/" + "myvideo"+(number)+".mp4");
+            cameraView.captureVideo(file);
+
+            done_btn.setBackgroundResource(R.drawable.ic_not_done);
+            done_btn.setEnabled(false);
+            record_image.setImageDrawable(getResources().getDrawable(R.drawable.ic_recoding_yes));
+
+            camera_options.setVisibility(View.GONE);
+            add_sound_txt.setClickable(false);
+            rotate_camera.setVisibility(View.GONE);
+
         }
         else if(sec_passed>selected_time-1){
             Functions.Show_Alert(this,"Alert","Video only can be a 18s.");
@@ -257,12 +279,11 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
     // this will apped all the videos parts in one  fullvideo
     private boolean append() {
+        Toast.makeText(this, "upload", Toast.LENGTH_SHORT).show();
         final ProgressDialog progressDialog=new ProgressDialog(Video_Recoder_A.this);
         new Thread(new Runnable() {
             @Override
             public void run() {
-
-
                 runOnUiThread(new Runnable() {
                     public void run() {
 
@@ -270,7 +291,6 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
                         progressDialog.show();
                     }
                 });
-
                 ArrayList<String> video_list=new ArrayList<>();
                 for (int i=0;i<videopaths.size();i++){
 

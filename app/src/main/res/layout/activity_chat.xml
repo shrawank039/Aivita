@@ -173,6 +173,7 @@
                     android:paddingBottom="5dp"
                     android:textColorHint="@color/gray"
                     android:textColor="@color/black"
+                    android:textCursorDrawable="@color/black"
                     android:layout_toLeftOf="@+id/upload_gif_btn"
                     android:backgroundTint="@android:color/transparent"
                     android:hint="Send Message Here..."/>

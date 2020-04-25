@@ -396,7 +396,7 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
                 assert user_info != null;
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
                 username.setText(a);
-                String b="@aivita"+user_info.optString("username");
+                String b="@"+user_info.optString("username");
                 username1.setText(b);
 
                 ProfileFragment.pic_url = user_info.optString("profile_pic");

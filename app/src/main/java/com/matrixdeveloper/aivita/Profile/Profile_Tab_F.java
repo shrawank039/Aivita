@@ -259,7 +259,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
 
     @SuppressLint("SetTextI18n")
     public void update_profile() {
-        username.setText("@aivita"+Variables.sharedPreferences.getString(Variables.f_name, "")+ Variables.sharedPreferences.getString(Variables.l_name, ""));
+        username.setText("@"+Variables.sharedPreferences.getString(Variables.f_name, "")+ Variables.sharedPreferences.getString(Variables.l_name, ""));
         username1.setText(Variables.sharedPreferences.getString(Variables.f_name, "")+" "+ Variables.sharedPreferences.getString(Variables.l_name, ""));
         pic_url = Variables.sharedPreferences.getString(Variables.u_pic, "null");
 
@@ -446,7 +446,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 Variables.referral_code=user_info.optString("referral_code");
                 assert user_info != null;
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
-                String b="@aivita"+user_info.optString("username");
+                String b="@"+user_info.optString("username");
                 username.setText(b);
                 username1.setText(a);
                 ProfileFragment.pic_url=user_info.optString("profile_pic");
