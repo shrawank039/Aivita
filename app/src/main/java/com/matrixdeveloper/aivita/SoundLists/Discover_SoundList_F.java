@@ -5,15 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Environment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.matrixdeveloper.aivita.Main_Menu.RelateToFragment_OnBack.RootFragment;
 import com.matrixdeveloper.aivita.R;
@@ -50,13 +54,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
-public class Discover_SoundList_F extends RootFragment implements Player.EventListener{
+public class Discover_SoundList_F extends RootFragment implements Player.EventListener {
 
     RecyclerView listview;
     Sounds_Adapter adapter;
@@ -80,10 +86,10 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view= inflater.inflate(R.layout.activity_sound_list, container, false);
-        context=getContext();
+        view = inflater.inflate(R.layout.activity_sound_list, container, false);
+        context = getContext();
 
-        running_sound_id="none";
+        running_sound_id = "none";
 
         iosDialog = new IOSDialog.Builder(context)
                 .setCancelable(false)
@@ -95,7 +101,7 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
         PRDownloader.initialize(context);
 
 
-        datalist=new ArrayList<>();
+        datalist = new ArrayList<>();
 
         listview = view.findViewById(R.id.listview);
         listview.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
@@ -104,12 +110,12 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
         listview.getLayoutManager().setMeasurementCacheEnabled(false);
 
 
-        swiperefresh=view.findViewById(R.id.swiperefresh);
+        swiperefresh = view.findViewById(R.id.swiperefresh);
         swiperefresh.setColorSchemeResources(R.color.black);
         swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                previous_url="none";
+                previous_url = "none";
                 StopPlaying();
                 Call_Api_For_get_allsound();
             }
@@ -121,23 +127,20 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
+    public void Set_adapter() {
 
-    public void Set_adapter(){
-
-        adapter=new Sounds_Adapter(context, datalist, new Sounds_Adapter.OnItemClickListener() {
+        adapter = new Sounds_Adapter(context, datalist, new Sounds_Adapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view,int postion, Sounds_GetSet item) {
+            public void onItemClick(View view, int postion, Sounds_GetSet item) {
 
-                Log.d("resp",item.acc_path);
+                Log.d("resp", item.acc_path);
 
-                if(view.getId()==R.id.done){
+                if (view.getId() == R.id.done) {
                     StopPlaying();
-                    Down_load_mp3(item.id,item.sound_name,item.acc_path);
-                }
-               else if(view.getId()==R.id.fav_btn){
+                    Down_load_mp3(item.id, item.sound_name, item.acc_path);
+                } else if (view.getId() == R.id.fav_btn) {
                     Call_Api_For_Fav_sound(item.id);
-                }
-                else {
+                } else {
                     if (thread != null && !thread.isAlive()) {
                         StopPlaying();
                         playaudio(view, item);
@@ -156,13 +159,11 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
-
-
     private void Call_Api_For_get_allsound() {
 
         JSONObject parameters = new JSONObject();
         try {
-            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id,"0"));
+            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id, "0"));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -175,33 +176,111 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
             public void Responce(String resp) {
                 swiperefresh.setRefreshing(false);
                 Parse_data(resp);
+                File dir = Environment.getExternalStorageDirectory();
+                String path = dir.getAbsolutePath();
+
+               // getPlayList(path);
             }
         });
 
 
     }
 
+//    private void getPlayLists(String path) {
+//        ArrayList<HashMap<String,String>> songList=getPlayList("/storage/sdcard1/");
+//        String fileName="abc";
+//        if(songList!=null){
+//            for(int i=0;i<songList.size();i++){
+//                fileName=songList.get(i).get("file_name");
+//                String filePath=songList.get(i).get("file_path");
+//                //here you will get list of file name and file path that present in your device
+//                // Log.e("file_details "," name ="+fileName +" path = "+filePath);
+//            }
+//        }
+//        Toast.makeText(context, fileName, Toast.LENGTH_SHORT).show();
+//    }
 
 
-    public void Parse_data(String responce){
+    public void getPlayList(String rootPath) {
+        ArrayList<HashMap<String, String>> fileList = new ArrayList<>();
+    //    ArrayList<Sounds_GetSet> sound_list = new ArrayList<>();
 
-        datalist=new ArrayList<>();
+        String fileName="abc";
 
         try {
-            JSONObject jsonObject=new JSONObject(responce);
-            String code=jsonObject.optString("code");
-            if(code.equals("200")){
+            File rootFolder = new File(rootPath);
+            File[] files = rootFolder.listFiles(); //here you will get NPE if directory doesn't contains  any file,handle it like this.
+            assert files != null;
+            for (File file : files) {
+                if (file.isDirectory()) {
+//                    if (getPlayList(file.getAbsolutePath()) != null) {
+//                        fileList.addAll(getPlayList(file.getAbsolutePath()));
+                        Toast.makeText(context, fileList.toString(), Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        break;
+//                    }
+                } else if (file.getName().endsWith(".mp3")) {
+//                    HashMap<String, String> song = new HashMap<>();
+//                    song.put("file_path", file.getAbsolutePath());
+//                    song.put("file_name", file.getName());
+//                    fileList.add(song);
 
-                JSONArray msgArray=jsonObject.getJSONArray("msg");
+                   // Sounds_GetSet item = new Sounds_GetSet();
 
-                for(int i=msgArray.length()-1;i>=0;i--) {
-                    JSONObject object=msgArray.getJSONObject(i);
+                    //item.id = itemdata.optString("id");
+
+                    // item.mp3_path = audio_path.optString("mp3");
+                   // item.acc_path = file.getAbsolutePath();
+                    fileName = file.getName();
+                   // item.sound_name = file.getName();
+//                        item.description = itemdata.optString("description");
+//                        item.section = itemdata.optString("section");
+//                        item.thum = itemdata.optString("thum");
+//                        item.date_created = itemdata.optString("created");
+
+                  //  sound_list.add(item);
+
+            }
+        }
+            Toast.makeText(context, fileName, Toast.LENGTH_SHORT).show();
+
+//            Sound_catagory_Get_Set sound_catagory_get_set = new Sound_catagory_Get_Set();
+//            sound_catagory_get_set.catagory = "storage";
+//            sound_catagory_get_set.sound_list = sound_list;
+//
+//            datalist.add(sound_catagory_get_set);
+//
+//            Set_adapter();
+       // return fileList;
+    } catch(
+    Exception e)
+
+    {
+       // return null;
+    }
+
+}
+
+
+    public void Parse_data(String responce) {
+
+        datalist = new ArrayList<>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(responce);
+            String code = jsonObject.optString("code");
+            if (code.equals("200")) {
+
+                JSONArray msgArray = jsonObject.getJSONArray("msg");
+
+                for (int i = msgArray.length() - 1; i >= 0; i--) {
+                    JSONObject object = msgArray.getJSONObject(i);
 
                     Timber.d(object.toString());
 
-                    JSONArray section_array=object.optJSONArray("sections_sounds");
+                    JSONArray section_array = object.optJSONArray("sections_sounds");
 
-                    ArrayList<Sounds_GetSet> sound_list=new ArrayList<>();
+                    ArrayList<Sounds_GetSet> sound_list = new ArrayList<>();
 
                     for (int j = 0; j < section_array.length(); j++) {
                         JSONObject itemdata = section_array.optJSONObject(j);
@@ -211,7 +290,7 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
                         item.id = itemdata.optString("id");
 
                         JSONObject audio_path = itemdata.optJSONObject("audio_path");
-                       // item.mp3_path = audio_path.optString("mp3");
+                        // item.mp3_path = audio_path.optString("mp3");
                         item.acc_path = audio_path.optString("acc");
 
 
@@ -236,8 +315,8 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
                 Set_adapter();
 
 
-            }else {
-              //  Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+            } else {
+                //  Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
@@ -248,7 +327,6 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
-
     @Override
     public boolean onBackPressed() {
         getActivity().onBackPressed();
@@ -256,24 +334,22 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
-
-
-
     View previous_view;
     Thread thread;
     SimpleExoPlayer player;
-    String previous_url="none";
-    public void playaudio(View view, final Sounds_GetSet item){
-        previous_view=view;
+    String previous_url = "none";
 
-        if(previous_url.equals(item.acc_path)){
+    public void playaudio(View view, final Sounds_GetSet item) {
+        previous_view = view;
 
-            previous_url="none";
-            running_sound_id="none";
-        }else {
+        if (previous_url.equals(item.acc_path)) {
 
-            previous_url=item.acc_path;
-            running_sound_id=item.id;
+            previous_url = "none";
+            running_sound_id = "none";
+        } else {
+
+            previous_url = item.acc_path;
+            running_sound_id = item.id;
 
             DefaultTrackSelector trackSelector = new DefaultTrackSelector();
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
@@ -292,14 +368,13 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
             player.setPlayWhenReady(true);
 
 
-
         }
 
     }
 
 
-    public void StopPlaying(){
-        if(player!=null){
+    public void StopPlaying() {
+        if (player != null) {
             player.setPlayWhenReady(false);
             player.removeListener(this);
             player.release();
@@ -310,23 +385,21 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
-
-  @Override
+    @Override
     public void onStart() {
         super.onStart();
-        active=true;
+        active = true;
     }
-
 
 
     @Override
     public void onStop() {
         super.onStop();
-        active=false;
+        active = false;
 
-        running_sound_id="null";
+        running_sound_id = "null";
 
-        if(player!=null){
+        if (player != null) {
             player.setPlayWhenReady(false);
             player.removeListener(this);
             player.release();
@@ -337,25 +410,24 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
+    public void Show_Run_State() {
 
-    public void Show_Run_State(){
+        if (previous_view != null) {
+            previous_view.findViewById(R.id.loading_progress).setVisibility(View.GONE);
+            previous_view.findViewById(R.id.pause_btn).setVisibility(View.VISIBLE);
+            previous_view.findViewById(R.id.done).setVisibility(View.VISIBLE);
+        }
 
-    if (previous_view != null) {
-        previous_view.findViewById(R.id.loading_progress).setVisibility(View.GONE);
-        previous_view.findViewById(R.id.pause_btn).setVisibility(View.VISIBLE);
-        previous_view.findViewById(R.id.done).setVisibility(View.VISIBLE);
     }
 
-    }
 
-
-    public void Show_loading_state(){
+    public void Show_loading_state() {
         previous_view.findViewById(R.id.play_btn).setVisibility(View.GONE);
         previous_view.findViewById(R.id.loading_progress).setVisibility(View.VISIBLE);
     }
 
 
-    public void show_Stop_state(){
+    public void show_Stop_state() {
 
         if (previous_view != null) {
             previous_view.findViewById(R.id.play_btn).setVisibility(View.VISIBLE);
@@ -364,19 +436,18 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
             previous_view.findViewById(R.id.done).setVisibility(View.GONE);
         }
 
-        running_sound_id="none";
+        running_sound_id = "none";
 
     }
 
 
+    public void Down_load_mp3(final String id, final String sound_name, String url) {
 
-    public void Down_load_mp3(final String id,final String sound_name, String url){
-
-        final ProgressDialog progressDialog=new ProgressDialog(context);
+        final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Please Wait...");
         progressDialog.show();
 
-        prDownloader= PRDownloader.download(url, Variables.root, Variables.SelectedAudio)
+        prDownloader = PRDownloader.download(url, Variables.root, Variables.SelectedAudio)
                 .build()
                 .setOnStartOrResumeListener(new OnStartOrResumeListener() {
                     @Override
@@ -408,9 +479,9 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
             public void onDownloadComplete() {
                 progressDialog.dismiss();
                 Intent output = new Intent();
-                output.putExtra("isSelected","yes");
-                output.putExtra("sound_name",sound_name);
-                output.putExtra("sound_id",id);
+                output.putExtra("isSelected", "yes");
+                output.putExtra("sound_name", sound_name);
+                output.putExtra("sound_id", id);
                 getActivity().setResult(RESULT_OK, output);
                 getActivity().finish();
                 getActivity().overridePendingTransition(R.anim.in_from_top, R.anim.out_from_bottom);
@@ -425,15 +496,14 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
-
     private void Call_Api_For_Fav_sound(String video_id) {
 
         iosDialog.show();
 
-       JSONObject parameters = new JSONObject();
+        JSONObject parameters = new JSONObject();
         try {
-            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id,"0"));
-            parameters.put("sound_id",video_id);
+            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id, "0"));
+            parameters.put("sound_id", video_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -466,12 +536,11 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
-        if(playbackState==Player.STATE_BUFFERING){
-           Show_loading_state();
-        }
-        else if(playbackState==Player.STATE_READY){
+        if (playbackState == Player.STATE_BUFFERING) {
+            Show_loading_state();
+        } else if (playbackState == Player.STATE_READY) {
             Show_Run_State();
-        }else if(playbackState==Player.STATE_ENDED){
+        } else if (playbackState == Player.STATE_ENDED) {
             show_Stop_state();
         }
 
@@ -510,8 +579,6 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     public void onSeekProcessed() {
 
     }
-
-
 
 
 }

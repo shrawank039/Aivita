@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.matrixdeveloper.aivita.Main_Menu.MainMenuFragment;
@@ -79,7 +80,9 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
         this.fragment_callback=fragment_callback;
     }
     ImageView profile_image;
-    private EditText firstname_edit,lastname_edit,user_bio_edit,et_youtubelink,et_instagramlink,et_facebooklink;
+    TextView txtReferral;
+    private EditText firstname_edit,lastname_edit,user_bio_edit,et_youtubelink,et_instagramlink,et_facebooklink,
+                        edt_username;
     RadioButton male_btn,female_btn;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,6 +93,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
         view.findViewById(R.id.Goback).setOnClickListener(this);
         view.findViewById(R.id.save_btn).setOnClickListener(this);
         view.findViewById(R.id.upload_pic_btn).setOnClickListener(this);
+        edt_username = view.findViewById(R.id.edt_username);
         et_youtubelink=view.findViewById(R.id.et_youtubelink);
         et_instagramlink=view.findViewById(R.id.et_instagramlink);
         et_facebooklink=view.findViewById(R.id.et_facebooklink);
@@ -99,6 +103,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
         user_bio_edit=view.findViewById(R.id.user_bio_edit);
         firstname_edit.setText(Variables.sharedPreferences.getString(Variables.f_name,""));
         lastname_edit.setText(Variables.sharedPreferences.getString(Variables.l_name,""));
+        edt_username.setText(Variables.username);
 
         if (!Variables.u_pic.equalsIgnoreCase("")) {
             Picasso.with(context)
@@ -480,6 +485,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
             parameters.put("fb_url",et_facebooklink.getText().toString());
             parameters.put("youtube_url",et_youtubelink.getText().toString());
             parameters.put("instagram_url",et_instagramlink.getText().toString());
+            parameters.put("username",edt_username.getText().toString().trim());
 
 
         } catch (JSONException e) {
@@ -500,12 +506,14 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
                         editor.putString(Variables.facebooklink,et_facebooklink.getText().toString());
                         editor.putString(Variables.youtubelink,et_youtubelink.getText().toString());
                         editor.putString(Variables.instagramlink,et_instagramlink.getText().toString());
-                        editor.commit();
+                        editor.apply();
 
-                        Variables.user_name = firstname_edit.getText().toString() + " " +lastname_edit.getText().toString();
+                        Variables.user_name = edt_username.getText().toString();
 
                         getActivity().onBackPressed();
                     }
+                    else
+                        Toast.makeText(context, response.optString("msg"), Toast.LENGTH_SHORT).show();
 
                     } catch (JSONException e) {
                     e.printStackTrace();

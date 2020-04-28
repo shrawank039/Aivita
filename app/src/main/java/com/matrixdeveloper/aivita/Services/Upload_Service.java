@@ -168,7 +168,7 @@ public class Upload_Service extends Service{
                 frames.add(resized);
             }
 
-             Gif_base_64= Base64.encodeToString(generateGIF(frames), Base64.DEFAULT);
+            Gif_base_64= Base64.encodeToString(generateGIF(frames), Base64.DEFAULT);
 
 
             JSONObject parameters = new JSONObject();

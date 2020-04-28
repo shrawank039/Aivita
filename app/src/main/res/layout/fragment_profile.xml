@@ -80,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:layout_centerVertical="true"
-                        android:text="Alisha Dsuza"
+                        android:text=""
                         android:textColor="@color/standard_white"
                         android:textSize="15sp"
                         android:textStyle="bold" />
@@ -90,7 +90,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:layout_centerVertical="true"
-                        android:text="Alisha Dsuza"
+                        android:text=""
                         android:textColor="@color/dark_gray"
                         android:textSize="13sp"
                         android:textStyle="bold" />
@@ -237,7 +237,7 @@
                                 android:paddingTop="2dp"
                                 android:paddingRight="15dp"
                                 android:paddingBottom="2dp"
-                                android:text="3.1k"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="18dp"
                                 android:textStyle="bold" />
@@ -272,7 +272,7 @@
                                 android:paddingTop="2dp"
                                 android:paddingRight="15dp"
                                 android:paddingBottom="2dp"
-                                android:text="1.2k"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="18dp"
                                 android:textStyle="bold" />
@@ -306,7 +306,7 @@
                                 android:paddingTop="2dp"
                                 android:paddingRight="15dp"
                                 android:paddingBottom="2dp"
-                                android:text="24"
+                                android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="18dp"
                                 android:textStyle="bold" />

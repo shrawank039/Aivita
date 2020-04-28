@@ -65,7 +65,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
     Context context;
 
 
-    public  TextView username,video_count_txt,username1;
+    public  TextView username,video_count_txt,name;
     public  ImageView imageView;
     private LinearLayout instagram,facebook,youttube;
     public  TextView follow_count_txt,fans_count_txt,heart_count_txt;
@@ -180,7 +180,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
     public View init(){
 
         username=view.findViewById(R.id.username);
-        username1=view.findViewById(R.id.username1);
+        name=view.findViewById(R.id.name);
         imageView=view.findViewById(R.id.user_image);
         imageView.setOnClickListener(this);
 
@@ -260,7 +260,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
     @SuppressLint("SetTextI18n")
     public void update_profile() {
         username.setText("@"+Variables.sharedPreferences.getString(Variables.f_name, "")+ Variables.sharedPreferences.getString(Variables.l_name, ""));
-        username1.setText(Variables.sharedPreferences.getString(Variables.f_name, "")+" "+ Variables.sharedPreferences.getString(Variables.l_name, ""));
+        name.setText(Variables.username);
         pic_url = Variables.sharedPreferences.getString(Variables.u_pic, "null");
 
         try {
@@ -447,8 +447,9 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 assert user_info != null;
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
                 String b="@"+user_info.optString("username");
+                Variables.username=user_info.optString("username");
                 username.setText(b);
-                username1.setText(a);
+                name.setText(a);
                 ProfileFragment.pic_url=user_info.optString("profile_pic");
                 if (!ProfileFragment.pic_url.equals("")) {
                     Picasso.with(context)

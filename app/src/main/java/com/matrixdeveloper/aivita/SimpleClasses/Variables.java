@@ -18,7 +18,7 @@ public class Variables {
     public static String outputfile=root + "/output.mp4";
     public static String outputfile2=root + "/output2.mp4";
     public static String output_filter_file=root + "/output-filtered.mp4";
-    public static String referral_code="";
+    public static String referral_code="Referral Code";
 
 
     public static String gallery_trimed_video = root + "/gallery_trimed_video.mp4";
@@ -70,6 +70,8 @@ public class Variables {
 
     public static String SignUp = domain + "signup";
     public static String user_login = domain + "user_login";
+    public static String send_otp = domain + "send_otp";
+    public static String verify_otp = domain + "verify_otp";
     public static String uploadVideo = domain + "uploadVideo";
     public static String showAllVideos = domain + "showAllVideos";
     public static String showMyAllVideos = domain + "showMyAllVideos";

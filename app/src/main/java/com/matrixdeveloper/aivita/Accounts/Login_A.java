@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,9 +22,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,20 +74,24 @@ import org.json.JSONObject;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.List;
 
 public class Login_A extends Activity {
-    FirebaseAuth mAuth;
-    FirebaseUser firebaseUser;
+   // FirebaseAuth mAuth;
+   // FirebaseUser firebaseUser;
     IOSDialog iosDialog;
     SharedPreferences sharedPreferences;
     TextView createAccount;
-    View top_view;
+   // View top_view;
     Button login_btn;
     String TAG = "Login_A";
-    EditText tv_username, password;
+    RelativeLayout rlPhone,rlOtp,rlReferral;
+    EditText tv_username; //password;
     private PrefManager prefManager;
     String email;
+    Spinner spinnerCountryCodes;
     CoordinatorLayout rl;
+    String mode ="+91";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,104 +111,97 @@ public class Login_A extends Activity {
                 .setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-
         setContentView(R.layout.activity_login);
+
+        rlPhone= (RelativeLayout) findViewById(R.id.rl_login_details);
+        rlReferral = findViewById(R.id.rl_referral);
+        rlOtp = (RelativeLayout) findViewById(R.id.rl_otp);
+        rlOtp.setVisibility(View.GONE);
+        rlPhone.setVisibility(View.VISIBLE);
         rl = findViewById(R.id.coordinatorLayout);
-        createAccount = findViewById(R.id.tc_createaccount);
+        //createAccount = findViewById(R.id.tc_createaccount);
         login_btn = findViewById(R.id.login_btn);
-        password = findViewById(R.id.password);
+       // password = findViewById(R.id.password);
         tv_username = findViewById(R.id.simpleEditText);
+
+        spinnerCountryCodes = (Spinner) findViewById(R.id.spinner_country_code);
+        // ArrayList<String> arrayList = new ArrayList<>();
+        List<String> Lines = Arrays.asList(getResources().getStringArray(R.array.countrycodes));
+//        arrayList.add("+91");
+//        arrayList.add("private");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, Lines);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCountryCodes.setAdapter(arrayAdapter);
+        spinnerCountryCodes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
+                mode = parent.getItemAtPosition(position).toString();
+                // Toast.makeText(parent.getContext(), "Selected: " + mode, Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView <?> parent) {
+
+            }
+        });
+
 
         login_btn.setOnClickListener(v -> {
 
             if (tv_username.getText().toString().trim().isEmpty()) {
-                tv_username.setError("Email or Username is required!");
+                tv_username.setError("Phone number is required!");
                 tv_username.requestFocus();
-            } else if (password.getText().toString().trim().isEmpty()) {
-                password.setError("password is required!");
-                password.requestFocus();
+//            } else if (password.getText().toString().trim().isEmpty()) {
+//                password.setError("password is required!");
+//                password.requestFocus();
             } else {
                 email = tv_username.getText().toString();
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
 
                     if (email.length() <= 9) {
-                        try {
-                            double num = Double.parseDouble(tv_username.getText().toString());
-//                                Snackbar.make(rl, "Please enter country code with phone! (e.g. +91)", Snackbar.LENGTH_LONG)
-//                                        .show();
-                            Toast.makeText(this, "Please enter valid phone number or email!", Toast.LENGTH_LONG).show();
-                        } catch (NumberFormatException e) {
-                            String password1 = password.getText().toString().trim();
-                            login(email, password1);
-                        }
-//                            Snackbar.make(rl, "Please enter valid phone number or email", Snackbar.LENGTH_LONG)
-//                                    .show();
-                    } else if (email.length() == 10) {
-                        try {
-                            double n = Double.parseDouble(tv_username.getText().toString());
-//                                Snackbar.make(rl, "Please enter country code with phone! (e.g. +91)", Snackbar.LENGTH_LONG)
-//                                        .show();
-                            Toast.makeText(this, "Please enter country code with phone! (eg- +91)", Toast.LENGTH_LONG).show();
-                        } catch (NumberFormatException e) {
-                          //  Toast.makeText(this, "String", Toast.LENGTH_LONG).show();
-                                String password1 = password.getText().toString().trim();
-                                login(email, password1);
-                        }
 
-                    } else if (email.length() == 12) {
-                        try {
-                            int num = Integer.parseInt(email);
-                            email = "+" + email;
-                            String password1 = password.getText().toString().trim();
-                            // Login(username,password1);
-                            login(email, password1);
-                        } catch (NumberFormatException e) {
-                        }
-                    } else {
-                        String password1 = password.getText().toString().trim();
+                            Toast.makeText(this, "Please enter valid phone number or email!", Toast.LENGTH_LONG).show();
+
+                    }  else {
+                       // String password1 = password.getText().toString().trim();
                         // Login(username,password1);
-                        login(email, password1);
+                        login(mode+email, "");
                     }
-                } else {
-                    String password1 = password.getText().toString().trim();
-                    // Login(username,password1);
-                    login(email, password1);
                 }
 
                 // TODO Auto-generated method stub
 //                loading.setVisibility(View.VISIBLE);
 //                btnLogin.setVisibility(View.GONE);
-            }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        firebaseUser = mAuth.getCurrentUser();
+//        mAuth = FirebaseAuth.getInstance();
+//        firebaseUser = mAuth.getCurrentUser();
+//
+//        // if the user is already login trought facebook then we will logout the user automatically
+     //   LoginManager.getInstance().logOut();
 
-        // if the user is already login trought facebook then we will logout the user automatically
-        LoginManager.getInstance().logOut();
-
-        iosDialog = new IOSDialog.Builder(this)
-                .setCancelable(false)
-                .setSpinnerClockwise(false)
-                .setMessageContentGravity(Gravity.END)
-                .build();
+//        iosDialog = new IOSDialog.Builder(this)
+//                .setCancelable(false)
+//                .setSpinnerClockwise(false)
+//                .setMessageContentGravity(Gravity.END)
+//                .build();
 
         sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
 
-        findViewById(R.id.facebook_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Loginwith_FB();
-            }
-        });
+//        findViewById(R.id.facebook_btn).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Loginwith_FB();
+//            }
+//        });
 
 
-        findViewById(R.id.google_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Sign_in_with_gmail();
-            }
-        });
+//        findViewById(R.id.google_btn).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Sign_in_with_gmail();
+//            }
+//        });
 
 
 //        findViewById(R.id.tc_createaccount).setOnClickListener(new View.OnClickListener() {
@@ -218,18 +219,18 @@ public class Login_A extends Activity {
             }
         });
 
-        top_view = findViewById(R.id.top_view);
+      //  top_view = findViewById(R.id.top_view);
 
 
-        printKeyHash();
+     //   printKeyHash();
 
 
-        createAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Login_A.this, SignUpActivity.class));
-            }
-        });
+//        createAccount.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                startActivity(new Intent(Login_A.this, SignUpActivity.class));
+//            }
+//        });
 
     }
 
@@ -238,14 +239,14 @@ public class Login_A extends Activity {
         super.onEnterAnimationComplete();
         AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
         anim.setDuration(200);
-        top_view.startAnimation(anim);
-        top_view.setVisibility(View.VISIBLE);
+//        top_view.startAnimation(anim);
+//        top_view.setVisibility(View.VISIBLE);
 
     }
 
     @Override
     public void onBackPressed() {
-        top_view.setVisibility(View.GONE);
+      //  top_view.setVisibility(View.GONE);
         finish();
         overridePendingTransition(R.anim.in_from_top, R.anim.out_from_bottom);
 
@@ -253,282 +254,282 @@ public class Login_A extends Activity {
 
 
     // Bottom two function are related to Fb implimentation
-    private CallbackManager mCallbackManager;
+  //  private CallbackManager mCallbackManager;
 
     //facebook implimentation
-    public void Loginwith_FB() {
+//    public void Loginwith_FB() {
+//
+//        LoginManager.getInstance()
+//                .logInWithReadPermissions(Login_A.this,
+//                        Arrays.asList("public_profile", "email"));
+//
+//        // initialze the facebook sdk and request to facebook for login
+//        FacebookSdk.sdkInitialize(this.getApplicationContext());
+//        mCallbackManager = CallbackManager.Factory.create();
+//        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                handleFacebookAccessToken(loginResult.getAccessToken());
+//                Log.d("resp_token", loginResult.getAccessToken() + "");
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                // App code
+//                Toast.makeText(Login_A.this, "Login Cancel", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onError(FacebookException error) {
+//                Log.d("resp", "" + error.toString());
+//                Toast.makeText(Login_A.this, "Login Error" + error.toString(), Toast.LENGTH_SHORT).show();
+//            }
+//
+//        });
+//
+//
+//    }
 
-        LoginManager.getInstance()
-                .logInWithReadPermissions(Login_A.this,
-                        Arrays.asList("public_profile", "email"));
-
-        // initialze the facebook sdk and request to facebook for login
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
-        mCallbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                handleFacebookAccessToken(loginResult.getAccessToken());
-                Log.d("resp_token", loginResult.getAccessToken() + "");
-            }
-
-            @Override
-            public void onCancel() {
-                // App code
-                Toast.makeText(Login_A.this, "Login Cancel", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.d("resp", "" + error.toString());
-                Toast.makeText(Login_A.this, "Login Error" + error.toString(), Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-
-    }
-
-    private void handleFacebookAccessToken(final AccessToken token) {
-        // if user is login then this method will call and
-        // facebook will return us a token which will user for get the info of user
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        Log.d("resp_token", token.getToken() + "");
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            iosDialog.show();
-                            final String id = Profile.getCurrentProfile().getId();
-                            GraphRequest request = GraphRequest.newMeRequest(token, new GraphRequest.GraphJSONObjectCallback() {
-                                @Override
-                                public void onCompleted(JSONObject user, GraphResponse graphResponse) {
-
-                                    Log.d("resp", user.toString());
-                                    //after get the info of user we will pass to function which will store the info in our server
-
-                                    String fname = "" + user.optString("first_name");
-                                    String lname = "" + user.optString("last_name");
-
-
-                                    if (fname.equals("") || fname.equals("null"))
-                                        fname = getResources().getString(R.string.app_name);
-
-                                    if (lname.equals("") || lname.equals("null"))
-                                        lname = "";
-
-                                    Call_Api_For_Signup("" + id, fname
-                                            , lname,
-                                            "https://graph.facebook.com/" + id + "/picture?width=500&width=500",
-                                            "facebook");
-
-                                }
-                            });
-
-                            // here is the request to facebook sdk for which type of info we have required
-                            Bundle parameters = new Bundle();
-                            parameters.putString("fields", "last_name,first_name,email");
-                            request.setParameters(parameters);
-                            request.executeAsync();
-                        } else {
-
-                            Toast.makeText(Login_A.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                });
-    }
+//    private void handleFacebookAccessToken(final AccessToken token) {
+//        // if user is login then this method will call and
+//        // facebook will return us a token which will user for get the info of user
+//        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+//        Log.d("resp_token", token.getToken() + "");
+//        mAuth.signInWithCredential(credential)
+//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                        if (task.isSuccessful()) {
+//                            iosDialog.show();
+//                            final String id = Profile.getCurrentProfile().getId();
+//                            GraphRequest request = GraphRequest.newMeRequest(token, new GraphRequest.GraphJSONObjectCallback() {
+//                                @Override
+//                                public void onCompleted(JSONObject user, GraphResponse graphResponse) {
+//
+//                                    Log.d("resp", user.toString());
+//                                    //after get the info of user we will pass to function which will store the info in our server
+//
+//                                    String fname = "" + user.optString("first_name");
+//                                    String lname = "" + user.optString("last_name");
+//
+//
+//                                    if (fname.equals("") || fname.equals("null"))
+//                                        fname = getResources().getString(R.string.app_name);
+//
+//                                    if (lname.equals("") || lname.equals("null"))
+//                                        lname = "";
+//
+//                                    Call_Api_For_Signup("" + id, fname
+//                                            , lname,
+//                                            "https://graph.facebook.com/" + id + "/picture?width=500&width=500",
+//                                            "facebook");
+//
+//                                }
+//                            });
+//
+//                            // here is the request to facebook sdk for which type of info we have required
+//                            Bundle parameters = new Bundle();
+//                            parameters.putString("fields", "last_name,first_name,email");
+//                            request.setParameters(parameters);
+//                            request.executeAsync();
+//                        } else {
+//
+//                            Toast.makeText(Login_A.this, "Authentication failed.",
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    }
+//                });
+//    }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // Pass the activity result back to the Facebook SDK
-        if (requestCode == 123) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        } else if (mCallbackManager != null)
-            mCallbackManager.onActivityResult(requestCode, resultCode, data);
-
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        // Pass the activity result back to the Facebook SDK
+//        if (requestCode == 123) {
+//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+//            handleSignInResult(task);
+//        } else if (mCallbackManager != null)
+//            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+//
+//    }
 
 
     //google Implimentation
-    GoogleSignInClient mGoogleSignInClient;
+ //   GoogleSignInClient mGoogleSignInClient;
 
-    public void Sign_in_with_gmail() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(Login_A.this);
-        if (account != null) {
-            String id = account.getId();
-            String fname = account.getGivenName();
-            String lname = account.getFamilyName();
-
-            String pic_url;
-            if (account.getPhotoUrl() != null) {
-                pic_url = account.getPhotoUrl().toString();
-            } else {
-                pic_url = "null";
-            }
-
-
-            if (fname.equals("") || fname.equals("null"))
-                fname = getResources().getString(R.string.app_name);
-
-            if (lname.equals("") || lname.equals("null"))
-                lname = "";
-            Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
-
-
-        } else {
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, 123);
-        }
-
-    }
-
-
-    //Relate to google login
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            if (account != null) {
-                String id = account.getId();
-                String fname = account.getGivenName();
-                String lname = account.getFamilyName();
-
-                // if we do not get the picture of user then we will use default profile picture
-
-                String pic_url;
-                if (account.getPhotoUrl() != null) {
-                    pic_url = account.getPhotoUrl().toString();
-                } else {
-                    pic_url = "null";
-                }
+//    public void Sign_in_with_gmail() {
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestEmail()
+//                .build();
+//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(Login_A.this);
+//        if (account != null) {
+//            String id = account.getId();
+//            String fname = account.getGivenName();
+//            String lname = account.getFamilyName();
+//
+//            String pic_url;
+//            if (account.getPhotoUrl() != null) {
+//                pic_url = account.getPhotoUrl().toString();
+//            } else {
+//                pic_url = "null";
+//            }
+//
+//
+//            if (fname.equals("") || fname.equals("null"))
+//                fname = getResources().getString(R.string.app_name);
+//
+//            if (lname.equals("") || lname.equals("null"))
+//                lname = "";
+//            Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
+//
+//
+//        } else {
+//            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//            startActivityForResult(signInIntent, 123);
+//        }
+//
+//    }
 
 
-                if (fname.equals("") || fname.equals("null"))
-                    fname = getResources().getString(R.string.app_name);
-
-                if (lname.equals("") || lname.equals("null"))
-                    lname = "";
-
-                Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
-
-
-            }
-        } catch (ApiException e) {
-            Log.w("Error message", "signInResult:failed code=" + e.getStatusCode());
-        }
-
-    }
+    // Relate to google login
+//    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+//        try {
+//            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+//            if (account != null) {
+//                String id = account.getId();
+//                String fname = account.getGivenName();
+//                String lname = account.getFamilyName();
+//
+//                // if we do not get the picture of user then we will use default profile picture
+//
+//                String pic_url;
+//                if (account.getPhotoUrl() != null) {
+//                    pic_url = account.getPhotoUrl().toString();
+//                } else {
+//                    pic_url = "null";
+//                }
+//
+//
+//                if (fname.equals("") || fname.equals("null"))
+//                    fname = getResources().getString(R.string.app_name);
+//
+//                if (lname.equals("") || lname.equals("null"))
+//                    lname = "";
+//
+//                Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
+//
+//
+//            }
+//        } catch (ApiException e) {
+//            Log.w("Error message", "signInResult:failed code=" + e.getStatusCode());
+//        }
+//
+//    }
 
 
     // this function call an Api for Signin
-    private void Call_Api_For_Signup(String id,
-                                     String f_name,
-                                     String l_name,
-                                     String picture,
-                                     String singnup_type) {
+//    private void Call_Api_For_Signup(String id,
+//                                     String f_name,
+//                                     String l_name,
+//                                     String picture,
+//                                     String singnup_type) {
 
 
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        String appversion = packageInfo.versionName;
-
-        JSONObject parameters = new JSONObject();
-        try {
-
-            parameters.put("fb_id", id);
-            parameters.put("first_name", "" + f_name);
-            parameters.put("last_name", "" + l_name);
-            parameters.put("profile_pic", picture);
-            parameters.put("gender", "m");
-            parameters.put("version", appversion);
-            parameters.put("signup_type", singnup_type);
-            parameters.put("device", Variables.device);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        iosDialog.show();
-        ApiRequest.Call_Api(this, Variables.SignUp, parameters, new Callback() {
-            @Override
-            public void Responce(String resp) {
-                iosDialog.cancel();
-                Parse_signup_data(resp);
-
-            }
-        });
-
-    }
+//        PackageInfo packageInfo = null;
+//        try {
+//            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        String appversion = packageInfo.versionName;
+//
+//        JSONObject parameters = new JSONObject();
+//        try {
+//
+//            parameters.put("fb_id", id);
+//            parameters.put("first_name", "" + f_name);
+//            parameters.put("last_name", "" + l_name);
+//            parameters.put("profile_pic", picture);
+//            parameters.put("gender", "m");
+//            parameters.put("version", appversion);
+//            parameters.put("signup_type", singnup_type);
+//            parameters.put("device", Variables.device);
+//
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        iosDialog.show();
+//        ApiRequest.Call_Api(this, Variables.SignUp, parameters, new Callback() {
+//            @Override
+//            public void Responce(String resp) {
+//                iosDialog.cancel();
+//                Parse_signup_data(resp);
+//
+//            }
+//        });
+//
+//    }
 
 
     // if the signup successfull then this method will call and it store the user info in local
-    public void Parse_signup_data(String loginData) {
-        try {
-            JSONObject jsonObject = new JSONObject(loginData);
-            String code = jsonObject.optString("code");
-            if (code.equals("200")) {
-                JSONArray jsonArray = jsonObject.getJSONArray("msg");
-                JSONObject userdata = jsonArray.getJSONObject(0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(Variables.u_id, userdata.optString("fb_id"));
-                editor.putString(Variables.f_name, userdata.optString("first_name"));
-                editor.putString(Variables.l_name, userdata.optString("last_name"));
-                editor.putString(Variables.u_name, userdata.optString("first_name") + " " + userdata.optString("last_name"));
-                editor.putString(Variables.gender, userdata.optString("gender"));
-                editor.putString(Variables.u_pic, userdata.optString("profile_pic"));
-                editor.putBoolean(Variables.islogin, true);
-                editor.commit();
-
-                Variables.sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
-                Variables.user_id = Variables.sharedPreferences.getString(Variables.u_id, "");
-
-                top_view.setVisibility(View.GONE);
-                finish();
-                startActivity(new Intent(this, MainMenuActivity.class));
-
-
-            } else {
-                Toast.makeText(this, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (JSONException e) {
-            Toast.makeText(Login_A.this, "Something wrong with Api", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-
-    }
+//    public void Parse_signup_data(String loginData) {
+//        try {
+//            JSONObject jsonObject = new JSONObject(loginData);
+//            String code = jsonObject.optString("code");
+//            if (code.equals("200")) {
+//                JSONArray jsonArray = jsonObject.getJSONArray("msg");
+//                JSONObject userdata = jsonArray.getJSONObject(0);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putString(Variables.u_id, userdata.optString("fb_id"));
+//                editor.putString(Variables.f_name, userdata.optString("first_name"));
+//                editor.putString(Variables.l_name, userdata.optString("last_name"));
+//                editor.putString(Variables.u_name, userdata.optString("first_name") + " " + userdata.optString("last_name"));
+//                editor.putString(Variables.gender, userdata.optString("gender"));
+//                editor.putString(Variables.u_pic, userdata.optString("profile_pic"));
+//                editor.putBoolean(Variables.islogin, true);
+//                editor.commit();
+//
+//                Variables.sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
+//                Variables.user_id = Variables.sharedPreferences.getString(Variables.u_id, "");
+//
+//                top_view.setVisibility(View.GONE);
+//                finish();
+//                startActivity(new Intent(this, MainMenuActivity.class));
+//
+//
+//            } else {
+//                Toast.makeText(this, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+//            }
+//
+//        } catch (JSONException e) {
+//            Toast.makeText(Login_A.this, "Something wrong with Api", Toast.LENGTH_SHORT).show();
+//            e.printStackTrace();
+//        }
+//
+//    }
 
 
     // this function will print the keyhash of your project
     // which is very helpfull during Fb login implimentation
-    public void printKeyHash() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.i("keyhash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void printKeyHash() {
+//        try {
+//            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+//            for (Signature signature : info.signatures) {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                Log.i("keyhash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+//            }
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 
@@ -580,9 +581,7 @@ public class Login_A extends Activity {
 
 
     // this function call an Api for Signin
-    private void login(String username,
-                       String password
-    ) {
+    private void login(String username, String password) {
         PackageInfo packageInfo = null;
         try {
             packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -601,17 +600,31 @@ public class Login_A extends Activity {
             e.printStackTrace();
         }
 
-        iosDialog.show();
-        ApiRequest.Call_Api(this, Variables.user_login, parameters, new Callback() {
+//        iosDialog.show();
+        ApiRequest.Call_Api(this, Variables.send_otp, parameters, new Callback() {
             @Override
             public void Responce(String resp) {
-                iosDialog.cancel();
+//                iosDialog.cancel();
                 Log.d(TAG, "login :- " + resp);
 //                AuthBean authBean = new AuthBean();
 //                LoginParser loginParser = new LoginParser();
 //                authBean = loginParser.parseLoginResponse(resp);
                 // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
-                Parse_login_data(resp);
+
+                JSONObject userdata = null;
+                try {
+                    userdata = new JSONObject(resp);
+                    if (userdata.optString("status").equalsIgnoreCase("success")) {
+                        if (userdata.optString("userExits").equalsIgnoreCase("true"))
+                            rlReferral.setVisibility(View.GONE);
+                        rlPhone.setVisibility(View.GONE);
+                        rlOtp.setVisibility(View.VISIBLE);
+                        Toast.makeText(Login_A.this, "OTP has been sent successfully.", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+               // Parse_login_data(resp);
 
             }
         });
@@ -642,7 +655,7 @@ public class Login_A extends Activity {
                 editor.apply();
                 Variables.sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
                 Variables.user_id = Variables.sharedPreferences.getString(Variables.u_id, "0");
-                top_view.setVisibility(View.GONE);
+              //  top_view.setVisibility(View.GONE);
                 finish();
                 startActivity(new Intent(this, MainMenuActivity.class));
             } else {
@@ -657,8 +670,45 @@ public class Login_A extends Activity {
 
     }
 
-
-    public void forgotPassword(View view) {
-        startActivity(new Intent(getApplicationContext(), PhoneAuth.class));
+    public void goBack(View view) {
+        rlPhone.setVisibility(View.VISIBLE);
+        rlOtp.setVisibility(View.GONE);
+        onBackPressed();
     }
+
+    public void submitOTP(View view) {
+        EditText otp = findViewById(R.id.edt_otp);
+        EditText ref = findViewById(R.id.edt_referral);
+
+
+        JSONObject parameter = new JSONObject();
+        try {
+            parameter.put("phone", mode+email);
+            parameter.put("otp", otp.getText().toString().trim());
+            parameter.put("referal", ref.getText().toString().trim());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ApiRequest.Call_Api(this, Variables.verify_otp, parameter, new Callback() {
+            @Override
+            public void Responce(String resp) {
+//                iosDialog.cancel();
+                Log.d(TAG, "login :- " + resp);
+//                AuthBean authBean = new AuthBean();
+//                LoginParser loginParser = new LoginParser();
+//                authBean = loginParser.parseLoginResponse(resp);
+                // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
+
+                 Parse_login_data(resp);
+
+            }
+        });
+
+    }
+
+//    public void forgotPassword(View view) {
+//        startActivity(new Intent(getApplicationContext(), PhoneAuth.class));
+//    }
 }
