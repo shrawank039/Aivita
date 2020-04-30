@@ -38,7 +38,22 @@
         tools:ignore="LockedOrientationActivity, InnerclassSeparator"
         tools:replace="allowBackup,supportsRtl"
         tools:targetApi="n">
-        <activity android:name=".Wallet.WithdrawConvert"></activity>
+        <activity android:name=".AudioActivity">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
+        <activity android:name=".AdmobActivity">
+
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7312381714873081~3662600889" />
+
+        <activity android:name=".Wallet.WithdrawConvert" />
         <activity
             android:name=".Wallet.WalletActivity"
             android:theme="@style/black_status" />

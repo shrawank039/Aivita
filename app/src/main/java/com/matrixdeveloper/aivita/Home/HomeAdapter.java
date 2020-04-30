@@ -68,7 +68,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
             holder.sound_name.setSelected(true);
             holder.desc_txt.setText(item.video_description);
 
-            Picasso.with(context).
+            Picasso.get().
                     load(item.profile_pic)
                     .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
                     .resize(100, 100).into(holder.user_pic);
@@ -78,7 +78,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
             else if (item.sound_pic.equals(""))
                 item.sound_pic = "Null";
 
-            Picasso.with(context).
+            Picasso.get().
                     load(item.sound_pic)
                     .placeholder(context.getResources().getDrawable(R.drawable.ic_round_music))
                     .resize(100, 100).into(holder.sound_image);

@@ -61,7 +61,7 @@ public class Comments_Adapter extends RecyclerView.Adapter<Comments_Adapter.Cust
         holder.username.setText(item.first_name+" "+item.last_name);
 
         try{
-        Picasso.with(context).
+        Picasso.get().
                 load(item.profile_pic)
                 .resize(50,50)
                 .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))

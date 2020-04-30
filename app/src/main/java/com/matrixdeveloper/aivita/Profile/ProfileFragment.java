@@ -400,7 +400,7 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
                 username1.setText(b);
 
                 ProfileFragment.pic_url = user_info.optString("profile_pic");
-                Picasso.with(context)
+                Picasso.get()
                         .load(ProfileFragment.pic_url)
                         .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
                         .resize(200, 200).centerCrop().into(imageView);

@@ -23,6 +23,9 @@ import com.coremedia.iso.boxes.Container;
 import com.coremedia.iso.boxes.MovieHeaderBox;
 import com.daasuu.gpuv.composer.GPUMp4Composer;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.Video_Recording.GallerySelectedVideo.GallerySelectedVideo_A;
 import com.matrixdeveloper.aivita.SimpleClasses.Functions;
@@ -171,6 +174,7 @@ public class GalleryVideos_A extends AppCompatActivity {
     public  void  getAllVideoPath(Context context, int i, Cursor cursor) {
 
         if (cursor != null) {
+
             int itemNum = 0;
             if (i==1){
                 itemNum =i;}

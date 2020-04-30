@@ -57,7 +57,9 @@ public class SeeFullImageFragment extends Fragment {
 
 
         p_bar.setVisibility(View.VISIBLE);
-        Picasso.with(context).load(image_url).placeholder(R.drawable.image_placeholder)
+
+        Picasso.get().
+                load(image_url).placeholder(R.drawable.image_placeholder)
                 .into(single_image, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -66,7 +68,7 @@ public class SeeFullImageFragment extends Fragment {
                     }
 
                     @Override
-                    public void onError() {
+                    public void onError(Exception e) {
                         // TODO Auto-generated method stub
                         p_bar.setVisibility(View.GONE);
                     }

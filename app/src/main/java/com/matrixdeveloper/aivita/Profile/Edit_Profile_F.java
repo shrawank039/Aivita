@@ -106,7 +106,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
         edt_username.setText(Variables.username);
 
         if (!Variables.u_pic.equalsIgnoreCase("")) {
-            Picasso.with(context)
+            Picasso.get()
                     .load(Variables.sharedPreferences.getString(Variables.u_pic, "0"))
                     .placeholder(R.drawable.profile_image_placeholder)
                     .resize(200, 200)
@@ -439,7 +439,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
                         ProfileFragment.pic_url=image_link;
                         Variables.user_pic=image_link;
 
-                        Picasso.with(context)
+                        Picasso.get()
                                 .load(ProfileFragment.pic_url)
                                 .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
                                 .resize(200,200).centerCrop().into(profile_image);
@@ -508,7 +508,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
                         editor.putString(Variables.instagramlink,et_instagramlink.getText().toString());
                         editor.apply();
 
-                        Variables.user_name = edt_username.getText().toString();
+                        Variables.username = edt_username.getText().toString();
 
                         getActivity().onBackPressed();
                     }
@@ -564,7 +564,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
 
                 String picture = data.optString("profile_pic");
 
-                Picasso.with(context)
+                Picasso.get()
                         .load(picture)
                         .placeholder(R.drawable.profile_image_placeholder)
                         .into(profile_image);

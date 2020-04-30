@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.coremedia.iso.IsoFile;
 import com.coremedia.iso.boxes.Container;
+import com.googlecode.mp4parser.authoring.tracks.MP3TrackImpl;
 import com.matrixdeveloper.aivita.SimpleClasses.Variables;
 import com.googlecode.mp4parser.FileDataSourceImpl;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -34,7 +36,7 @@ public class Merge_Video_Audio extends AsyncTask<String,String,String> {
     ProgressDialog progressDialog;
     Context context;
 
-    String audio,video,output;
+    String audio,video,output,storage;
 
     public Merge_Video_Audio(Context context){
         this.context=context;
@@ -58,8 +60,9 @@ public class Merge_Video_Audio extends AsyncTask<String,String,String> {
          audio=strings[0];
          video=strings[1];
          output=strings[2];
+         storage=strings[3];
 
-        Log.d("resp",audio+"----"+video+"-----"+output);
+        Log.d("resp",audio+"----"+video+"-----"+output+"-----"+storage);
 
         Thread thread = new Thread(runnable);
         thread.start();
@@ -125,10 +128,11 @@ public class Merge_Video_Audio extends AsyncTask<String,String,String> {
             }
 
             CroppedTrack cropperAacTrack = new CroppedTrack(fullAudio, startSample1, endSample1);
-
+            Log.e("resp", "cropperAacTrack : "+cropperAacTrack);
             return cropperAacTrack;
 
         } catch (IOException e) {
+            Log.e("resp", "converter : "+e.getMessage());
             e.printStackTrace();
         }
 
@@ -155,7 +159,12 @@ public class Merge_Video_Audio extends AsyncTask<String,String,String> {
                 }
 
 
-                 Track nuAudio = new AACTrackImpl(new FileDataSourceImpl(audio));
+                 Track nuAudio;
+
+                 // if (storage.equalsIgnoreCase("no"))
+                 nuAudio = new AACTrackImpl(new FileDataSourceImpl(audio));
+//                 else
+//                 nuAudio = new MP3TrackImpl(new FileDataSourceImpl(audio));
 
                  Track crop_track= CropAudio(video,nuAudio);
 
@@ -171,7 +180,8 @@ public class Merge_Video_Audio extends AsyncTask<String,String,String> {
                 try {
                     progressDialog.dismiss();
                 }catch (Exception e){
-                    Log.d("resp",e.toString());
+
+                    Log.d("Runnable : ",e.getMessage());
 
                 }finally {
                     Go_To_preview_Activity();
@@ -179,7 +189,7 @@ public class Merge_Video_Audio extends AsyncTask<String,String,String> {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.d("resp",e.toString());
+                Log.d("Runnable catch : ",e.getMessage());
 
             }
 

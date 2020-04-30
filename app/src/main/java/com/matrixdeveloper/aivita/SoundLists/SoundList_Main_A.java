@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SoundLists.FavouriteSounds.Favourite_Sound_F;
+import com.matrixdeveloper.aivita.SoundLists.StorageSounds.Storage_SoundList_F;
 
 
 public class SoundList_Main_A extends AppCompatActivity implements View.OnClickListener{
@@ -32,7 +33,7 @@ public class SoundList_Main_A extends AppCompatActivity implements View.OnClickL
 
         tablayout = (TabLayout) findViewById(R.id.groups_tab);
         pager = findViewById(R.id.viewpager);
-        pager.setOffscreenPageLimit(2);
+        pager.setOffscreenPageLimit(3);
         pager.setPagingEnabled(false);
 
         // Note that we are passing childFragmentManager, not FragmentManager
@@ -80,6 +81,9 @@ public class SoundList_Main_A extends AppCompatActivity implements View.OnClickL
                 case 1:
                     result = new Favourite_Sound_F();
                     break;
+                case 2:
+                    result = new Storage_SoundList_F();
+                    break;
                 default:
                     result = null;
                     break;
@@ -90,7 +94,7 @@ public class SoundList_Main_A extends AppCompatActivity implements View.OnClickL
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -100,6 +104,8 @@ public class SoundList_Main_A extends AppCompatActivity implements View.OnClickL
                     return "Discover";
                 case 1:
                     return "My Favorites";
+                case 2:
+                    return "Storage";
 
                 default:
                     return null;

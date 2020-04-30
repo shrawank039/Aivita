@@ -264,7 +264,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
         pic_url = Variables.sharedPreferences.getString(Variables.u_pic, "null");
 
         try {
-            Picasso.with(context).load(pic_url)
+            Picasso.get().load(pic_url)
                     .resize(200, 200)
                     .placeholder(R.drawable.profile_image_placeholder)
                     .centerCrop()
@@ -448,11 +448,11 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
                 String b="@"+user_info.optString("username");
                 Variables.username=user_info.optString("username");
-                username.setText(b);
-                name.setText(a);
+                name.setText(b);
+                username.setText(a);
                 ProfileFragment.pic_url=user_info.optString("profile_pic");
                 if (!ProfileFragment.pic_url.equals("")) {
-                    Picasso.with(context)
+                    Picasso.get()
                             .load(ProfileFragment.pic_url)
                             .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
                             .resize(200, 200).centerCrop().into(imageView);

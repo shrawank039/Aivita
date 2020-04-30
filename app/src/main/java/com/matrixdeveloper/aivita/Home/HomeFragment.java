@@ -28,6 +28,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,6 +67,9 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.tabs.TabLayout;
 import com.volokh.danylo.hashtaghelper.HashTagHelper;
 
@@ -115,6 +119,10 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     private ProgressBar p_bar;
     private SwipeRefreshLayout swiperefresh;
     private int swipe_count = 0;
+    private int currentItems, totalItems, scrollOutItems;
+    private int scrollOut=2;
+    private InterstitialAd mInterstitialAd;
+
     public HomeFragment() {
 
     }
@@ -133,6 +141,13 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
+        MobileAds.initialize(getContext(),
+                "ca-app-pub-3940256099942544~3347511713");
+        mInterstitialAd = new InterstitialAd(Objects.requireNonNull(getContext()));
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+
         tv_following.setOnClickListener(v -> Open_Following());
         popular.setOnClickListener(v -> Open_Following());
 
@@ -147,6 +162,13 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 super.onScrolled(recyclerView, dx, dy);
                 final int scrollOffset = recyclerView.computeVerticalScrollOffset();
                 final int height = recyclerView.getHeight();
+                currentItems = layoutManager.getChildCount();
+                totalItems = layoutManager.getItemCount();
+                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+                if (scrollOutItems>scrollOut){
+                    scrollOut+=2;
+                    showAd();
+                }
                 int page_no = scrollOffset / height;
                 if (page_no != currentPage) {
                     currentPage = page_no;
@@ -172,6 +194,15 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         return view;
     }
 
+    private void showAd() {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+            Toast.makeText(getContext(), "show", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "The interstitial wasn't loaded yet.", Toast.LENGTH_SHORT).show();
+           // Log.d("TAG", "The interstitial wasn't loaded yet.");
+        }
+    }
 
     private void Open_Following() {
 

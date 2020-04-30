@@ -1,4 +1,6 @@
-package com.matrixdeveloper.aivita.SoundLists;
+package com.matrixdeveloper.aivita.SoundLists.StorageSounds;
+
+
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -6,37 +8,24 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.telephony.mbms.DownloadRequest;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
-import com.matrixdeveloper.aivita.Main_Menu.RelateToFragment_OnBack.RootFragment;
-import com.matrixdeveloper.aivita.R;
-import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
-import com.matrixdeveloper.aivita.SimpleClasses.Callback;
-import com.matrixdeveloper.aivita.SimpleClasses.Variables;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.downloader.Error;
-import com.downloader.OnCancelListener;
-import com.downloader.OnDownloadListener;
-import com.downloader.OnPauseListener;
-import com.downloader.OnProgressListener;
-import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
-import com.downloader.Progress;
-import com.downloader.request.DownloadRequest;
 import com.gmail.samehadar.iosdialog.IOSDialog;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -52,13 +41,19 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.matrixdeveloper.aivita.Main_Menu.RelateToFragment_OnBack.RootFragment;
+import com.matrixdeveloper.aivita.R;
+import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
+import com.matrixdeveloper.aivita.SimpleClasses.Callback;
+import com.matrixdeveloper.aivita.SimpleClasses.Variables;
+import com.matrixdeveloper.aivita.SoundLists.Sounds_GetSet;
+import com.matrixdeveloper.aivita.Video_Recording.GalleryVideos.GalleryVideos_A;
 
-import org.json.JSONArray;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -70,22 +65,27 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
-public class Discover_SoundList_F extends RootFragment implements Player.EventListener {
+public class Storage_SoundList_F extends RootFragment implements Player.EventListener {
 
     RecyclerView listview;
-    Sounds_Adapter adapter;
-    ArrayList<Sound_catagory_Get_Set> datalist;
+    Storage_Sounds_Adapter adapter;
+    ArrayList<Stored_Sound_catagory_Get_Set> datalist;
 
     DownloadRequest prDownloader;
     static boolean active = false;
+    Boolean isScrolling = false;
 
     View view;
     Context context;
 
     IOSDialog iosDialog;
-
-
-    SwipeRefreshLayout swiperefresh;
+    int currentItems, totalItems, scrollOutItems;
+    int a=0,b=0,c=0,totalLength;
+    private Handler mHandler = new Handler();
+    Uri uri;
+    String[] proj;
+    Cursor audioCursor;
+    LinearLayoutManager linearLayoutManager;
 
 
     public static String running_sound_id;
@@ -94,8 +94,13 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.activity_sound_list, container, false);
+        view = inflater.inflate(R.layout.activity_stored_sound_list, container, false);
         context = getContext();
+
+        proj = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DATA};// Can include more data for more details and check it.
+
+        audioCursor = Objects.requireNonNull(getActivity()).getApplicationContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, proj, null, null, null);
+
 
         running_sound_id = "none";
 
@@ -106,30 +111,60 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
                 .build();
 
 
-        PRDownloader.initialize(context);
-
 
         datalist = new ArrayList<>();
+        linearLayoutManager =new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
 
-        listview = view.findViewById(R.id.listview);
-        listview.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-        listview.setNestedScrollingEnabled(false);
+        listview = view.findViewById(R.id.stored_listview);
+        listview.setLayoutManager(linearLayoutManager);
+        listview.setNestedScrollingEnabled(true);
         listview.setHasFixedSize(true);
         listview.getLayoutManager().setMeasurementCacheEnabled(false);
 
-
-        swiperefresh = view.findViewById(R.id.swiperefresh);
-        swiperefresh.setColorSchemeResources(R.color.black);
-        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        listview.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onRefresh() {
-                previous_url = "none";
-                StopPlaying();
-                Call_Api_For_get_allsound();
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true;
+                    // Toast.makeText(HomeActivity.this, "Scrolling", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                currentItems = linearLayoutManager.getChildCount();
+                totalItems = linearLayoutManager.getItemCount();
+                scrollOutItems = linearLayoutManager.findFirstVisibleItemPosition();
+
+                //   Toast.makeText(GalleryVideos_A.this, String.valueOf(totalItems), Toast.LENGTH_SHORT).show();
+
+                if (isScrolling && (currentItems+scrollOutItems==totalItems)) {
+                    isScrolling = false;
+                    a=c;
+                    c=a-30;
+                    b=scrollOutItems+2;
+                    if (a<=30){
+                        c=-1;
+                    }
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (c==-1){
+                                //getAllVideoPath(GalleryVideos_A.this, 1, cursor);
+                                getPlayList(1,audioCursor);
+                            }
+                        }
+                    },300);
+
+
+                }
             }
         });
 
-        Call_Api_For_get_allsound();
+                    //getAllVideoPath(GalleryVideos_A.this, 1, cursor);
+                    getPlayList(0,audioCursor);
 
         AndroidAudioConverter.load(getContext(), new ILoadCallback() {
             @Override
@@ -146,49 +181,16 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
         return view;
     }
 
-
-    public void Set_adapter() {
-
-        adapter = new Sounds_Adapter(context, datalist, new Sounds_Adapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int postion, Sounds_GetSet item) {
-
-                Log.d("resp", item.acc_path);
-
-                if (view.getId() == R.id.done) {
-                    StopPlaying();
-                    Down_load_mp3(item.id, item.sound_name, item.acc_path);
-                } else if (view.getId() == R.id.fav_btn) {
-                    Call_Api_For_Fav_sound(item.id);
-                } else {
-                    if (thread != null && !thread.isAlive()) {
-                        StopPlaying();
-                        playaudio(view, item);
-                    } else if (thread == null) {
-                        StopPlaying();
-                        playaudio(view, item);
-                    }
-                }
-
-            }
-        });
-
-        listview.setAdapter(adapter);
-
-
-    }
-
     public void set_storage_adapter() {
 
-        adapter = new Sounds_Adapter(context, datalist, new Sounds_Adapter.OnItemClickListener() {
+        adapter = new Storage_Sounds_Adapter(context, datalist, new Storage_Sounds_Adapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int postion, Sounds_GetSet item) {
-
+            public void onItemClick(View view, int postion, Stored_Sounds_GetSet item) {
                 Log.d("resp", item.acc_path);
 
                 if (view.getId() == R.id.done) {
                     StopPlaying();
-                 //   Down_load_mp3(item.id, item.sound_name, item.acc_path);
+                    //   Down_load_mp3(item.id, item.sound_name, item.acc_path);
 
                     convertAudio(item.acc_path,item.sound_name);
 
@@ -204,8 +206,8 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
                         playaudio(view, item);
                     }
                 }
-
             }
+
         });
 
         listview.setAdapter(adapter);
@@ -214,66 +216,40 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     }
 
 
-    private void Call_Api_For_get_allsound() {
-
-        JSONObject parameters = new JSONObject();
-        try {
-            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id, "0"));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Timber.d(parameters.toString());
-
-        ApiRequest.Call_Api(context, Variables.allSounds, parameters, new Callback() {
-            @Override
-            public void Responce(String resp) {
-                swiperefresh.setRefreshing(false);
-
-                Parse_data(resp);
-
-              //  getPlayList();
-
-            }
-
-        });
-
-
-    }
-
-    private void getPlayList() {
+    private void getPlayList(int i, Cursor audioCursor) {
 
         datalist = new ArrayList<>();
-        ArrayList<Sounds_GetSet> sound_list = new ArrayList<>();
-        String[] proj = { MediaStore.Audio.Media._ID,MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DATA };// Can include more data for more details and check it.
+        ArrayList<Stored_Sounds_GetSet> sound_list = new ArrayList<>();
 
-        Cursor audioCursor = Objects.requireNonNull(getActivity()).getApplicationContext().getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, proj, null, null, null);
+        if(this.audioCursor != null){
 
-        if(audioCursor != null){
-            if(audioCursor.moveToFirst()){
+            int itemNum = 0;
+            if (i==1){
+                itemNum =i;}
+
+            if(this.audioCursor.moveToFirst()){
                 do{
-                    int audioID = audioCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
-                    int audioName = audioCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
-                    int audioPath = audioCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+                    int audioID = this.audioCursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID);
+                    int audioName = this.audioCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME);
+                    int audioPath = this.audioCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
 
-                    Log.e("Music_Details", audioCursor.getString(audioPath));
+                 //   Log.e("Music_Details", audioCursor.getString(audioPath));
 
-                    Sounds_GetSet item = new Sounds_GetSet();
-                    item.id = audioCursor.getString(audioID);
-                    item.acc_path = audioCursor.getString(audioPath);
-                    item.sound_name = audioCursor.getString(audioName);
+                    Stored_Sounds_GetSet item = new Stored_Sounds_GetSet();
+                    item.id = this.audioCursor.getString(audioID);
+                    item.acc_path = this.audioCursor.getString(audioPath);
+                    item.sound_name = this.audioCursor.getString(audioName);
 //                    item.description = "description";
 //                    item.section = "20";
 //                    item.thum = "";
 //                    item.date_created = "";
 
                     sound_list.add(item);
-
+                    itemNum++;
                   //  audioList.add(audioCursor.getString(audioPath));
-                }while(audioCursor.moveToNext());
+                }while(this.audioCursor.moveToNext() && itemNum <=30);
 
-                Sound_catagory_Get_Set sound_catagory_get_set = new Sound_catagory_Get_Set();
+                Stored_Sound_catagory_Get_Set sound_catagory_get_set = new Stored_Sound_catagory_Get_Set();
                 sound_catagory_get_set.catagory = "storage";
                 sound_catagory_get_set.sound_list = sound_list;
 
@@ -282,76 +258,10 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
 
         }
         set_storage_adapter();
-        audioCursor.close();
+       // this.audioCursor.close();
 
       //  ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,android.R.id.text1, audioList);
        // audioView.setAdapter(adapter);
-    }
-
-    public void Parse_data(String responce) {
-
-        datalist = new ArrayList<>();
-
-        try {
-            JSONObject jsonObject = new JSONObject(responce);
-            String code = jsonObject.optString("code");
-            if (code.equals("200")) {
-
-                JSONArray msgArray = jsonObject.getJSONArray("msg");
-
-                for (int i = msgArray.length() - 1; i >= 0; i--) {
-                    JSONObject object = msgArray.getJSONObject(i);
-
-                    Timber.d(object.toString());
-
-                    JSONArray section_array = object.optJSONArray("sections_sounds");
-
-                    ArrayList<Sounds_GetSet> sound_list = new ArrayList<>();
-
-                    for (int j = 0; j < section_array.length(); j++) {
-                        JSONObject itemdata = section_array.optJSONObject(j);
-
-                        Sounds_GetSet item = new Sounds_GetSet();
-
-                        item.id = itemdata.optString("id");
-
-                        JSONObject audio_path = itemdata.optJSONObject("audio_path");
-                        // item.mp3_path = audio_path.optString("mp3");
-                        item.acc_path = audio_path.optString("acc");
-
-
-                        item.sound_name = itemdata.optString("sound_name");
-                        item.description = itemdata.optString("description");
-                        item.section = itemdata.optString("section");
-                        item.thum = itemdata.optString("thum");
-                        item.date_created = itemdata.optString("created");
-
-                        sound_list.add(item);
-                    }
-
-                   // Toast.makeText(context, sound_list.toString(), Toast.LENGTH_SHORT).show();
-
-                    Sound_catagory_Get_Set sound_catagory_get_set = new Sound_catagory_Get_Set();
-                    sound_catagory_get_set.catagory = object.optString("section_name");
-                    sound_catagory_get_set.sound_list = sound_list;
-
-                    datalist.add(sound_catagory_get_set);
-
-                }
-
-
-                Set_adapter();
-
-
-            } else {
-                //  Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
-            }
-
-        } catch (JSONException e) {
-
-            e.printStackTrace();
-        }
-
     }
 
 
@@ -367,7 +277,7 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
     SimpleExoPlayer player;
     String previous_url = "none";
 
-    public void playaudio(View view, final Sounds_GetSet item) {
+    public void playaudio(View view, final Stored_Sounds_GetSet item) {
         previous_view = view;
 
         if (previous_url.equals(item.acc_path)) {
@@ -466,61 +376,6 @@ public class Discover_SoundList_F extends RootFragment implements Player.EventLi
 
     }
 
-
-    public void Down_load_mp3(final String id, final String sound_name, String url) {
-
-        final ProgressDialog progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.show();
-
-        prDownloader = PRDownloader.download(url, Variables.root, Variables.SelectedAudio)
-                .build()
-                .setOnStartOrResumeListener(new OnStartOrResumeListener() {
-                    @Override
-                    public void onStartOrResume() {
-
-                    }
-                })
-                .setOnPauseListener(new OnPauseListener() {
-                    @Override
-                    public void onPause() {
-
-                    }
-                })
-                .setOnCancelListener(new OnCancelListener() {
-                    @Override
-                    public void onCancel() {
-
-                    }
-                })
-                .setOnProgressListener(new OnProgressListener() {
-                    @Override
-                    public void onProgress(Progress progress) {
-
-                    }
-                });
-
-        prDownloader.start(new OnDownloadListener() {
-            @Override
-            public void onDownloadComplete() {
-                progressDialog.dismiss();
-                Intent output = new Intent();
-                output.putExtra("isSelected", "yes");
-                output.putExtra("storage","no");
-                output.putExtra("sound_name", sound_name);
-                output.putExtra("sound_id", id);
-                getActivity().setResult(RESULT_OK, output);
-                getActivity().finish();
-                getActivity().overridePendingTransition(R.anim.in_from_top, R.anim.out_from_bottom);
-            }
-
-            @Override
-            public void onError(Error error) {
-                progressDialog.dismiss();
-            }
-        });
-
-    }
 
 
     private void Call_Api_For_Fav_sound(String video_id) {

@@ -107,7 +107,7 @@ public class Inbox_Adapter extends RecyclerView.Adapter<Inbox_Adapter.CustomView
         holder.date_created.setText(ChangeDate(item.getDate()));
 
         if(!item.getPic().equals("") && item.getPic()!=null)
-        Picasso.with(context).
+        Picasso.get().
                 load(item.getPic())
                 .resize(100,100)
                 .placeholder(R.drawable.profile_image_placeholder).into(holder.user_image);

@@ -65,8 +65,8 @@ public class Variables {
 
     public static String gif_api_key1 ="giphy_api_key_here";
 
-    public static String domain = "https://aivita.club/aivita/API/index.php?p=";
-    public static String base_url = "https://aivita.club/aivita/API/";
+    public static String domain = "http://aivita.club/aivita/API/index.php?p=";
+    public static String base_url = "http://aivita.club/aivita/API/";
 
     public static String SignUp = domain + "signup";
     public static String user_login = domain + "user_login";

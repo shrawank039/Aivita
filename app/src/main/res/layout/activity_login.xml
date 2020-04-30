@@ -326,7 +326,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:textColorHint="@color/dark_gray"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:maxLength="10"
                     android:textSize="21dp"
                     android:textColor="@color/standard_white" />

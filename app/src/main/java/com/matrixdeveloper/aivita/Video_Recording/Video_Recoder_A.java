@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -76,6 +77,7 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
     File file;
     int recording_status =0;  // 0>record 1>paused >2 resumed
     int selected_time=18;
+    String storage="no";
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -387,13 +389,18 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
 
         String root = Environment.getExternalStorageDirectory().toString();
         String audio_file;
-        audio_file = root + "/"+Variables.SelectedAudio;
+        if (storage.equalsIgnoreCase("no")) {
+            audio_file = root + "/" + Variables.SelectedAudio;
+        }
+        else {
+            audio_file =Variables.SelectedAudio;
+        }
 
         String video = root + "/"+"output.mp4";
         String finaloutput = root + "/"+"output2.mp4";
 
         Merge_Video_Audio merge_video_audio=new Merge_Video_Audio(Video_Recoder_A.this);
-        merge_video_audio.doInBackground(audio_file,video,finaloutput);
+        merge_video_audio.doInBackground(audio_file,video,finaloutput, storage);
 
     }
 
@@ -465,11 +472,18 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==Sounds_list_Request_code){
             if(data!=null){
-
-                if(data.getStringExtra("isSelected").equals("yes")){
-                    add_sound_txt.setText(data.getStringExtra("sound_name"));
-                    Variables.Selected_sound_id=data.getStringExtra("sound_id");
-                    PreparedAudio();
+                storage =data.getStringExtra("storage");
+                if(Objects.equals(data.getStringExtra("isSelected"), "yes")){
+                    if(storage.equalsIgnoreCase("yes")){
+                        add_sound_txt.setText(data.getStringExtra("sound_name"));
+                        Variables.SelectedAudio = data.getStringExtra("sound_path");
+                        PreparedStoredAudio();
+                    }
+                    else {
+                        add_sound_txt.setText(data.getStringExtra("sound_name"));
+                        Variables.Selected_sound_id = data.getStringExtra("sound_id");
+                        PreparedAudio();
+                    }
                 }
 
             }
@@ -487,6 +501,18 @@ public class Video_Recoder_A extends AppCompatActivity implements View.OnClickLi
             audio = new MediaPlayer();
             try {
                 audio.setDataSource(Variables.root + "/" + Variables.SelectedAudio);
+                audio.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public  void PreparedStoredAudio(){
+        File file=new File(Variables.SelectedAudio);
+        if(file.exists()) {
+            audio = new MediaPlayer();
+            try {
+                audio.setDataSource(Variables.SelectedAudio);
                 audio.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
