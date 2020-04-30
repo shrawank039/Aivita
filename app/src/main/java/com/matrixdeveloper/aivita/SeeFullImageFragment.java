@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
@@ -40,6 +41,7 @@ public class SeeFullImageFragment extends Fragment {
         height = displayMetrics.heightPixels;
         width = displayMetrics.widthPixels;
 
+        assert getArguments() != null;
         image_url = getArguments().getString("image_url");
 
         close_gallery = view.findViewById(R.id.close_gallery);
@@ -58,24 +60,28 @@ public class SeeFullImageFragment extends Fragment {
 
         p_bar.setVisibility(View.VISIBLE);
 
-        Picasso.get().
-                load(image_url).placeholder(R.drawable.image_placeholder)
-                .into(single_image, new Callback() {
-                    @Override
-                    public void onSuccess() {
+        if (!image_url.equalsIgnoreCase("")) {
+            Picasso.get().
+                    load(image_url).placeholder(R.drawable.image_placeholder)
+                    .into(single_image, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-                        p_bar.setVisibility(View.GONE);
-                    }
+                            p_bar.setVisibility(View.GONE);
+                        }
 
-                    @Override
-                    public void onError(Exception e) {
-                        // TODO Auto-generated method stub
-                        p_bar.setVisibility(View.GONE);
-                    }
-                });
+                        @Override
+                        public void onError(Exception e) {
+                            // TODO Auto-generated method stub
+                            p_bar.setVisibility(View.GONE);
+                        }
+                    });
+             return view;
+        }else {
+            Toast.makeText(context, "Don't have profile pic!!!", Toast.LENGTH_SHORT).show();
+            return null;
+        }
 
-
-        return view;
     }
 
 

@@ -43,6 +43,7 @@ public class WithdrawConvert extends AppCompatActivity {
     Spinner spinner_type;
     String type= "diamond",avt_coin;
     EditText edtAmt;
+    TextView txtAvt;
     private ProgressBar progressBar;
 
     @Override
@@ -56,16 +57,18 @@ public class WithdrawConvert extends AppCompatActivity {
         edtAmt = findViewById(R.id.edt_amt);
         progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
+        txtAvt = findViewById(R.id.txt_avt);
 
         if (getIntent().hasExtra("avt_coin")) {
             avt_coin = getIntent().getStringExtra("avt_coin");
            // Toast.makeText(this, avt_coin, Toast.LENGTH_SHORT).show();
         }
+        txtAvt.setText(avt_coin);
 
         // ArrayList<String> arrayList = new ArrayList<>();
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("diamond");
-        arrayList.add("usd");
+       // arrayList.add("usd");
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, arrayList);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -143,7 +146,7 @@ public class WithdrawConvert extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     progressBar.setVisibility(View.GONE);
                     Log.e("VOLLEY", error.toString());
-                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "1 "+error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override

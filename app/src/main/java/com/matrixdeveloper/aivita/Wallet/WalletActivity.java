@@ -43,7 +43,10 @@ public class WalletActivity extends AppCompatActivity {
     private void setData(String avt_coin, String diamond, String usd) {
         avt.setText(avt_coin);
         diamondTxt.setText(diamond);
-        usdTxt.setText(usd);
+        float a= Float.parseFloat(avt_coin);
+        a= a/210;
+        a = (float)((int)( a *100f ))/100f;
+        usdTxt.setText(String.valueOf(a));
     }
 
     @Override
@@ -93,7 +96,7 @@ public class WalletActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.e("VOLLEY", error.toString());
-                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "2 "+error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override

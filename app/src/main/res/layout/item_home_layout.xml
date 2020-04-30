@@ -36,7 +36,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:paddingTop="@dimen/_100sdp"
-
                 android:layout_marginRight="10dp"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
@@ -45,8 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/sound_image_layout"
-
-                     android:orientation="vertical">
+                    android:orientation="vertical">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user_pic"
@@ -58,8 +56,8 @@
 
                     <ImageView
                         android:id="@+id/Home_follow_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                           android:src="@drawable/ic_add_circle_black_24dp"/>
 
                 </RelativeLayout>

@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -70,6 +71,10 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdCallback;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.tabs.TabLayout;
 import com.volokh.danylo.hashtaghelper.HashTagHelper;
 
@@ -121,7 +126,8 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     private int swipe_count = 0;
     private int currentItems, totalItems, scrollOutItems;
     private int scrollOut=2;
-    private InterstitialAd mInterstitialAd;
+   // private InterstitialAd mInterstitialAd;
+   private RewardedAd rewardedAd;
 
     public HomeFragment() {
 
@@ -141,11 +147,27 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
-        MobileAds.initialize(getContext(),
-                "ca-app-pub-3940256099942544~3347511713");
-        mInterstitialAd = new InterstitialAd(Objects.requireNonNull(getContext()));
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+//        MobileAds.initialize(getContext(),
+//                "ca-app-pub-3940256099942544~3347511713");
+//        mInterstitialAd = new InterstitialAd(Objects.requireNonNull(getContext()));
+//        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+//        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        rewardedAd = new RewardedAd(Objects.requireNonNull(getContext()),
+                "ca-app-pub-7312381714873081/6406772588");
+
+        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                // Ad successfully loaded.
+            }
+
+            @Override
+            public void onRewardedAdFailedToLoad(int errorCode) {
+                // Ad failed to load.
+            }
+        };
+        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
 
 
         tv_following.setOnClickListener(v -> Open_Following());
@@ -166,7 +188,8 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 totalItems = layoutManager.getItemCount();
                 scrollOutItems = layoutManager.findFirstVisibleItemPosition();
                 if (scrollOutItems>scrollOut){
-                    scrollOut+=2;
+                    scrollOut+=13;
+                    rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
                     showAd();
                 }
                 int page_no = scrollOffset / height;
@@ -174,7 +197,6 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                     currentPage = page_no;
                     Release_Privious_Player();
                     Set_Player(currentPage);
-
                 }
             }
         });
@@ -195,12 +217,40 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     private void showAd() {
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-            Toast.makeText(getContext(), "show", Toast.LENGTH_SHORT).show();
+//        if (mInterstitialAd.isLoaded()) {
+//            mInterstitialAd.show();
+//            Toast.makeText(getContext(), "show", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(getContext(), "The interstitial wasn't loaded yet.", Toast.LENGTH_SHORT).show();
+//           // Log.d("TAG", "The interstitial wasn't loaded yet.");
+//        }
+        if (rewardedAd.isLoaded()) {
+            //  Activity activityContext = getApplicationContext();
+            RewardedAdCallback adCallback = new RewardedAdCallback() {
+                @Override
+                public void onRewardedAdOpened() {
+                    // Ad opened.
+                }
+
+                @Override
+                public void onRewardedAdClosed() {
+                    // Ad closed.
+                }
+
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem reward) {
+                    // User earned reward.
+                }
+
+                @Override
+                public void onRewardedAdFailedToShow(int errorCode) {
+                    // Ad failed to display.
+                }
+            };
+            rewardedAd.show(getActivity(), adCallback);
+
         } else {
-            Toast.makeText(getContext(), "The interstitial wasn't loaded yet.", Toast.LENGTH_SHORT).show();
-           // Log.d("TAG", "The interstitial wasn't loaded yet.");
+            Log.d("TAG", "The rewarded ad wasn't loaded yet.");
         }
     }
 
@@ -233,7 +283,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                     case R.id.Home_follow_btn :
                         if (Variables.sharedPreferences.getBoolean(Variables.islogin, false)){
                             Follow_unFollow_User(item);
-                            Toast.makeText(context, "You followed user", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(context, "You followed user", Toast.LENGTH_SHORT).show();
                         }
                         else
                             Toast.makeText(context, "Please login in to app", Toast.LENGTH_SHORT).show();
@@ -255,8 +305,10 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                         break;
 
                     case R.id.like_layout:
-                        if (sharedPreferences.getBoolean(Variables.islogin, false)) Like_Video(postion, item);
-                        else Toast.makeText(context, "Please Login.", Toast.LENGTH_SHORT).show();
+                        if (sharedPreferences.getBoolean(Variables.islogin, false))
+                            Like_Video(postion, item);
+                        else
+                            Toast.makeText(context, "Please Login First!", Toast.LENGTH_LONG).show();
                         break;
 
                     case R.id.comment_layout:
@@ -457,6 +509,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                     item.video_description = itemdata.optString("description");
 
                     item.thum = Variables.base_url + itemdata.optString("thum");
+                    item.follow =itemdata.optString("follow");
                     item.created_date = itemdata.optString("created");
 
                     data_list.remove(pos);
@@ -1068,8 +1121,14 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         };
         RequestQueue requestQueue= Volley.newRequestQueue(context);
         requestQueue.add(stringRequest);
+        String a="0";
+        if(item.follow.equalsIgnoreCase("true"))
+            a="0";
+        else
+            a="1";
+      //  Toast.makeText(context, a, Toast.LENGTH_SHORT).show();
         Functions.Call_Api_For_Follow_or_unFollow(getActivity(),
-                sharedPreferences.getString(Variables.u_id, "0"), item.fb_id, "1", new API_CallBack() {
+                sharedPreferences.getString(Variables.u_id, "0"), item.fb_id, a, new API_CallBack() {
                     @Override
                     public void ArrayData(ArrayList arrayList) {}
                     @Override

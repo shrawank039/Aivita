@@ -100,10 +100,12 @@ public class FollowingAdapter extends RecyclerView.Adapter<FollowingAdapter.Cust
 
         holder.user_name.setText(item.first_name + " " + item.last_name);
 
-        Picasso.get()
-                .load(item.profile_pic)
-                .placeholder(R.drawable.profile_image_placeholder)
-                .into(holder.user_image);
+        if (!item.profile_pic.equalsIgnoreCase("")) {
+            Picasso.get()
+                    .load(item.profile_pic)
+                    .placeholder(R.drawable.profile_image_placeholder)
+                    .into(holder.user_image);
+        }
 
         holder.user_id.setText(item.username);
 

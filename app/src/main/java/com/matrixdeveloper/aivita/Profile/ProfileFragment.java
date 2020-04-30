@@ -400,10 +400,12 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
                 username1.setText(b);
 
                 ProfileFragment.pic_url = user_info.optString("profile_pic");
-                Picasso.get()
-                        .load(ProfileFragment.pic_url)
-                        .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
-                        .resize(200, 200).centerCrop().into(imageView);
+                if (!ProfileFragment.pic_url.equalsIgnoreCase("")) {
+                    Picasso.get()
+                            .load(ProfileFragment.pic_url)
+                            .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
+                            .resize(200, 200).centerCrop().into(imageView);
+                }
 
                 follow_count_txt.setText(data.optString("total_following"));
                 fans_count_txt.setText(data.optString("total_fans"));

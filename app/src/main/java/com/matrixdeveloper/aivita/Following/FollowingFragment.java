@@ -179,11 +179,11 @@ public class FollowingFragment extends Fragment {
                     no_data_layout.setVisibility(View.GONE);
 
             } else {
-                Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "4 "+ jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "5 "+e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -249,7 +249,7 @@ public class FollowingFragment extends Fragment {
             } else Toast.makeText(context, "" + jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
 
         } catch (JSONException e) {
-            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "6 "+e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

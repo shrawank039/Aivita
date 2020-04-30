@@ -209,11 +209,11 @@ public class Discover_F extends RootFragment {
                 adapter.notifyDataSetChanged();
 
             }else {
-                Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "16 "+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {
-            Toast.makeText(context, "", Toast.LENGTH_SHORT).show();
+         //   Toast.makeText(context, "19 "+ e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

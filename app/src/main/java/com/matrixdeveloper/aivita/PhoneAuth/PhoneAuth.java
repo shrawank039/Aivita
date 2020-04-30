@@ -176,7 +176,7 @@ public class PhoneAuth extends AppCompatActivity {
                             finish();
 
                         } else {
-                            Toast.makeText(getApplicationContext(), "0"+task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "0 "+task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -216,7 +216,7 @@ public class PhoneAuth extends AppCompatActivity {
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "10 "+e.getMessage(), Toast.LENGTH_LONG).show();
         }
     };
 
@@ -295,7 +295,7 @@ public class PhoneAuth extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     Log.e("VOLLEY", error.toString());
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(PhoneAuth.this, "2"+error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PhoneAuth.this, "2 "+error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override

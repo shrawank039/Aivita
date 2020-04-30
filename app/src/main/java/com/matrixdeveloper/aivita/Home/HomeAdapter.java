@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -61,6 +62,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
             holder.bind(i, item, listener);
             holder.username.setText(item.first_name + " " + item.last_name);
 
+           // Toast.makeText(context, item.liked, Toast.LENGTH_SHORT).show();
+            if (item.follow.equalsIgnoreCase("true")) {
+                holder.Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_correct));
+            } else {
+                holder.Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_add_circle_black_24dp));
+            }
+            if (item.liked.equals("1")){
+                holder.like_image.setImageDrawable(context.getDrawable(R.drawable.ic_heart));}
+            else{
+                holder.like_image.setImageDrawable(context.getDrawable(R.drawable.ic_favorite_black_24dp));}
+
+
             if ((item.sound_name == null || item.sound_name.equals("") || item.sound_name.equals("null")))
                 holder.sound_name.setText("original sound - " + item.first_name + " " + item.last_name);
             else holder.sound_name.setText(item.sound_name);
@@ -82,11 +95,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
                     load(item.sound_pic)
                     .placeholder(context.getResources().getDrawable(R.drawable.ic_round_music))
                     .resize(100, 100).into(holder.sound_image);
-
-            if (item.liked.equals("1"))
-                holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_heart));
-            else
-                holder.like_image.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_favorite_black_24dp));
 
             holder.like_txt.setText(item.like_count);
             holder.comment_txt.setText(item.video_comment_count);
@@ -150,7 +158,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
             like_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(postion, item, v);
+
+                    if (item.liked.equalsIgnoreCase("1")) {
+                      //  Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
+                        like_image.setImageDrawable(context.getDrawable(R.drawable.ic_favorite_black_24dp));
+                        listener.onItemClick(postion, item, v);
+                        item.liked="0";
+                    } else {
+                      //  Toast.makeText(context, "true", Toast.LENGTH_SHORT).show();
+                        like_image.setImageDrawable(context.getDrawable(R.drawable.ic_heart));
+                        listener.onItemClick(postion, item, v);
+                        item.liked="1";
+                    }
                 }
             });
 
@@ -171,8 +190,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
             Home_follow_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_correct));
-                    listener.onItemClick(postion, item, v);
+
+                    if (item.follow.equalsIgnoreCase("false")) {
+                       // Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
+                        Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_correct));
+                        listener.onItemClick(postion, item, v);
+                        item.follow="true";
+                    } else {
+                      //  Toast.makeText(context, "true", Toast.LENGTH_SHORT).show();
+                        Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_add_circle_black_24dp));
+                        listener.onItemClick(postion, item, v);
+                        item.follow="false";
+                    }
                 }
             });
             sound_image_layout.setOnClickListener(new View.OnClickListener() {
