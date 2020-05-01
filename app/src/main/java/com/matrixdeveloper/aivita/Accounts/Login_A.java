@@ -31,10 +31,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.matrixdeveloper.aivita.ApiServices.PrefManager;
 import com.matrixdeveloper.aivita.Main_Menu.MainMenuActivity;
 import com.matrixdeveloper.aivita.Net.parser.LoginParser;
+import com.matrixdeveloper.aivita.PhoneAuth.NewPassword;
 import com.matrixdeveloper.aivita.PhoneAuth.PhoneAuth;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
@@ -75,23 +80,26 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Login_A extends Activity {
-   // FirebaseAuth mAuth;
-   // FirebaseUser firebaseUser;
+    FirebaseAuth mAuth;
+    FirebaseUser firebaseUser;
     IOSDialog iosDialog;
     SharedPreferences sharedPreferences;
     TextView createAccount;
+    private String verificationId;
    // View top_view;
     Button login_btn;
     String TAG = "Login_A";
     RelativeLayout rlPhone,rlOtp,rlReferral;
-    EditText tv_username; //password;
+    EditText tv_username, otp; //password;
     private PrefManager prefManager;
     String email;
     Spinner spinnerCountryCodes;
     CoordinatorLayout rl;
-    String mode ="+91";
+    String mode ="+91",otpCode="";
+    Boolean userExist =false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +122,7 @@ public class Login_A extends Activity {
         setContentView(R.layout.activity_login);
 
         rlPhone= (RelativeLayout) findViewById(R.id.rl_login_details);
+        otp = findViewById(R.id.edt_otp);
         rlReferral = findViewById(R.id.rl_referral);
         rlOtp = (RelativeLayout) findViewById(R.id.rl_otp);
         rlOtp.setVisibility(View.GONE);
@@ -174,17 +183,17 @@ public class Login_A extends Activity {
 //                btnLogin.setVisibility(View.GONE);
         });
 
-//        mAuth = FirebaseAuth.getInstance();
-//        firebaseUser = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
 //
 //        // if the user is already login trought facebook then we will logout the user automatically
      //   LoginManager.getInstance().logOut();
 
-//        iosDialog = new IOSDialog.Builder(this)
-//                .setCancelable(false)
-//                .setSpinnerClockwise(false)
-//                .setMessageContentGravity(Gravity.END)
-//                .build();
+        iosDialog = new IOSDialog.Builder(this)
+                .setCancelable(false)
+                .setSpinnerClockwise(false)
+                .setMessageContentGravity(Gravity.END)
+                .build();
 
         sharedPreferences = getSharedPreferences(Variables.pref_name, MODE_PRIVATE);
 
@@ -196,12 +205,12 @@ public class Login_A extends Activity {
 //        });
 
 
-//        findViewById(R.id.google_btn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Sign_in_with_gmail();
-//            }
-//        });
+        findViewById(R.id.google_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Sign_in_with_gmail();
+            }
+        });
 
 
 //        findViewById(R.id.tc_createaccount).setOnClickListener(new View.OnClickListener() {
@@ -254,7 +263,7 @@ public class Login_A extends Activity {
 
 
     // Bottom two function are related to Fb implimentation
-  //  private CallbackManager mCallbackManager;
+ //   private CallbackManager mCallbackManager;
 
     //facebook implimentation
 //    public void Loginwith_FB() {
@@ -319,10 +328,11 @@ public class Login_A extends Activity {
 //                                    if (lname.equals("") || lname.equals("null"))
 //                                        lname = "";
 //
-//                                    Call_Api_For_Signup("" + id, fname
-//                                            , lname,
-//                                            "https://graph.facebook.com/" + id + "/picture?width=500&width=500",
-//                                            "facebook");
+//                                    Toast.makeText(Login_A.this, "Facebood "+fname, Toast.LENGTH_SHORT).show();
+////                                    Call_Api_For_Signup("" + id, fname
+////                                            , lname,
+////                                            "https://graph.facebook.com/" + id + "/picture?width=500&width=500",
+////                                            "facebook");
 //
 //                                }
 //                            });
@@ -343,91 +353,113 @@ public class Login_A extends Activity {
 //    }
 
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        // Pass the activity result back to the Facebook SDK
-//        if (requestCode == 123) {
-//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-//            handleSignInResult(task);
-//        } else if (mCallbackManager != null)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Pass the activity result back to the Facebook SDK
+        if (requestCode == 123) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+//        else if (mCallbackManager != null)
 //            mCallbackManager.onActivityResult(requestCode, resultCode, data);
-//
-//    }
+
+    }
 
 
     //google Implimentation
- //   GoogleSignInClient mGoogleSignInClient;
+    GoogleSignInClient mGoogleSignInClient;
 
-//    public void Sign_in_with_gmail() {
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestEmail()
-//                .build();
-//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(Login_A.this);
-//        if (account != null) {
-//            String id = account.getId();
-//            String fname = account.getGivenName();
-//            String lname = account.getFamilyName();
-//
-//            String pic_url;
-//            if (account.getPhotoUrl() != null) {
-//                pic_url = account.getPhotoUrl().toString();
-//            } else {
-//                pic_url = "null";
-//            }
-//
-//
-//            if (fname.equals("") || fname.equals("null"))
-//                fname = getResources().getString(R.string.app_name);
-//
-//            if (lname.equals("") || lname.equals("null"))
-//                lname = "";
-//            Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
-//
-//
-//        } else {
-//            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//            startActivityForResult(signInIntent, 123);
-//        }
-//
-//    }
+    public void Sign_in_with_gmail() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(Login_A.this);
+
+        if (account != null) {
+            String id = account.getId();
+            String fname = account.getGivenName();
+            String lname = account.getFamilyName();
+            String personEmail = account.getEmail();
+
+            String pic_url;
+            if (account.getPhotoUrl() != null) {
+                pic_url = account.getPhotoUrl().toString();
+            } else {
+                pic_url = "null";
+            }
+
+
+            socialLogin(personEmail);
+
+
+        } else {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, 123);
+
+            Sign_in_with_gmail();
+        }
+
+    }
+
+    private void socialLogin(String personEmail) {
+
+        JSONObject parameter = new JSONObject();
+        try {
+            parameter.put("email",personEmail);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        iosDialog.show();
+        ApiRequest.Call_Api(getApplicationContext(), Variables.social_login, parameter, new Callback() {
+            @Override
+            public void Responce(String resp) {
+                iosDialog.cancel();
+                Log.d(TAG, "login :- " + resp);
+
+                Parse_login_data(resp);
+
+            }
+        });
+    }
 
 
     // Relate to google login
-//    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-//        try {
-//            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-//            if (account != null) {
-//                String id = account.getId();
-//                String fname = account.getGivenName();
-//                String lname = account.getFamilyName();
-//
-//                // if we do not get the picture of user then we will use default profile picture
-//
-//                String pic_url;
-//                if (account.getPhotoUrl() != null) {
-//                    pic_url = account.getPhotoUrl().toString();
-//                } else {
-//                    pic_url = "null";
-//                }
-//
-//
-//                if (fname.equals("") || fname.equals("null"))
-//                    fname = getResources().getString(R.string.app_name);
-//
-//                if (lname.equals("") || lname.equals("null"))
-//                    lname = "";
-//
-//                Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
-//
-//
-//            }
-//        } catch (ApiException e) {
-//            Log.w("Error message", "signInResult:failed code=" + e.getStatusCode());
-//        }
-//
-//    }
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            if (account != null) {
+                String id = account.getId();
+                String fname = account.getGivenName();
+                String lname = account.getFamilyName();
+
+                // if we do not get the picture of user then we will use default profile picture
+
+                String pic_url;
+                if (account.getPhotoUrl() != null) {
+                    pic_url = account.getPhotoUrl().toString();
+                } else {
+                    pic_url = "null";
+                }
+
+
+                if (fname.equals("") || fname.equals("null"))
+                    fname = getResources().getString(R.string.app_name);
+
+                if (lname.equals("") || lname.equals("null"))
+                    lname = "";
+
+               // Call_Api_For_Signup(id, fname, lname, pic_url, "gmail");
+
+
+            }
+        } catch (ApiException e) {
+            Log.w("Error message", "signInResult:failed code=" + e.getStatusCode());
+        }
+
+    }
 
 
     // this function call an Api for Signin
@@ -600,37 +632,118 @@ public class Login_A extends Activity {
             e.printStackTrace();
         }
 
-//        iosDialog.show();
+        sendVerificationCode(username);
+
+        iosDialog.show();
         ApiRequest.Call_Api(this, Variables.send_otp, parameters, new Callback() {
             @Override
             public void Responce(String resp) {
-//                iosDialog.cancel();
-                Log.d(TAG, "login :- " + resp);
-//                AuthBean authBean = new AuthBean();
-//                LoginParser loginParser = new LoginParser();
-//                authBean = loginParser.parseLoginResponse(resp);
-                // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
+                iosDialog.cancel();
+                Log.e(TAG, "login :- " + resp);
 
                 JSONObject userdata = null;
                 try {
                     userdata = new JSONObject(resp);
                     if (userdata.optString("status").equalsIgnoreCase("success")) {
                         if (userdata.optString("userExits").equalsIgnoreCase("true"))
+                            userExist = true;
                             rlReferral.setVisibility(View.GONE);
                         rlPhone.setVisibility(View.GONE);
                         rlOtp.setVisibility(View.VISIBLE);
+
                         Toast.makeText(Login_A.this, "OTP has been sent successfully.", Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-               // Parse_login_data(resp);
 
             }
         });
 
     }
 
+    private void verifyCode(String code) {
+        otp.setText(code);
+        try {
+            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+            signInWithCredential(credential);
+        } catch (Exception e){
+            Toast.makeText(this, "OTP didn't match!!!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void signInWithCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            JSONObject parameter = new JSONObject();
+                            try {
+                                EditText ref = findViewById(R.id.edt_referral);
+                                parameter.put("phone", mode + email);
+                                parameter.put("otp", "123456");
+                                parameter.put("referal", ref.getText().toString().trim());
+                                parameter.put("email","");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                                iosDialog.show();
+                            ApiRequest.Call_Api(getApplicationContext(), Variables.verify_otp, parameter, new Callback() {
+                                @Override
+                                public void Responce(String resp) {
+                                iosDialog.cancel();
+                                    Log.d(TAG, "login :- " + resp);
+
+                                    Parse_login_data(resp);
+
+                                }
+                            });
+                        } else {
+                            iosDialog.show();
+                            Toast.makeText(getApplicationContext(), "0 "+task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
+    private void sendVerificationCode(String number) {
+      //  progressBar.setVisibility(View.VISIBLE);
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                number,
+                60,
+                TimeUnit.SECONDS,
+                TaskExecutors.MAIN_THREAD,
+                mCallBack
+        );
+
+    }
+
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+            mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            verificationId = s;
+        }
+
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            otpCode = phoneAuthCredential.getSmsCode();
+            otp.setText(otpCode);
+            if (otpCode != null && userExist) {
+                verifyCode(otpCode);
+            }
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            Toast.makeText(getApplicationContext(), "10 "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    };
 
     // if the signup successfull then this method will call and it store the user info in local
     public void Parse_login_data(String loginData) {
@@ -673,40 +786,25 @@ public class Login_A extends Activity {
     public void goBack(View view) {
         rlPhone.setVisibility(View.VISIBLE);
         rlOtp.setVisibility(View.GONE);
+        userExist = false;
         onBackPressed();
     }
 
     public void submitOTP(View view) {
-        EditText otp = findViewById(R.id.edt_otp);
-        EditText ref = findViewById(R.id.edt_referral);
 
+        String code = otp.getText().toString().trim();
 
-        JSONObject parameter = new JSONObject();
-        try {
-            parameter.put("phone", mode+email);
-            parameter.put("otp", otp.getText().toString().trim());
-            parameter.put("referal", ref.getText().toString().trim());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (code.isEmpty() || code.length() < 6) {
+            otp.setError("Enter valid code.");
+            otp.requestFocus();
+            return;
+        }
+        else {
+            verifyCode(code);
         }
 
-        ApiRequest.Call_Api(this, Variables.verify_otp, parameter, new Callback() {
-            @Override
-            public void Responce(String resp) {
-//                iosDialog.cancel();
-                Log.d(TAG, "login :- " + resp);
-//                AuthBean authBean = new AuthBean();
-//                LoginParser loginParser = new LoginParser();
-//                authBean = loginParser.parseLoginResponse(resp);
-                // Toast.makeText(Login_A.this, resp, Toast.LENGTH_SHORT).show();
 
-                 Parse_login_data(resp);
-
-            }
-        });
-
-    }
+        }
 
 //    public void forgotPassword(View view) {
 //        startActivity(new Intent(getApplicationContext(), PhoneAuth.class));

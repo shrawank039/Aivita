@@ -51,7 +51,7 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
     private Context context;
 
     private TextView follow_unfollow_btn;
-    private TextView username,username1, video_count_txt;
+    private TextView username,name, video_count_txt;
     private ImageView imageView;
     private TextView follow_count_txt, fans_count_txt, heart_count_txt;
     private ImageView back_btn, setting_btn;
@@ -132,8 +132,8 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
 
     public View init() {
 
-        username = view.findViewById(R.id.username);
-        username1=view.findViewById(R.id.username1);
+        name = view.findViewById(R.id.name);
+        username=view.findViewById(R.id.username);
         imageView = view.findViewById(R.id.user_image);
         imageView.setOnClickListener(this);
 
@@ -395,9 +395,9 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
                 JSONObject user_info = data.optJSONObject("user_info");
                 assert user_info != null;
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
-                username.setText(a);
+                name.setText(a);
                 String b="@"+user_info.optString("username");
-                username1.setText(b);
+                username.setText(b);
 
                 ProfileFragment.pic_url = user_info.optString("profile_pic");
                 if (!ProfileFragment.pic_url.equalsIgnoreCase("")) {
@@ -491,20 +491,23 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
 
     //this method will get the big size of profile image.
     public void OpenfullsizeImage(String url) {
-        SeeFullImageFragment see_image_f = new SeeFullImageFragment();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-        Bundle args = new Bundle();
-        args.putSerializable("image_url", url);
-        see_image_f.setArguments(args);
-        transaction.addToBackStack(null);
+        if (!url.equalsIgnoreCase("")) {
+            SeeFullImageFragment see_image_f = new SeeFullImageFragment();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+            Bundle args = new Bundle();
+            args.putSerializable("image_url", url);
+            see_image_f.setArguments(args);
+            transaction.addToBackStack(null);
 
-        View view = getActivity().findViewById(R.id.MainMenuFragment);
-        if (view != null)
-            transaction.replace(R.id.MainMenuFragment, see_image_f).commit();
-        else
-            transaction.replace(R.id.Profile_F, see_image_f).commit();
-
+            View view = getActivity().findViewById(R.id.MainMenuFragment);
+            if (view != null)
+                transaction.replace(R.id.MainMenuFragment, see_image_f).commit();
+            else
+                transaction.replace(R.id.Profile_F, see_image_f).commit();
+        }else {
+            Toast.makeText(context, "Don't have profile pic!!!", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

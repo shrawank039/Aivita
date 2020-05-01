@@ -72,6 +72,7 @@ public class Variables {
     public static String user_login = domain + "user_login";
     public static String send_otp = domain + "send_otp";
     public static String verify_otp = domain + "verify_otp";
+    public static String social_login = domain + "socal_login";
     public static String uploadVideo = domain + "uploadVideo";
     public static String showAllVideos = domain + "showAllVideos";
     public static String showMyAllVideos = domain + "showMyAllVideos";

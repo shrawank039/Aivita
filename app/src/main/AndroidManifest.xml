@@ -39,11 +39,6 @@
         tools:replace="allowBackup,supportsRtl"
         tools:targetApi="n">
         <activity android:name=".AudioActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
         </activity>
         <activity android:name=".AdmobActivity">
 
@@ -150,8 +145,11 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
         <activity android:name=".PhoneAuth.NewPassword" />
-        <activity android:name=".PhoneAuth.PhoneAuth" />
+        <activity android:name=".PhoneAuth.PhoneAuth">
+
+        </activity>
         <activity
             android:name=".Video_Recording.Video_Recoder_A"
             android:screenOrientation="portrait" />

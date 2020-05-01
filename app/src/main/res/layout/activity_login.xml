@@ -197,66 +197,48 @@
 <!--                android:layout_width="fill_parent"-->
 <!--                android:layout_height="wrap_content"-->
 <!--                android:layout_gravity="center"-->
-<!--                android:backgroundTint="@color/facebookcolor"-->
-<!--                android:drawableLeft="@drawable/facebookicon"-->
+<!--                android:backgroundTint="@color/com_facebook_blue"-->
+<!--                android:drawableLeft="@drawable/com_facebook_button_icon"-->
 <!--                android:onClick="onClick"-->
-<!--                android:text="@string/facebook"-->
+<!--                android:text="Facebook"-->
 <!--                android:textAllCaps="false"-->
 <!--                android:textColor="@color/white"-->
 <!--                android:textStyle="normal" />-->
 <!--        </FrameLayout>-->
-<!--        <FrameLayout-->
-<!--            android:id="@+id/FrameLayout2"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@+id/FrameLayout1"-->
-<!--            android:layout_marginLeft="@dimen/_15sdp"-->
-<!--            android:layout_marginTop="@dimen/_20sdp"-->
-<!--            android:layout_marginRight="@dimen/_15sdp">-->
+            <TextView
+                android:id="@+id/txt_or"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_margin="18dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/login_btn"
+                android:text="Or,"/>
+        <FrameLayout
+            android:id="@+id/FrameLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_or"
+            android:layout_marginLeft="@dimen/_15sdp"
+            android:layout_marginRight="@dimen/_15sdp">
 
-<!--            <Button-->
-<!--                android:id="@+id/google_btn"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:backgroundTint="@color/white"-->
-<!--                android:drawableLeft="@drawable/goolgeicon"-->
-<!--                android:onClick="onClick"-->
-<!--                android:text="@string/google"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textStyle="normal" />-->
-<!--        </FrameLayout>-->
+            <Button
+                android:id="@+id/google_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="#F44336"
+                android:drawableLeft="@drawable/google"
+                android:onClick="onClick"
+                android:text="Google"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textStyle="normal" />
+        </FrameLayout>
 
-<!--        <LinearLayout-->
-<!--            android:layout_marginBottom="@dimen/_30sdp"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_below="@+id/FrameLayout2"-->
-<!--            android:layout_marginTop="@dimen/_20sdp"-->
-<!--            android:gravity="center"-->
-<!--            android:orientation="horizontal">-->
 
-<!--            <TextView-->
-<!--                android:id="@+id/login_details_TV2_id"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_below="@+id/login_details_RL3_id"-->
-<!--                android:layout_centerHorizontal="true"-->
-<!--                android:text="New on Aivita?"-->
-<!--                android:textAlignment="center"-->
-<!--                android:textColor="@color/standard_white" />-->
-<!--            <TextView-->
-<!--                android:id="@+id/tc_createaccount"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginLeft="@dimen/_10sdp"-->
-<!--                android:layout_below="@+id/login_details_RL3_id"-->
-<!--                android:layout_centerHorizontal="true"-->
-<!--                android:text="Create Account"-->
-<!--                android:textAlignment="center"-->
-<!--                android:textColor="@color/app_color" />-->
-<!--        </LinearLayout>-->
         </RelativeLayout>
     </RelativeLayout>
 
@@ -326,7 +308,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:textColorHint="@color/dark_gray"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
+                    android:inputType="number"
                     android:maxLength="10"
                     android:textSize="21dp"
                     android:textColor="@color/standard_white" />
@@ -379,7 +361,7 @@
                     android:backgroundTint="@color/colorAccent"
                     android:textColorHint="@color/dark_gray"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:maxLength="7"
                     android:textSize="21dp"
                     android:textColor="@color/standard_white" />

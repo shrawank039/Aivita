@@ -46,6 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.matrixdeveloper.aivita.Wallet.WalletActivity;
 import com.squareup.picasso.Picasso;
@@ -106,24 +107,36 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 instagram.setOnClickListener(v -> {
                     String insta=Variables.sharedPreferences.getString(Variables.instagramlink, "https://www.instagram.com/");
                    // Log.e("instagramlink",Variables.sharedPreferences.getString(Variables.instagramlink, ""));
-                    Intent viewIntent =
-                            new Intent("android.intent.action.VIEW",
-                                    Uri.parse(insta));
-                    startActivity(viewIntent);
+                    if (!insta.equalsIgnoreCase("")) {
+                        Intent viewIntent =
+                                new Intent("android.intent.action.VIEW",
+                                        Uri.parse(insta));
+                        startActivity(viewIntent);
+                    }else {
+                        Toast.makeText(context, "Don't have any added account!!!", Toast.LENGTH_LONG).show();
+                    }
                 });
                 facebook.setOnClickListener(v -> {
                     String facebook=Variables.sharedPreferences.getString(Variables.facebooklink, "https://www.facebook.com/");
-                    Intent viewIntent = new Intent("android.intent.action.VIEW",
-                                    Uri.parse(facebook));
-                    startActivity(viewIntent);
+                    if(!facebook.equalsIgnoreCase("")) {
+                        Intent viewIntent = new Intent("android.intent.action.VIEW",
+                                Uri.parse(facebook));
+                        startActivity(viewIntent);
+                    }else {
+                        Toast.makeText(context, "Don't have any added account!!!", Toast.LENGTH_LONG).show();
+                    }
                 });
 
                 youttube.setOnClickListener(v -> {
                     String youtube=Variables.sharedPreferences.getString(Variables.youtubelink, "https://www.youtube.com/");
-                    Intent viewIntent =
-                            new Intent("android.intent.action.VIEW",
-                                    Uri.parse(youtube));
-                    startActivity(viewIntent);
+                    if (!youtube.equalsIgnoreCase("")) {
+                        Intent viewIntent =
+                                new Intent("android.intent.action.VIEW",
+                                        Uri.parse(youtube));
+                        startActivity(viewIntent);
+                    }else {
+                        Toast.makeText(context, "Don't have any added account!!!", Toast.LENGTH_LONG).show();
+                    }
                 });
 
 
@@ -259,8 +272,8 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
 
     @SuppressLint("SetTextI18n")
     public void update_profile() {
-        username.setText("@"+Variables.sharedPreferences.getString(Variables.f_name, "")+ Variables.sharedPreferences.getString(Variables.l_name, ""));
-        name.setText(Variables.username);
+        name.setText(Variables.sharedPreferences.getString(Variables.f_name, "")+ Variables.sharedPreferences.getString(Variables.l_name, ""));
+        username.setText("@"+Variables.username);
         pic_url = Variables.sharedPreferences.getString(Variables.u_pic, "null");
 
         try {
@@ -448,8 +461,8 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                 String a=user_info.optString("first_name") + " " + user_info.optString("last_name");
                 String b="@"+user_info.optString("username");
                 Variables.username=user_info.optString("username");
-                name.setText(b);
-                username.setText(a);
+                username.setText(b);
+                name.setText(a);
                 ProfileFragment.pic_url=user_info.optString("profile_pic");
                 if (!ProfileFragment.pic_url.equals("")) {
                     Picasso.get()
@@ -517,14 +530,18 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
 
     //this method will get the big size of profile image.
     public void OpenfullsizeImage(String url){
-        SeeFullImageFragment see_image_f = new SeeFullImageFragment();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-        Bundle args = new Bundle();
-        args.putSerializable("image_url", url);
-        see_image_f.setArguments(args);
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.MainMenuFragment, see_image_f).commit();
+        if (!url.equalsIgnoreCase("")) {
+            SeeFullImageFragment see_image_f = new SeeFullImageFragment();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+            Bundle args = new Bundle();
+            args.putSerializable("image_url", url);
+            see_image_f.setArguments(args);
+            transaction.addToBackStack(null);
+            transaction.replace(R.id.MainMenuFragment, see_image_f).commit();
+        }else {
+            Toast.makeText(context, "Don't have profile pic!!!", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -550,7 +567,8 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                         Intent shareRide = new Intent();
                         shareRide.setAction(Intent.ACTION_SEND);
                         shareRide.putExtra(Intent.EXTRA_TEXT, "Use this referral code \"" +Variables.referral_code+
-                                "\" while registering in Aivita to get 100 Aivita Coin.");
+                                "\" while registering in Aivita. \n\n " +
+                                "https://play.google.com/store/apps/details?id=com.matrixdeveloper.aivita");
                         shareRide.setType("text/plain");
                         Intent shareIntent = Intent.createChooser(shareRide, "Share Now");
                         startActivity(shareIntent);

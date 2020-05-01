@@ -506,6 +506,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
                         editor.putString(Variables.facebooklink,et_facebooklink.getText().toString());
                         editor.putString(Variables.youtubelink,et_youtubelink.getText().toString());
                         editor.putString(Variables.instagramlink,et_instagramlink.getText().toString());
+                        editor.putString(Variables.username, edt_username.getText().toString());
                         editor.apply();
 
                         Variables.username = edt_username.getText().toString();
@@ -513,7 +514,7 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
                         getActivity().onBackPressed();
                     }
                     else
-                        Toast.makeText(context, "12 "+response.optString("msg"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, response.optString("msg"), Toast.LENGTH_LONG).show();
 
                     } catch (JSONException e) {
                     e.printStackTrace();
@@ -558,8 +559,9 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
                 JSONArray msg = jsonObject.optJSONArray("msg");
                 assert msg != null;
                 JSONObject data = msg.getJSONObject(0);
-                 firstname_edit.setText(data.optString("first_name"));
+                firstname_edit.setText(data.optString("first_name"));
                 lastname_edit.setText(data.optString("last_name"));
+              //  edt_username.setText(data.optString("username"));
 
 
                 String picture = data.optString("profile_pic");

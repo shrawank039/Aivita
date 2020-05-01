@@ -1621,15 +1621,19 @@ public class Chat_Activity extends Fragment {
 
     //this method will get the big size of image in private chat
     public void OpenfullsizeImage(Chat_GetSet item){
-        SeeFullImageFragment see_image_f = new SeeFullImageFragment();
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-        Bundle args = new Bundle();
-        args.putSerializable("image_url", item.getPic_url());
-        args.putSerializable("chat_id", item.getChat_id());
-        see_image_f.setArguments(args);
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.Chat_F, see_image_f).commit();
+        if (!item.getPic_url().equalsIgnoreCase("")) {
+            SeeFullImageFragment see_image_f = new SeeFullImageFragment();
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+            Bundle args = new Bundle();
+            args.putSerializable("image_url", item.getPic_url());
+            args.putSerializable("chat_id", item.getChat_id());
+            see_image_f.setArguments(args);
+            transaction.addToBackStack(null);
+            transaction.replace(R.id.Chat_F, see_image_f).commit();
+        }else {
+            Toast.makeText(context, "Don't have profile pic!!!", Toast.LENGTH_SHORT).show();
+        }
 
     }
 

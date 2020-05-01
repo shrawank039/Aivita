@@ -156,6 +156,7 @@ public class PhoneAuth extends AppCompatActivity {
     }
 
     private void verifyCode(String code) {
+        Log.e("phone_auth", "verifyCode :- " + code);
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
         signInWithCredential(credential);
     }
@@ -243,7 +244,10 @@ public class PhoneAuth extends AppCompatActivity {
             phoneText.setText(editTextPhone.getText().toString());
             phonenumber = "+91" + editTextPhone.getText().toString().trim();
 //          //  Toast.makeText(this, phonenumber, Toast.LENGTH_SHORT).show();
-            checkPhoneAvailability();
+           // checkPhoneAvailability();
+            sendVerificationCode(phonenumber);
+            updateCountDownText();
+            startTimer();
 
         } else {
             editTextPhone.setError("Enter valid number");
@@ -266,7 +270,7 @@ public class PhoneAuth extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         JSONObject object = new JSONObject(response);
                         String status = object.getString("status");
-                       // Toast.makeText(PhoneAuth.this, status, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PhoneAuth.this, status, Toast.LENGTH_SHORT).show();
                         if (status.equalsIgnoreCase("success")) {
                             sendVerificationCode(phonenumber);
                             updateCountDownText();

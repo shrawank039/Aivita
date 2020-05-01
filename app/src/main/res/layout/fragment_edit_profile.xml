@@ -252,6 +252,7 @@
                         android:textColor="@color/white"/>
 
                     <EditText
+                        android:textAllCaps="false"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minLines="2"
@@ -263,7 +264,7 @@
                         android:nextFocusForward="@+id/jobtitle_edit"
                         android:id="@+id/edt_username"
                         android:textColorHint="@color/gainsboro"
-                        android:textColor="@color/standard_white"
+                        android:textColor="@color/colorAccent"
                         android:backgroundTint="@color/dark_gray"/>
                 </LinearLayout>
 
