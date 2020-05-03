@@ -1,6 +1,7 @@
 package com.matrixdeveloper.aivita.Home;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -41,6 +44,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.RewardedVideoCallbacks;
 import com.daasuu.gpuv.composer.GPUMp4Composer;
 import com.daasuu.gpuv.egl.filter.GlWatermarkFilter;
 import com.downloader.Error;
@@ -52,6 +57,7 @@ import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
 import com.downloader.Progress;
 import com.downloader.request.DownloadRequest;
+import com.explorestack.consent.ConsentForm;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -76,6 +82,7 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.tabs.TabLayout;
+import com.ixidev.gdpr.GDPRChecker;
 import com.volokh.danylo.hashtaghelper.HashTagHelper;
 
 import com.matrixdeveloper.aivita.Comments.Comment_F;
@@ -95,6 +102,8 @@ import com.matrixdeveloper.aivita.Taged.Taged_Videos_F;
 import com.matrixdeveloper.aivita.VideoAction.VideoAction_F;
 import com.matrixdeveloper.aivita.Video_Recording.Video_Recoder_A;
 import com.matrixdeveloper.aivita.Videos.Followings;
+import com.watermark.androidwm.utils.Constant;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -127,7 +136,8 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     private int currentItems, totalItems, scrollOutItems;
     private int scrollOut=2;
    // private InterstitialAd mInterstitialAd;
-   private RewardedAd rewardedAd;
+    private RewardedAd rewardedAd;
+    private ConsentForm consentForm;
 
     public HomeFragment() {
 
@@ -147,27 +157,37 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
+//        new GDPRChecker()
+//                .withContext(getApplicationContext())
+//                .withPrivacyUrl(getString(R.string.privacy_url)) // your privacy url
+//                .withPublisherIds("pub-6272309782897719") // your admob account Publisher id
+//                //  .withTestMode("9424DF76F06983D1392E609FC074596C") // remove this on real project
+//                .check();
+
 //        MobileAds.initialize(getContext(),
 //                "ca-app-pub-3940256099942544~3347511713");
 //        mInterstitialAd = new InterstitialAd(Objects.requireNonNull(getContext()));
 //        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
 //        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
-        rewardedAd = new RewardedAd(Objects.requireNonNull(getContext()),
-                "ca-app-pub-7312381714873081/6406772588");
 
-        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
-            @Override
-            public void onRewardedAdLoaded() {
-                // Ad successfully loaded.
-            }
+        Appodeal.setTesting(true);
+        Appodeal.initialize(Objects.requireNonNull(getActivity()), "13acdc7b99a902dca59f6b0ba59ca451280c0558c7a8b795", Appodeal.REWARDED_VIDEO,true);
 
-            @Override
-            public void onRewardedAdFailedToLoad(int errorCode) {
-                // Ad failed to load.
-            }
-        };
-        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+//        rewardedAd = new RewardedAd(Objects.requireNonNull(getContext()),
+//                "ca-app-pub-6272309782897719/1077799568");
+//        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+//            @Override
+//            public void onRewardedAdLoaded() {
+//                // Ad successfully loaded.
+//            }
+//            @Override
+//            public void onRewardedAdFailedToLoad(int errorCode) {
+//               // Toast.makeText(context, String.valueOf(errorCode), Toast.LENGTH_SHORT).show();
+//                // Ad failed to load.
+//            }
+//        };
+     //   rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
 
 
         tv_following.setOnClickListener(v -> Open_Following());
@@ -188,9 +208,10 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 totalItems = layoutManager.getItemCount();
                 scrollOutItems = layoutManager.findFirstVisibleItemPosition();
                 if (scrollOutItems>scrollOut){
-                    scrollOut+=13;
-                    rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
-                    showAd();
+                    scrollOut+=2;
+                   // rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+                           // Toast.makeText(context, String.valueOf(rewardedAd.isLoaded()), Toast.LENGTH_SHORT).show();
+                            showAd();
                 }
                 int page_no = scrollOffset / height;
                 if (page_no != currentPage) {
@@ -217,41 +238,75 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     private void showAd() {
-//        if (mInterstitialAd.isLoaded()) {
-//            mInterstitialAd.show();
-//            Toast.makeText(getContext(), "show", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(getContext(), "The interstitial wasn't loaded yet.", Toast.LENGTH_SHORT).show();
-//           // Log.d("TAG", "The interstitial wasn't loaded yet.");
+
+         Appodeal.setRewardedVideoCallbacks(new RewardedVideoCallbacks() {
+             @Override
+             public void onRewardedVideoLoaded(boolean b) {
+
+             }
+
+             @Override
+             public void onRewardedVideoFailedToLoad() {
+
+             }
+
+             @Override
+             public void onRewardedVideoShown() {
+
+             }
+
+             @Override
+             public void onRewardedVideoShowFailed() {
+
+             }
+
+             @Override
+             public void onRewardedVideoFinished(double v, String s) {
+
+             }
+
+             @Override
+             public void onRewardedVideoClosed(boolean b) {
+
+             }
+
+             @Override
+             public void onRewardedVideoExpired() {
+
+             }
+
+             @Override
+             public void onRewardedVideoClicked() {
+
+             }
+         });
+
+//        if (rewardedAd.isLoaded()) {
+//            Context activityContext = getContext();
+//            RewardedAdCallback adCallback = new RewardedAdCallback() {
+//                @Override
+//                public void onRewardedAdOpened() {
+//                    // Ad opened.
+//                }
+//                @Override
+//                public void onRewardedAdClosed() {
+//                    // Ad closed.
+//                }
+//                @Override
+//                public void onUserEarnedReward(@NonNull RewardItem reward) {
+//                    // User earned reward.
+//                }
+//
+//                @Override
+//                public void onRewardedAdFailedToShow(int errorCode) {
+//                    // Ad failed to display.
+//                }
+//            };
+//
+//            rewardedAd.show((Activity) activityContext, adCallback);
+//
 //        }
-        if (rewardedAd.isLoaded()) {
-            //  Activity activityContext = getApplicationContext();
-            RewardedAdCallback adCallback = new RewardedAdCallback() {
-                @Override
-                public void onRewardedAdOpened() {
-                    // Ad opened.
-                }
 
-                @Override
-                public void onRewardedAdClosed() {
-                    // Ad closed.
-                }
-
-                @Override
-                public void onUserEarnedReward(@NonNull RewardItem reward) {
-                    // User earned reward.
-                }
-
-                @Override
-                public void onRewardedAdFailedToShow(int errorCode) {
-                    // Ad failed to display.
-                }
-            };
-            rewardedAd.show(getActivity(), adCallback);
-
-        } else {
-            Log.d("TAG", "The rewarded ad wasn't loaded yet.");
-        }
     }
 
     private void Open_Following() {

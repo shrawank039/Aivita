@@ -10,6 +10,7 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="change_pass_caption">Please, Enter the Registered mobile number to get OTP. If you are not registered, then please sign up first.</string>
+    <string name="privacy_url">http://apptific.com/PlayStore/Privacy-Policy.html</string>
 
     <string-array name="countrycodes">
         <item>+91</item>

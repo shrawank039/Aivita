@@ -377,6 +377,9 @@ public class Login_A extends Activity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(Login_A.this);
 
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, 123);
+
         if (account != null) {
             String id = account.getId();
             String fname = account.getGivenName();
@@ -393,12 +396,6 @@ public class Login_A extends Activity {
 
             socialLogin(personEmail);
 
-
-        } else {
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, 123);
-
-            Sign_in_with_gmail();
         }
 
     }
@@ -756,7 +753,7 @@ public class Login_A extends Activity {
                 editor.putString(Variables.username, dataObj.optString("username"));
 
                 String a = Variables.sharedPreferences.getString(Variables.username, null);
-                Toast.makeText(Login_A.this, dataObj.optString("username") + a, Toast.LENGTH_SHORT).show();
+                Toast.makeText(Login_A.this, "Login Successfully", Toast.LENGTH_SHORT).show();
                 editor.putString(Variables.password, dataObj.optString("password"));
                 editor.putString(Variables.u_id, dataObj.optString("fb_id"));
                 editor.putString(Variables.f_name, dataObj.optString("first_name"));
