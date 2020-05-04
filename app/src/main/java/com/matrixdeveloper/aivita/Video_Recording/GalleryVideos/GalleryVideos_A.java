@@ -81,6 +81,7 @@ public class GalleryVideos_A extends AppCompatActivity {
         cursor = this.getContentResolver().query(uri, projection, null, null, null);
 
         data_list=new ArrayList<>();
+
         adapter=new GalleryVideos_Adapter(this, data_list, new GalleryVideos_Adapter.OnItemClickListener() {
             @Override
             public void onItemClick(int postion, GalleryVideo_Get_Set item, View view) {
@@ -171,6 +172,12 @@ public class GalleryVideos_A extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        cursor.close();
+        super.onBackPressed();
+    }
+
     public  void  getAllVideoPath(Context context, int i, Cursor cursor) {
 
         if (cursor != null) {
@@ -195,7 +202,6 @@ public class GalleryVideos_A extends AppCompatActivity {
                  itemNum++;
             }
              adapter.notifyDataSetChanged();
-            // cursor.close();
         }
     }
 

@@ -57,21 +57,22 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
         final HomeModel item = dataList.get(i);
         holder.setIsRecyclable(false);
 
-        try {
-
             holder.bind(i, item, listener);
             holder.username.setText(item.first_name + " " + item.last_name);
 
-           // Toast.makeText(context, item.liked, Toast.LENGTH_SHORT).show();
-            if (item.follow.equalsIgnoreCase("true")) {
+          //  Toast.makeText(context, item.like_count, Toast.LENGTH_SHORT).show();
+            holder.like_txt.setText(item.like_count);
+            holder.comment_txt.setText(item.video_comment_count);
+
+            if (item.follow.equalsIgnoreCase("true"))
                 holder.Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_correct));
-            } else {
+             else
                 holder.Home_follow_btn.setImageDrawable(context.getDrawable(R.drawable.ic_add_circle_black_24dp));
-            }
-            if (item.liked.equals("1")){
-                holder.like_image.setImageDrawable(context.getDrawable(R.drawable.ic_heart));}
-            else{
-                holder.like_image.setImageDrawable(context.getDrawable(R.drawable.ic_favorite_black_24dp));}
+
+            if (item.liked.equalsIgnoreCase("1"))
+                holder.like_image.setImageDrawable(context.getDrawable(R.drawable.ic_heart));
+            else
+                holder.like_image.setImageDrawable(context.getDrawable(R.drawable.ic_favorite_black_24dp));
 
 
             if ((item.sound_name == null || item.sound_name.equals("") || item.sound_name.equals("null")))
@@ -81,25 +82,26 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CustomViewHold
             holder.sound_name.setSelected(true);
             holder.desc_txt.setText(item.video_description);
 
+            if (!item.profile_pic.equals("")){
             Picasso.get().
                     load(item.profile_pic)
                     .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
-                    .resize(100, 100).into(holder.user_pic);
+                    .resize(100, 100).into(holder.user_pic);}
 
-            if ((item.sound_name == null || item.sound_name.equals("")) || item.sound_name.equals("null"))
+            if ((item.sound_name == null || item.sound_name.equals("")) || item.sound_name.equals("null")){
                 item.sound_pic = item.profile_pic;
+                if (!item.sound_pic.equals("")) {
+                    Picasso.get().
+                            load(item.sound_pic)
+                            .placeholder(context.getResources().getDrawable(R.drawable.ic_round_music))
+                            .resize(100, 100).into(holder.sound_image);
+                }
+            }
             else if (item.sound_pic.equals(""))
                 item.sound_pic = "Null";
 
-            Picasso.get().
-                    load(item.sound_pic)
-                    .placeholder(context.getResources().getDrawable(R.drawable.ic_round_music))
-                    .resize(100, 100).into(holder.sound_image);
 
-            holder.like_txt.setText(item.like_count);
-            holder.comment_txt.setText(item.video_comment_count);
 
-        } catch (Exception e) {}
 
     }
 

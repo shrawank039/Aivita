@@ -1,6 +1,9 @@
 package com.matrixdeveloper.aivita.Main_Menu;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +13,8 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import com.appodeal.ads.Appodeal;
+import com.appodeal.ads.utils.PermissionsHelper;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SimpleClasses.Variables;
 
@@ -62,6 +67,21 @@ public class MainMenuActivity extends AppCompatActivity {
             mainMenuFragment = (MainMenuFragment) getSupportFragmentManager().getFragments().get(0);
         }
 
+
+        if (Build.VERSION.SDK_INT >= 23 && (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            Appodeal.requestAndroidMPermissions(this, new PermissionsHelper.AppodealPermissionCallbacks() {
+                @Override
+                public void writeExternalStorageResponse(int i) {
+
+                }
+
+                @Override
+                public void accessCoarseLocationResponse(int i) {
+
+                }
+            });
+        }
 
 
 

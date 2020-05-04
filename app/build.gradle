@@ -11,8 +11,8 @@ android {
         applicationId "com.matrixdeveloper.aivita"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 8
-        versionName "0.1.5"
+        versionCode 10
+        versionName "0.1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         compileSdkVersion 29
     }
@@ -23,11 +23,21 @@ android {
     }
 
     repositories {
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+        // Add Appodeal repository
+        maven { url "https://artifactory.appodeal.com/appodeal" }
+        // Add Mopub repository
+        // https://github.com/mopub/mopub-android-sdk/issues/341#issuecomment-521563460
         maven {
-            url "https://jitpack.io"
+            url "https://s3.amazonaws.com/moat-sdk-builds"
+            content {
+                includeGroupByRegex "com\\.moat.*"
+            }
         }
         maven {
-            url "https://artifactory.appodeal.com/appodeal"
+            url "https://jitpack.io"
         }
     }
 

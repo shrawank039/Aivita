@@ -7,7 +7,7 @@ import com.google.firebase.FirebaseApp;
 
 import io.fabric.sdk.android.Fabric;
 
-public class TicTic extends Application {
+public class Aivita extends Application {
 
     @Override
     public void onCreate() {

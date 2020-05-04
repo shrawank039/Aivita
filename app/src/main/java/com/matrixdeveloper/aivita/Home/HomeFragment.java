@@ -1,7 +1,6 @@
 package com.matrixdeveloper.aivita.Home;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +10,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -27,12 +25,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +41,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.appodeal.ads.Appodeal;
 import com.appodeal.ads.RewardedVideoCallbacks;
+import com.appodeal.ads.UserSettings;
 import com.daasuu.gpuv.composer.GPUMp4Composer;
 import com.daasuu.gpuv.egl.filter.GlWatermarkFilter;
 import com.downloader.Error;
@@ -57,7 +53,6 @@ import com.downloader.OnStartOrResumeListener;
 import com.downloader.PRDownloader;
 import com.downloader.Progress;
 import com.downloader.request.DownloadRequest;
-import com.explorestack.consent.ConsentForm;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -75,14 +70,9 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdCallback;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.material.tabs.TabLayout;
-import com.ixidev.gdpr.GDPRChecker;
+import com.matrixdeveloper.aivita.Videos.Popular;
 import com.volokh.danylo.hashtaghelper.HashTagHelper;
 
 import com.matrixdeveloper.aivita.Comments.Comment_F;
@@ -102,7 +92,6 @@ import com.matrixdeveloper.aivita.Taged.Taged_Videos_F;
 import com.matrixdeveloper.aivita.VideoAction.VideoAction_F;
 import com.matrixdeveloper.aivita.Video_Recording.Video_Recoder_A;
 import com.matrixdeveloper.aivita.Videos.Followings;
-import com.watermark.androidwm.utils.Constant;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -134,10 +123,12 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     private SwipeRefreshLayout swiperefresh;
     private int swipe_count = 0;
     private int currentItems, totalItems, scrollOutItems;
-    private int scrollOut=2;
+    private int scrollOut=2, start=0, end=14;
    // private InterstitialAd mInterstitialAd;
     private RewardedAd rewardedAd;
-    private ConsentForm consentForm;
+    public static final String APP_KEY = "6b271ea32476c0dcb5d995a612f1a61e8686437df8aafc77";
+    boolean consent=true;
+    private HomeAdapter adapter;
 
     public HomeFragment() {
 
@@ -157,6 +148,72 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
+        data_list = new ArrayList<>();
+
+        adapter = new HomeAdapter(context, data_list, new HomeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int postion, final HomeModel item, View view) {
+
+                switch (view.getId()) {
+
+                    case R.id.Home_follow_btn :
+                        if (Variables.sharedPreferences.getBoolean(Variables.islogin, false)){
+                            Follow_unFollow_User(item);
+                            // Toast.makeText(context, "You followed user", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                            Toast.makeText(context, "Please login in to app", Toast.LENGTH_SHORT).show();
+
+                        break;
+
+                    case  R.id.sound_image_layout :
+                        AddedToFavourite(item);
+
+                        break;
+                    case R.id.user_pic:
+                        onPause();
+                        OpenProfile(item, false);
+                        break;
+
+                    case R.id.username:
+                        onPause();
+                        OpenProfile(item, false);
+                        break;
+
+                    case R.id.like_layout:
+                        if (sharedPreferences.getBoolean(Variables.islogin, false))
+                            Like_Video(postion, item);
+                        else
+                            Toast.makeText(context, "Please Login First!", Toast.LENGTH_LONG).show();
+                        break;
+
+                    case R.id.comment_layout:
+                        OpenComment(item);
+                        break;
+
+                    case R.id.shared_layout:
+
+                        final VideoAction_F fragment = new VideoAction_F(item.video_id, new Fragment_Callback() {
+                            @Override
+                            public void Responce(Bundle bundle) {
+
+                                if(bundle.getString("action").equals("save")){
+                                    Save_Video(item);
+                                }
+                            }
+                        });
+                        fragment.show(getChildFragmentManager(), "");
+
+
+                        break;
+                }
+
+            }
+        });
+
+        adapter.setHasStableIds(true);
+        recyclerView.setAdapter(adapter);
+
 //        new GDPRChecker()
 //                .withContext(getApplicationContext())
 //                .withPrivacyUrl(getString(R.string.privacy_url)) // your privacy url
@@ -170,9 +227,13 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 //        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
 //        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
+        Appodeal.setTesting(false);
+        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.none);
+        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true);
 
-        Appodeal.setTesting(true);
-        Appodeal.initialize(Objects.requireNonNull(getActivity()), "13acdc7b99a902dca59f6b0ba59ca451280c0558c7a8b795", Appodeal.REWARDED_VIDEO,true);
+        Appodeal.setUserAge(23);
+        Appodeal.setUserGender(UserSettings.Gender.MALE);
+        Appodeal.initialize(Objects.requireNonNull(getActivity()), APP_KEY, Appodeal.REWARDED_VIDEO, consent);
 
 //        rewardedAd = new RewardedAd(Objects.requireNonNull(getContext()),
 //                "ca-app-pub-6272309782897719/1077799568");
@@ -191,7 +252,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
 
         tv_following.setOnClickListener(v -> Open_Following());
-        popular.setOnClickListener(v -> Open_Following());
+        popular.setOnClickListener(v -> Open_Popular());
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -207,11 +268,20 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 currentItems = layoutManager.getChildCount();
                 totalItems = layoutManager.getItemCount();
                 scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+
+                if (end-2 == scrollOutItems){
+                  //  Toast.makeText(context, String.valueOf(scrollOutItems), Toast.LENGTH_SHORT).show();
+                    start = 1 + end;
+                    end = end + 14;
+                    showAd();
+                    Call_Api_For_get_Allvideos(start, end);
+                }
+
                 if (scrollOutItems>scrollOut){
-                    scrollOut+=2;
+
+                    scrollOut+=13;
                    // rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
-                           // Toast.makeText(context, String.valueOf(rewardedAd.isLoaded()), Toast.LENGTH_SHORT).show();
-                            showAd();
+                     //       showAd();
                 }
                 int page_no = scrollOffset / height;
                 if (page_no != currentPage) {
@@ -229,15 +299,21 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         swiperefresh.setColorSchemeResources(R.color.black);
         swiperefresh.setOnRefreshListener(() -> {
             currentPage = -1;
-            Call_Api_For_get_Allvideos();
+            Call_Api_For_get_Allvideos(start, end);
         });
 
-        Call_Api_For_get_Allvideos();
+        Call_Api_For_get_Allvideos(start, end);
 
         return view;
     }
 
     private void showAd() {
+
+//        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+//            Toast.makeText(context, "true", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(context, "false", Toast.LENGTH_SHORT).show();
+//        }
 
          Appodeal.setRewardedVideoCallbacks(new RewardedVideoCallbacks() {
              @Override
@@ -281,6 +357,8 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
              }
          });
 
+        Appodeal.show(getActivity(), Appodeal.REWARDED_VIDEO);
+
 //        if (rewardedAd.isLoaded()) {
 //            Context activityContext = getContext();
 //            RewardedAdCallback adCallback = new RewardedAdCallback() {
@@ -311,7 +389,9 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
     private void Open_Following() {
 
-        Followings following_f = new Followings(bundle -> Call_Api_For_get_Allvideos());
+        Release_Privious_Player();
+
+        Followings following_f = new Followings(bundle -> Call_Api_For_get_Allvideos(start, end));
 
         FragmentTransaction transaction = Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.in_from_bottom, R.anim.out_to_top, R.anim.in_from_top, R.anim.out_from_bottom);
@@ -325,73 +405,27 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
     }
 
-    private HomeAdapter adapter;
+    private void Open_Popular() {
+
+        Release_Privious_Player();
+
+        Popular popular_f = new Popular(bundle -> Call_Api_For_get_Allvideos(start, end));
+
+        FragmentTransaction transaction = Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.in_from_bottom, R.anim.out_to_top, R.anim.in_from_top, R.anim.out_from_bottom);
+        Bundle args = new Bundle();
+        args.putString("id", sharedPreferences.getString(Variables.u_id, ""));
+        args.putString("from_where", "following");
+        popular_f.setArguments(args);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.MainMenuFragment, popular_f);
+        transaction.commit();
+
+    }
 
     private void Set_Adapter() {
 
-        adapter = new HomeAdapter(context, data_list, new HomeAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int postion, final HomeModel item, View view) {
-
-                switch (view.getId()) {
-
-                    case R.id.Home_follow_btn :
-                        if (Variables.sharedPreferences.getBoolean(Variables.islogin, false)){
-                            Follow_unFollow_User(item);
-                           // Toast.makeText(context, "You followed user", Toast.LENGTH_SHORT).show();
-                        }
-                        else
-                            Toast.makeText(context, "Please login in to app", Toast.LENGTH_SHORT).show();
-
-                        break;
-
-                    case  R.id.sound_image_layout :
-                        AddedToFavourite(item);
-
-                        break;
-                    case R.id.user_pic:
-                        onPause();
-                        OpenProfile(item, false);
-                        break;
-
-                    case R.id.username:
-                        onPause();
-                        OpenProfile(item, false);
-                        break;
-
-                    case R.id.like_layout:
-                        if (sharedPreferences.getBoolean(Variables.islogin, false))
-                            Like_Video(postion, item);
-                        else
-                            Toast.makeText(context, "Please Login First!", Toast.LENGTH_LONG).show();
-                        break;
-
-                    case R.id.comment_layout:
-                        OpenComment(item);
-                        break;
-
-                    case R.id.shared_layout:
-
-                             final VideoAction_F fragment = new VideoAction_F(item.video_id, new Fragment_Callback() {
-                                @Override
-                                public void Responce(Bundle bundle) {
-
-                                    if(bundle.getString("action").equals("save")){
-                                        Save_Video(item);
-                                    }
-                                }
-                            });
-                            fragment.show(getChildFragmentManager(), "");
-
-
-                        break;
-                }
-
-            }
-        });
-
-        adapter.setHasStableIds(true);
-        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
     }
 
@@ -425,11 +459,14 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     // Bottom two function will call the api and get all the videos form api and parse the json data
-    private void Call_Api_For_get_Allvideos() {
+    private void Call_Api_For_get_Allvideos(int start, int end) {
         Log.d(Variables.tag, MainMenuActivity.token);
         JSONObject parameters = new JSONObject();
         try {
             parameters.put("fb_id", sharedPreferences.getString(Variables.u_id, "0"));
+            parameters.put("start", String.valueOf(start));
+            parameters.put("end", String.valueOf(end));
+            parameters.put("type", "home");
             //parameters.put("token",MainMenuActivity.token);
             parameters.put("token", sharedPreferences.getString(Variables.device_token, "Null"));
         } catch (JSONException e) {
@@ -446,8 +483,6 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     public void Parse_data(String responce) {
-
-        data_list = new ArrayList<>();
 
         try {
             JSONObject jsonObject = new JSONObject(responce);
@@ -485,6 +520,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                     item.video_description = itemdata.optString("description");
 
                     item.thum = Variables.base_url + itemdata.optString("thum");
+                    item.follow =itemdata.optString("follow");
                     item.created_date = itemdata.optString("created");
 
                     data_list.add(item);
@@ -587,7 +623,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     // this will call when swipe for another video and
     // this function will set the player to the current video
     @SuppressLint("ClickableViewAccessibility")
-    public void Set_Player(final int currentPage) {
+    private void Set_Player(final int currentPage) {
 
         final HomeModel item = data_list.get(currentPage);
         DefaultTrackSelector trackSelector = new DefaultTrackSelector();
@@ -773,7 +809,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     }
 
     // when we swipe for another video this will relaese the privious player
-    SimpleExoPlayer privious_player;
+    private SimpleExoPlayer privious_player;
 
     public void Release_Privious_Player() {
         if (privious_player != null) {

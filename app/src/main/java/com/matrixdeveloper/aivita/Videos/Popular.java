@@ -11,6 +11,8 @@ import android.os.Environment;
 import androidx.annotation.Nullable;
 
 import com.matrixdeveloper.aivita.Following.FollowingFragment;
+import com.matrixdeveloper.aivita.Home.HomeAdapter;
+import com.matrixdeveloper.aivita.Home.HomeModel;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
 import com.matrixdeveloper.aivita.SimpleClasses.Callback;
@@ -78,8 +80,10 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.matrixdeveloper.aivita.VideoAction.VideoAction_F;
 import com.volokh.danylo.hashtaghelper.HashTagHelper;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,6 +93,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.matrixdeveloper.aivita.SimpleClasses.Variables.sharedPreferences;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -98,20 +103,21 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
 
     View view;
     Context context;
-    RecyclerView recyclerView;
-    ArrayList<Popular_Get_Set> data_list;
+    private RecyclerView recyclerView;
+    private ArrayList<Popular_Get_Set> data_list;
     int currentPage=-1;
     LinearLayoutManager layoutManager;
 
     ProgressBar p_bar;
+    private int swipe_count = 0;
+    private int currentItems, totalItems, scrollOutItems;
+    private int scrollOut=2, start=0, end=14;
 
     SwipeRefreshLayout swiperefresh;
 
     public Popular(Fragment_Callback fragment_callback) {
         // Required empty public constructor
     }
-
-    int swipe_count=0;
 
     public Popular() {
 
@@ -124,121 +130,15 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
         view= inflater.inflate(R.layout.fragment_popular, container, false);
         context=getContext();
 
+      //  Toast.makeText(context, "popular", Toast.LENGTH_SHORT).show();
+
         p_bar=view.findViewById(R.id.p_bar);
         recyclerView=view.findViewById(R.id.recylerview);
         layoutManager=new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(false);
-
-        SnapHelper snapHelper =  new PagerSnapHelper();
-        snapHelper.attachToRecyclerView(recyclerView);
 
 
-
-   /*   tv_related.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              Call_Api_For_get_Allvideos();
-          }
-      });*/
-
-        // this is the scroll listener of recycler view which will tell the current item number
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-            }
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                //here we find the current item number
-                final int scrollOffset = recyclerView.computeVerticalScrollOffset();
-                final int height = recyclerView.getHeight();
-                int page_no=scrollOffset / height;
-                if(page_no!=currentPage ){
-                    currentPage=page_no;
-                    Release_Privious_Player();
-                    Set_Player(currentPage);
-
-                }
-            }
-        });
-
-
-
-        swiperefresh=view.findViewById(R.id.swiperefresh);
-        swiperefresh.setProgressViewOffset(false, 0, 200);
-
-        swiperefresh.setColorSchemeResources(R.color.black);
-        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentPage=-1;
-                Call_Api_For_get_Allvideos();
-            }
-        });
-
-        Call_Api_For_get_Allvideos();
-
-//        Load_add();
-
-        return view;
-    }
-
-    public void Open_Following(){
-
-        FollowingFragment following_f = new FollowingFragment(new Fragment_Callback() {
-            @Override
-            public void Responce(Bundle bundle) {
-
-                Call_Api_For_get_Allvideos();
-
-            }
-        });
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.in_from_bottom, R.anim.out_to_top, R.anim.in_from_top, R.anim.out_from_bottom);
-        Bundle args = new Bundle();
-        args.putString("id", Variables.sharedPreferences.getString(Variables.u_id,""));
-        args.putString("from_where","following");
-        following_f.setArguments(args);
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.MainMenuFragment, following_f).commit();
-
-    }
-
-/*
-    private InterstitialAd mInterstitialAd;
-    private void Load_add() {
-
-        // this is test app id you will get the actual id when you add app in your
-        //add mob account
-        MobileAds.initialize(context,
-                getResources().getString(R.string.ad_app_id));
-
-
-        //code for intertial add
-        mInterstitialAd = new InterstitialAd(context);
-
-        //here we will get the add id keep in mind above id is app id and below Id is add Id
-        mInterstitialAd.setAdUnitId(context.getResources().getString(R.string.my_Interstitial_Add));
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-            }
-        });
-
-
-    }
-*/
-
-
-
-    //    boolean is_add_show=false;
-    PopularAdapter adapter;
-    public void Set_Adapter(){
+        data_list = new ArrayList<>();
 
         adapter=new PopularAdapter(context, data_list, new PopularAdapter.OnItemClickListener() {
             @Override
@@ -294,19 +194,144 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
 
         adapter.setHasStableIds(true);
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(false);
+
+        SnapHelper snapHelper =  new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(recyclerView);
+
+
+
+   /*   tv_related.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              Call_Api_For_get_Allvideos();
+          }
+      });*/
+
+        // this is the scroll listener of recycler view which will tell the current item number
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                final int scrollOffset = recyclerView.computeVerticalScrollOffset();
+                final int height = recyclerView.getHeight();
+                currentItems = layoutManager.getChildCount();
+                totalItems = layoutManager.getItemCount();
+                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+
+                if (end-2 == scrollOutItems){
+                 //   Toast.makeText(context, String.valueOf(scrollOutItems), Toast.LENGTH_SHORT).show();
+                    start = 1 + end;
+                    end = end + 14;
+                    // showAd();
+                    Call_Api_For_get_Allvideos(start, end);
+                }
+
+                int page_no = scrollOffset / height;
+                if (page_no != currentPage) {
+                    currentPage = page_no;
+                    Release_Privious_Player();
+                    Set_Player(currentPage);
+                }
+            }
+        });
+
+
+
+        swiperefresh=view.findViewById(R.id.swiperefresh);
+        swiperefresh.setProgressViewOffset(false, 0, 200);
+
+        swiperefresh.setColorSchemeResources(R.color.black);
+        swiperefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                currentPage=-1;
+                Call_Api_For_get_Allvideos(start, end);
+            }
+        });
+
+        Call_Api_For_get_Allvideos(start, end);
+
+//        Load_add();
+
+        return view;
+    }
+
+    public void Open_Following(){
+
+        FollowingFragment following_f = new FollowingFragment(new Fragment_Callback() {
+            @Override
+            public void Responce(Bundle bundle) {
+
+                Call_Api_For_get_Allvideos(start, end);
+
+            }
+        });
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.in_from_bottom, R.anim.out_to_top, R.anim.in_from_top, R.anim.out_from_bottom);
+        Bundle args = new Bundle();
+        args.putString("id", Variables.sharedPreferences.getString(Variables.u_id,""));
+        args.putString("from_where","following");
+        following_f.setArguments(args);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.MainMenuFragment, following_f).commit();
+
+    }
+
+/*
+    private InterstitialAd mInterstitialAd;
+    private void Load_add() {
+
+        // this is test app id you will get the actual id when you add app in your
+        //add mob account
+        MobileAds.initialize(context,
+                getResources().getString(R.string.ad_app_id));
+
+
+        //code for intertial add
+        mInterstitialAd = new InterstitialAd(context);
+
+        //here we will get the add id keep in mind above id is app id and below Id is add Id
+        mInterstitialAd.setAdUnitId(context.getResources().getString(R.string.my_Interstitial_Add));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+        });
+
+
+    }
+*/
+
+
+
+    //    boolean is_add_show=false;
+    PopularAdapter adapter;
+    public void Set_Adapter(){
+
+       adapter.notifyDataSetChanged();
 
     }
 
 
 
     // Bottom two function will call the api and get all the videos form api and parse the json data
-    private void Call_Api_For_get_Allvideos() {
-
+    private void Call_Api_For_get_Allvideos(int start, int end) {
 
         Log.d(Variables.tag, MainMenuActivity.token);
         JSONObject parameters = new JSONObject();
         try {
             parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id,"0"));
+            parameters.put("start", String.valueOf(start));
+            parameters.put("end", String.valueOf(end));
+            parameters.put("type", "popular");
             //parameters.put("token",MainMenuActivity.token);
             parameters.put("token", Variables.sharedPreferences.getString(Variables.device_token, "Null"));
         } catch (JSONException e) {
@@ -323,8 +348,6 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
     }
 
     public void Parse_data(String responce){
-
-        data_list=new ArrayList<>();
 
         try {
             JSONObject jsonObject=new JSONObject(responce);
@@ -466,7 +489,9 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
 
     // this will call when swipe for another video and
     // this function will set the player to the current video
-    public void Set_Player(final int currentPage){
+    private void Set_Player(final int currentPage){
+
+       // Toast.makeText(context, String.valueOf(currentPage), Toast.LENGTH_SHORT).show();
 
         final Popular_Get_Set item= data_list.get(currentPage);
         DefaultTrackSelector trackSelector = new DefaultTrackSelector();
@@ -474,7 +499,7 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
         final SimpleExoPlayer player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
-                Util.getUserAgent(context, "TikTok"));
+                Util.getUserAgent(context, "Aivita"));
 
         MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(Uri.parse(item.video_url));
@@ -679,7 +704,7 @@ public class Popular extends RootFragment implements Player.EventListener, Fragm
 
 
     // when we swipe for another video this will relaese the privious player
-    SimpleExoPlayer privious_player;
+    private SimpleExoPlayer privious_player;
     public void Release_Privious_Player(){
         if(privious_player!=null) {
             privious_player.removeListener(this);
