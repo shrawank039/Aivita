@@ -6,7 +6,6 @@ apply plugin: 'kotlin-android'
 
 android {
 
-
     defaultConfig {
         applicationId "com.matrixdeveloper.aivita"
         minSdkVersion 21
@@ -36,6 +35,7 @@ android {
                 includeGroupByRegex "com\\.moat.*"
             }
         }
+
         maven {
             url "https://jitpack.io"
         }
@@ -135,9 +135,16 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:19.1.0'
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 
+    implementation 'com.adcolony:sdk:4.1.4'
+
     // Stack ConsentManager (required for requesting Consent from European Users)
     implementation 'com.explorestack:consent:1.0.1'
-    implementation 'com.appodeal.ads:sdk:2.6.3.0'
+    implementation ('com.appodeal.ads:sdk:2.6.3.0') {
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'amazon_ads'
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'appodeal'
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'inner-active'
+        exclude group: 'com.appodeal.ads.sdk.networks', module: 'nast'
+    }
 
     implementation 'com.github.ixiDev:GDPRChecker:v0.2'
 

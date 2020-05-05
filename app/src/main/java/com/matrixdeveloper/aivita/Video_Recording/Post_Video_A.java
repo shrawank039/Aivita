@@ -129,7 +129,7 @@ public class Post_Video_A extends AppCompatActivity implements ServiceCallback {
             Intent mServiceIntent = new Intent(this.getApplicationContext(), mService.getClass());
             mServiceIntent.setAction("startservice");
             mServiceIntent.putExtra("uri",""+ Uri.fromFile(new File(video_path)));
-            mServiceIntent.putExtra("desc",""+description_edit.getText().toString());
+            mServiceIntent.putExtra("desc",""+description_edit.getText().toString().trim());
             mServiceIntent.putExtra("post_type",mode);
             startService(mServiceIntent);
 

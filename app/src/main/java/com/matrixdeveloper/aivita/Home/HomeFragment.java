@@ -34,6 +34,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.adcolony.sdk.AdColony;
+import com.adcolony.sdk.AdColonyAdOptions;
+import com.adcolony.sdk.AdColonyAppOptions;
+import com.adcolony.sdk.AdColonyInterstitial;
+import com.adcolony.sdk.AdColonyInterstitialListener;
+import com.adcolony.sdk.AdColonyReward;
+import com.adcolony.sdk.AdColonyRewardListener;
+import com.adcolony.sdk.AdColonyUserMetadata;
+import com.adcolony.sdk.AdColonyZone;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -123,12 +132,19 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     private SwipeRefreshLayout swiperefresh;
     private int swipe_count = 0;
     private int currentItems, totalItems, scrollOutItems;
-    private int scrollOut=2, start=0, end=14;
+    private int scrollOut=2, start=0, end=12;
    // private InterstitialAd mInterstitialAd;
-    private RewardedAd rewardedAd;
-    public static final String APP_KEY = "6b271ea32476c0dcb5d995a612f1a61e8686437df8aafc77";
+  //  private RewardedAd rewardedAd;
+  //  public static final String APP_KEY = "6b271ea32476c0dcb5d995a612f1a61e8686437df8aafc77";
     boolean consent=true;
     private HomeAdapter adapter;
+    final private String APP_ID = "app185a7e71e1714831a49ec7";
+    final private String ZONE_ID = "vz1fd5a8b2bf6841a0a4b826";
+    final private String TAG = "AdColony";
+    private boolean adcolonyFilled=false;
+    private AdColonyInterstitial ad;
+    private AdColonyInterstitialListener listener;
+    private AdColonyAdOptions adOptions;
 
     public HomeFragment() {
 
@@ -149,6 +165,80 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
         snapHelper.attachToRecyclerView(recyclerView);
 
         data_list = new ArrayList<>();
+
+
+        AdColonyAppOptions appOptions = new AdColonyAppOptions()
+                .setUserID("unique_user_id")
+                .setKeepScreenOn(true);
+
+        // Configure AdColony in your launching Activity's onCreate() method so that cached ads can
+        // be available as soon as possible.
+        AdColony.configure(getActivity(), appOptions, APP_ID, ZONE_ID);
+
+        // Optional user metadata sent with the ad options in each request
+        AdColonyUserMetadata metadata = new AdColonyUserMetadata()
+                .setUserAge(23)
+                .setUserEducation(AdColonyUserMetadata.USER_EDUCATION_BACHELORS_DEGREE)
+                .setUserGender(AdColonyUserMetadata.USER_MALE);
+
+        // Ad specific options to be sent with request
+        adOptions = new AdColonyAdOptions()
+                .enableConfirmationDialog(false)
+                .enableResultsDialog(false)
+                .setUserMetadata(metadata);
+
+        // Create and set a reward listener
+        AdColony.setRewardListener(new AdColonyRewardListener() {
+            @Override
+            public void onReward(AdColonyReward reward) {
+                // Query reward object for info here
+                Log.d( TAG, "onReward" );
+            }
+        });
+
+        // Set up listener for interstitial ad callbacks. You only need to implement the callbacks
+        // that you care about. The only required callback is onRequestFilled, as this is the only
+        // way to get an ad object.
+        listener = new AdColonyInterstitialListener() {
+            @Override
+            public void onRequestFilled(AdColonyInterstitial ad) {
+                // Ad passed back in request filled callback, ad can now be shown
+             //   Toast.makeText(context, "adFilled", Toast.LENGTH_SHORT).show();
+                HomeFragment.this.ad = ad;
+                adcolonyFilled =true;
+//                showButton.setEnabled(true);
+//                progress.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "onRequestFilled");
+            }
+
+            @Override
+            public void onRequestNotFilled(AdColonyZone zone) {
+
+              //  Toast.makeText(context, "adNOTFilled", Toast.LENGTH_SHORT).show();
+                // Ad request was not filled
+                //  progress.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "onRequestNotFilled");
+            }
+
+            @Override
+            public void onOpened(AdColonyInterstitial ad) {
+                // Ad opened, reset UI to reflect state change
+//                showButton.setEnabled(false);
+                adcolonyFilled =false;
+//                progress.setVisibility(View.VISIBLE);
+                Log.d(TAG, "onOpened");
+            }
+
+            @Override
+            public void onExpiring(AdColonyInterstitial ad) {
+                // Request a new ad if ad is expiring
+//                showButton.setEnabled(false);
+                adcolonyFilled=false;
+//                progress.setVisibility(View.VISIBLE);
+                AdColony.requestInterstitial(ZONE_ID, this, adOptions);
+                Log.d(TAG, "onExpiring");
+            }
+        };
 
         adapter = new HomeAdapter(context, data_list, new HomeAdapter.OnItemClickListener() {
             @Override
@@ -227,13 +317,13 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 //        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
 //        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
-        Appodeal.setTesting(false);
-        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.none);
-        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true);
-
-        Appodeal.setUserAge(23);
-        Appodeal.setUserGender(UserSettings.Gender.MALE);
-        Appodeal.initialize(Objects.requireNonNull(getActivity()), APP_KEY, Appodeal.REWARDED_VIDEO, consent);
+//        Appodeal.setTesting(false);
+//        Appodeal.setLogLevel(com.appodeal.ads.utils.Log.LogLevel.none);
+//        Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true);
+//
+//        Appodeal.setUserAge(23);
+//        Appodeal.setUserGender(UserSettings.Gender.MALE);
+//        Appodeal.initialize(Objects.requireNonNull(getActivity()), APP_KEY, Appodeal.REWARDED_VIDEO, consent);
 
 //        rewardedAd = new RewardedAd(Objects.requireNonNull(getContext()),
 //                "ca-app-pub-6272309782897719/1077799568");
@@ -252,7 +342,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
 
 
         tv_following.setOnClickListener(v -> Open_Following());
-        popular.setOnClickListener(v -> Open_Popular());
+      //  popular.setOnClickListener(v -> Open_Popular());
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -272,8 +362,11 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
                 if (end-2 == scrollOutItems){
                   //  Toast.makeText(context, String.valueOf(scrollOutItems), Toast.LENGTH_SHORT).show();
                     start = 1 + end;
-                    end = end + 14;
-                    showAd();
+                    end = end + 12;
+
+                    if (adcolonyFilled)
+                        ad.show();
+                   // showAd();
                     Call_Api_For_get_Allvideos(start, end);
                 }
 
@@ -466,7 +559,7 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
             parameters.put("fb_id", sharedPreferences.getString(Variables.u_id, "0"));
             parameters.put("start", String.valueOf(start));
             parameters.put("end", String.valueOf(end));
-            parameters.put("type", "home");
+            parameters.put("type", "0");
             //parameters.put("token",MainMenuActivity.token);
             parameters.put("token", sharedPreferences.getString(Variables.device_token, "Null"));
         } catch (JSONException e) {
@@ -1100,6 +1193,11 @@ public class HomeFragment extends RootFragment implements Player.EventListener, 
     @Override
     public void onResume() {
         super.onResume();
+
+        if (ad == null || ad.isExpired()) {
+            AdColony.requestInterstitial(ZONE_ID, listener, adOptions);
+        }
+
         if ((privious_player != null && is_visible_to_user) && !is_fragment_exits()) {
             privious_player.setPlayWhenReady(true);
         }

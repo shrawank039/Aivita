@@ -2,8 +2,10 @@ package com.matrixdeveloper.aivita.SoundLists.StorageSounds;
 
 
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -145,18 +147,13 @@ public class Storage_SoundList_F extends RootFragment implements Player.EventLis
                     a=c;
                     c=a-30;
                     b=scrollOutItems+2;
-                    if (a<=30){
+                    if (a<=25){
                         c=-1;
                     }
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (c==-1){
+                    if (c==-1){
                                 //getAllVideoPath(GalleryVideos_A.this, 1, cursor);
                                 getPlayList(1,audioCursor);
                             }
-                        }
-                    },300);
 
 
                 }
@@ -174,7 +171,8 @@ public class Storage_SoundList_F extends RootFragment implements Player.EventLis
             @Override
             public void onFailure(Exception error) {
                 // FFmpeg is not supported by device
-                error.printStackTrace();
+                Toast.makeText(context, "33 "+ error.getMessage(), Toast.LENGTH_SHORT).show();
+                // error.printStackTrace();
             }
         });
 
@@ -268,6 +266,7 @@ public class Storage_SoundList_F extends RootFragment implements Player.EventLis
     @Override
     public boolean onBackPressed() {
         getActivity().onBackPressed();
+        this.audioCursor.close();
         return super.onBackPressed();
     }
 
@@ -488,7 +487,21 @@ public class Storage_SoundList_F extends RootFragment implements Player.EventLis
             @Override
             public void onFailure(Exception error) {
                 progressDialog.dismiss();
-                Toast.makeText(getContext(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show();
+                new AlertDialog.Builder(context)
+                        .setTitle("Too Large File!!!")
+                        .setMessage("You can not select a large music file. \nPlease select music files below 60sec.")
+
+//                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                // Continue with delete operation
+//                            }
+//                        })
+
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setNegativeButton("ok", null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+               // Toast.makeText(getContext(), "ERROR: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         };
        // Toast.makeText(getContext(), "Converting audio file...", Toast.LENGTH_SHORT).show();

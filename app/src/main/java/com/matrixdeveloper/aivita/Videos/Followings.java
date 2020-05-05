@@ -10,6 +10,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import androidx.annotation.Nullable;
 
+import com.adcolony.sdk.AdColony;
+import com.adcolony.sdk.AdColonyAdOptions;
+import com.adcolony.sdk.AdColonyAppOptions;
+import com.adcolony.sdk.AdColonyInterstitial;
+import com.adcolony.sdk.AdColonyInterstitialListener;
+import com.adcolony.sdk.AdColonyReward;
+import com.adcolony.sdk.AdColonyRewardListener;
+import com.adcolony.sdk.AdColonyUserMetadata;
+import com.adcolony.sdk.AdColonyZone;
 import com.giphy.sdk.core.models.StickerPack;
 import com.matrixdeveloper.aivita.Following.FollowingFragment;
 import com.matrixdeveloper.aivita.R;
@@ -35,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -104,13 +114,18 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
     private ArrayList<Following_Get_Set> data_list;
     int currentPage=-1;
     LinearLayoutManager layoutManager;
-
     ProgressBar p_bar;
-
     private int currentItems, totalItems, scrollOutItems;
-    private int scrollOut=2, start=0, end=14;
-
+    private int scrollOut=2, start=0, end=10;
     SwipeRefreshLayout swiperefresh;
+
+    final private String APP_ID = "app185a7e71e1714831a49ec7";
+    final private String ZONE_ID = "vz1fd5a8b2bf6841a0a4b826";
+    final private String TAG = "AdColony";
+    private boolean adcolonyFilled=false;
+    private AdColonyInterstitial ad;
+    private AdColonyInterstitialListener listener;
+    private AdColonyAdOptions adOptions;
 
     public Followings(Fragment_Callback fragment_callback) {
         // Required empty public constructor
@@ -148,6 +163,79 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
               Call_Api_For_get_Allvideos();
           }
       });*/
+
+        // Construct optional app options object to be sent with configure
+        AdColonyAppOptions appOptions = new AdColonyAppOptions()
+                .setUserID("unique_user_id")
+                .setKeepScreenOn(true);
+
+        // Configure AdColony in your launching Activity's onCreate() method so that cached ads can
+        // be available as soon as possible.
+        AdColony.configure(getActivity(), appOptions, APP_ID, ZONE_ID);
+
+        // Optional user metadata sent with the ad options in each request
+        AdColonyUserMetadata metadata = new AdColonyUserMetadata()
+                .setUserAge(23)
+                .setUserEducation(AdColonyUserMetadata.USER_EDUCATION_BACHELORS_DEGREE)
+                .setUserGender(AdColonyUserMetadata.USER_MALE);
+
+        // Ad specific options to be sent with request
+        adOptions = new AdColonyAdOptions()
+                .enableConfirmationDialog(false)
+                .enableResultsDialog(false)
+                .setUserMetadata(metadata);
+
+        // Create and set a reward listener
+        AdColony.setRewardListener(new AdColonyRewardListener() {
+            @Override
+            public void onReward(AdColonyReward reward) {
+                // Query reward object for info here
+                Log.d( TAG, "onReward" );
+            }
+        });
+
+        // Set up listener for interstitial ad callbacks. You only need to implement the callbacks
+        // that you care about. The only required callback is onRequestFilled, as this is the only
+        // way to get an ad object.
+        listener = new AdColonyInterstitialListener() {
+            @Override
+            public void onRequestFilled(AdColonyInterstitial ad) {
+                // Ad passed back in request filled callback, ad can now be shown
+                Followings.this.ad = ad;
+                adcolonyFilled =true;
+               // Toast.makeText(context, "adFilled", Toast.LENGTH_SHORT).show();
+//                showButton.setEnabled(true);
+//                progress.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "onRequestFilled");
+            }
+
+            @Override
+            public void onRequestNotFilled(AdColonyZone zone) {
+                // Ad request was not filled
+              //  progress.setVisibility(View.INVISIBLE);
+                Log.d(TAG, "onRequestNotFilled");
+            }
+
+            @Override
+            public void onOpened(AdColonyInterstitial ad) {
+                // Ad opened, reset UI to reflect state change
+//                showButton.setEnabled(false);
+                adcolonyFilled =false;
+//                progress.setVisibility(View.VISIBLE);
+                Log.d(TAG, "onOpened");
+            }
+
+            @Override
+            public void onExpiring(AdColonyInterstitial ad) {
+                // Request a new ad if ad is expiring
+//                showButton.setEnabled(false);
+                adcolonyFilled=false;
+//                progress.setVisibility(View.VISIBLE);
+                AdColony.requestInterstitial(ZONE_ID, this, adOptions);
+                Log.d(TAG, "onExpiring");
+            }
+        };
+
 
         // this is the scroll listener of recycler view which will tell the current item number
         data_list = new ArrayList<>();
@@ -229,7 +317,9 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
                 if (end-2 == scrollOutItems){
                    // Toast.makeText(context, String.valueOf(scrollOutItems), Toast.LENGTH_SHORT).show();
                     start = 1 + end;
-                    end = end + 14;
+                    end = end + 12;
+                    if (adcolonyFilled)
+                        ad.show();
                     // showAd();
                     Call_Api_For_get_Allvideos(start, end);
                 }
@@ -239,6 +329,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
                 if (page_no != currentPage) {
                     currentPage = page_no;
                     Release_Privious_Player();
+                  //  Toast.makeText(context, String.valueOf(page_no), Toast.LENGTH_SHORT).show();
                     Set_Player(currentPage);
                 }
             }
@@ -332,7 +423,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
             //parameters.put("token",MainMenuActivity.token);
             parameters.put("start", String.valueOf(start));
             parameters.put("end", String.valueOf(end));
-            parameters.put("type", "following");
+            parameters.put("type", "1");
             parameters.put("token", Variables.sharedPreferences.getString(Variables.device_token, "Null"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -518,6 +609,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
 
         player.setPlayWhenReady(is_visible_to_user);
         privious_player=player;
+        privious_player.setPlayWhenReady(true);
 
 
 
@@ -1014,6 +1106,11 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
     @Override
     public void onResume() {
         super.onResume();
+
+        if (ad == null || ad.isExpired()) {
+            AdColony.requestInterstitial(ZONE_ID, listener, adOptions);
+        }
+
         if((privious_player!=null && is_visible_to_user) && !is_fragment_exits() ){
             privious_player.setPlayWhenReady(true);
         }
@@ -1112,6 +1209,8 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
     public void onSeekProcessed() {
 
     }
+
+
 
 
 

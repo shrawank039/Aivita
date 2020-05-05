@@ -513,8 +513,13 @@ public class Edit_Profile_F extends RootFragment implements View.OnClickListener
 
                         getActivity().onBackPressed();
                     }
-                    else
-                        Toast.makeText(context, response.optString("msg"), Toast.LENGTH_LONG).show();
+                    else {
+                        if (response.optString("code").equalsIgnoreCase("201")) {
+                         //   Toast.makeText(context, response.optString("msg"), Toast.LENGTH_LONG).show();
+                            edt_username.setError("username already taken.");
+                            edt_username.requestFocus();
+                        }
+                    }
 
                     } catch (JSONException e) {
                     e.printStackTrace();

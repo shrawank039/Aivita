@@ -22,6 +22,9 @@ allprojects {
         maven { url  "https://giphy.bintray.com/giphy-sdk" }
         maven { url 'https://jitpack.io' }
         maven { url 'https://maven.fabric.io/public' }
+        maven {
+            url  "https://adcolony.bintray.com/AdColony"
+        }
     }
 }
 
