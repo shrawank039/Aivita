@@ -42,8 +42,6 @@ public class Discover_F extends RootFragment {
 
     RecyclerView recyclerView;
     EditText search_edit;
-
-
     SwipeRefreshLayout swiperefresh;
 
     public Discover_F() {
@@ -59,7 +57,6 @@ public class Discover_F extends RootFragment {
         // Inflate the layout for this fragment
         view= inflater.inflate(R.layout.fragment_discover, container, false);
         context=getContext();
-
 
         datalist=new ArrayList<>();
 

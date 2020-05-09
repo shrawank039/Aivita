@@ -2,6 +2,8 @@ package com.matrixdeveloper.aivita.ApiServices;
 
 import com.matrixdeveloper.aivita.model.LoginModel;
 import com.matrixdeveloper.aivita.model.RegisterModel;
+import com.matrixdeveloper.aivita.model.request.SearchRequest;
+import com.matrixdeveloper.aivita.model.response.SearchResponse;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -13,6 +15,9 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 
 public interface RetrofitApi {
+
+    @POST("index.php?p=get_hastagpost")
+    Call<SearchResponse> getSearch(@Body SearchRequest request);
 
     @POST("index.php?p=user_login")
     @FormUrlEncoded
@@ -33,6 +38,5 @@ public interface RetrofitApi {
 
     @POST("index.php?p=user_registration")
     Call<String> AddTransport(@Body RequestBody body);
-
 
 }

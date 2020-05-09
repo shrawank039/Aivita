@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.RECORD_VIDEO" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -41,7 +42,8 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity, InnerclassSeparator"
         tools:replace="allowBackup,supportsRtl"
-        tools:targetApi="n">
+        tools:targetApi="n"
+        android:requestLegacyExternalStorage="true">
 
 
         <activity android:name="com.adcolony.sdk.AdColonyInterstitialActivity"
@@ -60,10 +62,6 @@
 <!--                <category android:name="android.intent.category.LAUNCHER"/>-->
 <!--            </intent-filter>-->
         </activity>
-
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
 
         <activity
             android:name=".test.SplashAdActivity"
@@ -95,9 +93,7 @@
         <activity android:name=".Notifications.NotificationActivity" />
         <activity android:name=".Accounts.SignUpActivity" />
 
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -192,7 +188,8 @@
         </activity>
         <activity
             android:name=".Video_Recording.Video_Recoder_A"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:hardwareAccelerated="false"/>
         <activity
             android:name=".Video_Recording.Preview_Video_A"
             android:screenOrientation="portrait"

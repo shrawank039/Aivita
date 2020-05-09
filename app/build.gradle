@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
 
@@ -10,8 +10,8 @@ android {
         applicationId "com.matrixdeveloper.aivita"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 10
-        versionName "0.1.7"
+        versionCode 13
+        versionName "0.2.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         compileSdkVersion 29
     }
@@ -107,7 +107,6 @@ dependencies {
     implementation 'com.gmail.samehadar:iosdialog:1.0'
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
     implementation 'net.the4thdimension:audio-wife:1.0.3'
-    implementation 'com.github.MasayukiSuda:GPUVideo-android:v0.1.0'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     implementation 'com.makeramen:roundedimageview:2.3.0'
     implementation 'com.mindorks.android:prdownloader:0.6.0'
@@ -139,12 +138,7 @@ dependencies {
 
     // Stack ConsentManager (required for requesting Consent from European Users)
     implementation 'com.explorestack:consent:1.0.1'
-    implementation ('com.appodeal.ads:sdk:2.6.3.0') {
-        exclude group: 'com.appodeal.ads.sdk.networks', module: 'amazon_ads'
-        exclude group: 'com.appodeal.ads.sdk.networks', module: 'appodeal'
-        exclude group: 'com.appodeal.ads.sdk.networks', module: 'inner-active'
-        exclude group: 'com.appodeal.ads.sdk.networks', module: 'nast'
-    }
+    implementation 'com.appodeal.ads:sdk:2.6.3.0'
 
     implementation 'com.github.ixiDev:GDPRChecker:v0.2'
 
@@ -165,6 +159,12 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true;
     }
+
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    // (see https://github.com/ReactiveX/RxJava/releases for latest 3.x.x version)
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.chauthai.overscroll:overscroll-bouncy:0.1.1'

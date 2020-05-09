@@ -1,0 +1,85 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/SearchFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="No data Available"
+        android:visibility="gone" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="0dp"
+        android:background="@android:drawable/toast_frame"
+        android:orientation="vertical"
+        app:iconifiedByDefault="false">
+
+    </androidx.appcompat.widget.SearchView>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/search_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_view">
+
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:id="@+id/tab_all"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="All" />-->
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_people"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="People" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/tab_hashtags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HashTags" />
+
+<!--        <com.google.android.material.tabs.TabItem-->
+<!--            android:id="@+id/tab_places"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Places" />-->
+
+    </com.google.android.material.tabs.TabLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_tab_layout"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="14dp" />
+</RelativeLayout>
+</FrameLayout>

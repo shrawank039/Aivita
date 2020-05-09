@@ -19,7 +19,6 @@ import com.adcolony.sdk.AdColonyReward;
 import com.adcolony.sdk.AdColonyRewardListener;
 import com.adcolony.sdk.AdColonyUserMetadata;
 import com.adcolony.sdk.AdColonyZone;
-import com.giphy.sdk.core.models.StickerPack;
 import com.matrixdeveloper.aivita.Following.FollowingFragment;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
@@ -44,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -115,12 +113,13 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
     int currentPage=-1;
     LinearLayoutManager layoutManager;
     ProgressBar p_bar;
+    private String endItemID ="";
     private int currentItems, totalItems, scrollOutItems;
-    private int scrollOut=2, start=0, end=10;
+    private int scrollOut=2, end=11,endCount=12;
     SwipeRefreshLayout swiperefresh;
 
     final private String APP_ID = "app185a7e71e1714831a49ec7";
-    final private String ZONE_ID = "vz1fd5a8b2bf6841a0a4b826";
+    final private String ZONE_ID = "vz9f27a1bf7c094dcd94";
     final private String TAG = "AdColony";
     private boolean adcolonyFilled=false;
     private AdColonyInterstitial ad;
@@ -316,12 +315,13 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
 
                 if (end-2 == scrollOutItems){
                    // Toast.makeText(context, String.valueOf(scrollOutItems), Toast.LENGTH_SHORT).show();
-                    start = 1 + end;
-                    end = end + 12;
+                  //  start = 1 + end;
+                    end = end + endCount;
                     if (adcolonyFilled)
                         ad.show();
-                    // showAd();
-                    Call_Api_For_get_Allvideos(start, end);
+//                    else
+//                        showAd();
+                    Call_Api_For_get_Allvideos(endItemID);
                 }
 
 
@@ -345,11 +345,11 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
             @Override
             public void onRefresh() {
                 currentPage=-1;
-                Call_Api_For_get_Allvideos(start, end);
+                Call_Api_For_get_Allvideos(endItemID);
             }
         });
 
-        Call_Api_For_get_Allvideos(start, end);
+        Call_Api_For_get_Allvideos(endItemID);
 
         return view;
     }
@@ -360,7 +360,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
             @Override
             public void Responce(Bundle bundle) {
 
-                Call_Api_For_get_Allvideos(start, end);
+                Call_Api_For_get_Allvideos(endItemID);
 
             }
         });
@@ -413,7 +413,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
 
 
     // Bottom two function will call the api and get all the videos form api and parse the json data
-    private void Call_Api_For_get_Allvideos(int start, int end) {
+    private void Call_Api_For_get_Allvideos(String endItemID) {
 
 
         Log.d(Variables.tag, MainMenuActivity.token);
@@ -421,8 +421,8 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
         try {
             parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id,"0"));
             //parameters.put("token",MainMenuActivity.token);
-            parameters.put("start", String.valueOf(start));
-            parameters.put("end", String.valueOf(end));
+            parameters.put("end_id", endItemID);
+            parameters.put("end", String.valueOf(endCount));
             parameters.put("type", "1");
             parameters.put("token", Variables.sharedPreferences.getString(Variables.device_token, "Null"));
         } catch (JSONException e) {
@@ -449,6 +449,7 @@ public class Followings extends RootFragment implements Player.EventListener, Fr
                     JSONObject itemdata = msgArray.optJSONObject(i);
                     Following_Get_Set item=new Following_Get_Set();
                     item.fb_id=itemdata.optString("fb_id");
+                    endItemID = itemdata.optString("id");
 
                     JSONObject user_info=itemdata.optJSONObject("user_info");
 

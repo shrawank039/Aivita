@@ -67,6 +67,7 @@ public class Variables {
 
     public static String domain = "http://aivita.club/aivita/API/index.php?p=";
     public static String base_url = "http://aivita.club/aivita/API/";
+  //  public static String domain = "http://167.71.215.98/aivita/test/API/index.php?p=";
 
     public static String SignUp = domain + "signup";
     public static String user_login = domain + "user_login";
@@ -76,6 +77,7 @@ public class Variables {
     public static String uploadVideo = domain + "uploadVideo";
     public static String showAllVideos = domain + "showAllVideos";
     public static String showMyAllVideos = domain + "showMyAllVideos";
+    public static String getTaggedVideos = domain + "getTaggedVideos";
     public static String likeDislikeVideo = domain + "likeDislikeVideo";
     public static String updateVideoView = domain + "updateVideoView";
     public static String allSounds = domain + "allSounds";

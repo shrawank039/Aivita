@@ -1,76 +1,107 @@
-package com.matrixdeveloper.aivita.Profile.UserVideos;
+package com.matrixdeveloper.aivita.Discover;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.matrixdeveloper.aivita.Home.HomeModel;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.matrixdeveloper.aivita.Home.HomeModel;
+import com.matrixdeveloper.aivita.Main_Menu.RelateToFragment_OnBack.RootFragment;
+import com.matrixdeveloper.aivita.Profile.MyVideos_Adapter;
 import com.matrixdeveloper.aivita.R;
 import com.matrixdeveloper.aivita.SimpleClasses.ApiRequest;
 import com.matrixdeveloper.aivita.SimpleClasses.Callback;
 import com.matrixdeveloper.aivita.SimpleClasses.Variables;
 import com.matrixdeveloper.aivita.WatchVideos.WatchVideos_F;
-import com.matrixdeveloper.aivita.Profile.MyVideos_Adapter;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class UserVideo_F extends Fragment {
+public class DiscoverVideo_F extends RootFragment {
 
     public RecyclerView recyclerView;
      ArrayList<HomeModel> data_list;
      MyVideos_Adapter adapter;
      View view;
      Context context;
-     String user_id;
+     ImageView back_btn;
+     private String user_id;
+     private String tag_name="",endID="";
+    private int scrollOutItems;
+    private int end=11, endCount=12;
 
     RelativeLayout no_data_layout;
      public static int myvideo_count=0;
 
-    public UserVideo_F() {
+    public DiscoverVideo_F() {
 
     }
-
-
-    @SuppressLint("ValidFragment")
-    public UserVideo_F(String user_id) {
-
-        this.user_id=user_id;
-    }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view= inflater.inflate(R.layout.fragment_user_video, container, false);
+        view= inflater.inflate(R.layout.fragment_discover_video, container, false);
 
         context=getContext();
+
+        view.findViewById(R.id.back_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Objects.requireNonNull(getActivity()).onBackPressed();
+            }
+        });
+
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            tag_name = bundle.getString("tag_name", "");
+        }
 
 
         recyclerView=view.findViewById(R.id.recylerview);
         final GridLayoutManager layoutManager = new GridLayoutManager(context,3);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                scrollOutItems = layoutManager.findFirstVisibleItemPosition();
+
+                if (data_list.size()-5 == scrollOutItems){
+
+                    Call_Api_For_get_Allvideos(endID);
+                }
+
+            }
+        });
+
 
 
         data_list=new ArrayList<>();
@@ -88,7 +119,7 @@ public class UserVideo_F extends Fragment {
         no_data_layout=view.findViewById(R.id.no_data_layout);
 
 
-        Call_Api_For_get_Allvideos();
+        Call_Api_For_get_Allvideos(endID);
 
 
 
@@ -102,7 +133,7 @@ public class UserVideo_F extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         this.isVisibleToUser=isVisibleToUser;
         if(view!=null && isVisibleToUser){
-            Call_Api_For_get_Allvideos();
+            Call_Api_For_get_Allvideos(endID);
         }
     }
 
@@ -112,25 +143,28 @@ public class UserVideo_F extends Fragment {
     public void onResume() {
         super.onResume();
         if((view!=null && isVisibleToUser) && (!data_list.isEmpty() && !is_api_run)){
-            Call_Api_For_get_Allvideos();
+            Call_Api_For_get_Allvideos(endID);
         }
     }
 
 
     Boolean is_api_run=false;
     //this will get the all videos data of user and then parse the data
-    private void Call_Api_For_get_Allvideos() {
+    private void Call_Api_For_get_Allvideos(String endID) {
         is_api_run=true;
         JSONObject parameters = new JSONObject();
         try {
-            parameters.put("my_fb_id", Variables.sharedPreferences.getString(Variables.u_id,""));
-            parameters.put("fb_id", user_id);
+            parameters.put("tag_name", tag_name);
+            parameters.put("fb_id", Variables.sharedPreferences.getString(Variables.u_id,""));
+            parameters.put("type", "#");
+            parameters.put("end", "25");
+            parameters.put("end_id", endID);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ApiRequest.Call_Api(context, Variables.showMyAllVideos, parameters, new Callback() {
+        ApiRequest.Call_Api(context, Variables.getTaggedVideos, parameters, new Callback() {
             @Override
             public void Responce(String resp) {
                 is_api_run=false;
@@ -149,12 +183,10 @@ public class UserVideo_F extends Fragment {
             JSONObject jsonObject=new JSONObject(responce);
             String code=jsonObject.optString("code");
             if(code.equals("200")){
-                JSONArray msgArray=jsonObject.getJSONArray("msg");
-                JSONObject data=msgArray.getJSONObject(0);
-                JSONObject user_info=data.optJSONObject("user_info");
 
-                JSONArray user_videos=data.getJSONArray("user_videos");
-                if(!user_videos.toString().equals("["+"0"+"]")){
+                JSONArray user_videos=jsonObject.getJSONArray("msg");
+
+                if(!String.valueOf(user_videos.length()).equals("0")){
 
                     no_data_layout.setVisibility(View.GONE);
 
@@ -163,6 +195,10 @@ public class UserVideo_F extends Fragment {
 
                         HomeModel item=new HomeModel();
                         item.fb_id=user_id;
+
+                        endID = itemdata.optString("id");
+
+                        JSONObject user_info=itemdata.optJSONObject("user_info");
 
                         item.first_name=user_info.optString("first_name");
                         item.last_name=user_info.optString("last_name");
@@ -189,7 +225,6 @@ public class UserVideo_F extends Fragment {
                         item.created_date=itemdata.optString("created");
 
                         item.video_description=itemdata.optString("description");
-
 
                         data_list.add(item);
                     }
@@ -223,13 +258,14 @@ public class UserVideo_F extends Fragment {
     private void OpenWatchVideo(int postion) {
 
         Intent intent=new Intent(getActivity(), WatchVideos_F.class);
-        Log.e("UserVideo_F", data_list.toString());
         intent.putExtra("arraylist", data_list);
         intent.putExtra("position",postion);
         startActivity(intent);
 
     }
 
-
-
+    @Override
+    public boolean onBackPressed() {
+        return super.onBackPressed();
+    }
 }

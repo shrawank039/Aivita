@@ -64,6 +64,14 @@
                         android:layout_marginTop="25dp"
                         android:id="@+id/user_image"
                         android:src="@drawable/profile_image_placeholder"/>
+
+                    <ImageView
+                        android:layout_margin="5dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:visibility="gone"
+                        android:id="@+id/batch_url"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

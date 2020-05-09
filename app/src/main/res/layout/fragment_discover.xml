@@ -49,20 +49,23 @@
                     />
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
             android:id="@+id/swiperefresh"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/_2sdp"
             android:layout_below="@+id/search_layout">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_10sdp">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@color/transparent"
                     android:id="@+id/recylerview"/>
 

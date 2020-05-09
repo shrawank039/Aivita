@@ -66,8 +66,8 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
     Context context;
 
 
-    public  TextView username,video_count_txt,name;
-    public  ImageView imageView;
+    private TextView username,video_count_txt,name;
+    private ImageView imageView, batchImage;
     private LinearLayout instagram,facebook,youttube;
     public  TextView follow_count_txt,fans_count_txt,heart_count_txt;
     ImageView setting_btn;
@@ -195,6 +195,7 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
         username=view.findViewById(R.id.username);
         name=view.findViewById(R.id.name);
         imageView=view.findViewById(R.id.user_image);
+        batchImage = view.findViewById(R.id.batch_url);
         imageView.setOnClickListener(this);
 
         video_count_txt=view.findViewById(R.id.video_count_txt);
@@ -470,6 +471,16 @@ public class Profile_Tab_F extends RootFragment implements View.OnClickListener 
                             .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
                             .resize(200, 200).centerCrop().into(imageView);
                 }
+
+                ProfileFragment.batch_url=user_info.optString("batch_url");
+                if (!ProfileFragment.batch_url.equals("")) {
+                    batchImage.setVisibility(View.VISIBLE);
+                    Picasso.get()
+                            .load(ProfileFragment.batch_url)
+                           // .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
+                            .resize(30, 30).centerInside().into(batchImage);
+                }
+
                 follow_count_txt.setText(data.optString("total_following"));
                 fans_count_txt.setText(data.optString("total_fans"));
                 heart_count_txt.setText(data.optString("total_heart"));

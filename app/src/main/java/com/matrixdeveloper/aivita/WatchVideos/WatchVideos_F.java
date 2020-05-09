@@ -155,6 +155,7 @@ public class WatchVideos_F extends AppCompatActivity implements Player.EventList
                  Set_Adapter();
 
             }else {
+                Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show();
                 String link=appLinkData.toString();
                 String[] parts = link.split("=");
                 video_id=parts[1];
@@ -368,7 +369,7 @@ public class WatchVideos_F extends AppCompatActivity implements Player.EventList
                     adapter.notifyDataSetChanged();
                 }
 
-
+                privious_player.setPlayWhenReady(true);
 
             }else {
                 Toast.makeText(context, ""+jsonObject.optString("msg"), Toast.LENGTH_SHORT).show();
@@ -478,7 +479,7 @@ public class WatchVideos_F extends AppCompatActivity implements Player.EventList
     @Override
     public void onKeyboardHeightChanged(int height, int orientation) {
 
-        Timber.d("" + height);
+        Timber.d("%s", height);
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(write_layout.getWidth(), write_layout.getHeight());
         params.bottomMargin = height;

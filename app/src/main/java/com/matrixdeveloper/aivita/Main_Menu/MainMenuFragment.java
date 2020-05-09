@@ -15,7 +15,6 @@ import com.matrixdeveloper.aivita.Video_Recording.Video_Recoder_A;
 
 import com.google.android.material.tabs.TabLayout;
 import com.matrixdeveloper.aivita.Accounts.Login_A;
-import com.matrixdeveloper.aivita.Discover.Discover_F;
 import com.matrixdeveloper.aivita.Inbox.Inbox_F;
 import com.matrixdeveloper.aivita.Profile.Profile_Tab_F;
 
@@ -38,6 +37,7 @@ import android.widget.Toast;
 
 import com.matrixdeveloper.aivita.Main_Menu.RelateToFragment_OnBack.OnBackPressListener;
 import com.matrixdeveloper.aivita.Main_Menu.RelateToFragment_OnBack.RootFragment;
+import com.matrixdeveloper.aivita.Discover.SearchFragment;
 
 import java.util.Objects;
 
@@ -356,7 +356,7 @@ public class MainMenuFragment extends RootFragment implements View.OnClickListen
                     break;
 
                 case 1:
-                    result = new Discover_F();
+                    result = new SearchFragment();
                     break;
 
                 case 2:

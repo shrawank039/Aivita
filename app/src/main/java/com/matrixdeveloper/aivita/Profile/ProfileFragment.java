@@ -52,7 +52,7 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
 
     private TextView follow_unfollow_btn;
     private TextView username,name, video_count_txt;
-    private ImageView imageView;
+    private ImageView imageView, batchImage;
     private TextView follow_count_txt, fans_count_txt, heart_count_txt;
     private ImageView back_btn, setting_btn;
 
@@ -67,7 +67,7 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
     RelativeLayout tabs_main_layout;
     LinearLayout top_layout;
 
-    public static String pic_url;
+    public static String pic_url, batch_url;
     public ProfileFragment() {}
 
     Fragment_Callback fragment_callback;
@@ -124,17 +124,25 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
                 break;
 
             case R.id.back_btn:
-                Objects.requireNonNull(getActivity()).onBackPressed();
-                break;
+                try {
+                    Objects.requireNonNull(getActivity()).onBackPressed();
+                    break;
+                }catch (Exception ignored){
+                }
         }
     }
 
+    @Override
+    public boolean onBackPressed() {
+        return super.onBackPressed();
+    }
 
     public View init() {
 
         name = view.findViewById(R.id.name);
         username=view.findViewById(R.id.username);
         imageView = view.findViewById(R.id.user_image);
+        batchImage = view.findViewById(R.id.batchImage);
         imageView.setOnClickListener(this);
 
         video_count_txt = view.findViewById(R.id.video_count_txt);
@@ -405,6 +413,15 @@ public class ProfileFragment extends RootFragment implements View.OnClickListene
                             .load(ProfileFragment.pic_url)
                             .placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
                             .resize(200, 200).centerCrop().into(imageView);
+                }
+
+                ProfileFragment.batch_url = user_info.optString("batch_url");
+                if (!ProfileFragment.batch_url.equalsIgnoreCase("")) {
+                    batchImage.setVisibility(View.VISIBLE);
+                    Picasso.get()
+                            .load(ProfileFragment.batch_url)
+                            //.placeholder(context.getResources().getDrawable(R.drawable.profile_image_placeholder))
+                            .resize(30, 30).centerInside().into(batchImage);
                 }
 
                 follow_count_txt.setText(data.optString("total_following"));

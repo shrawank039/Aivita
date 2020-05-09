@@ -28,6 +28,7 @@ public class Sounds_Adapter extends RecyclerView.Adapter<Sounds_Adapter.CustomVi
     public Context context;
 
     ArrayList<Sound_catagory_Get_Set> datalist;
+
     public interface OnItemClickListener {
         void onItemClick(View view,int postion, Sounds_GetSet item);
     }
@@ -138,7 +139,7 @@ class Sound_Items_Adapter extends RecyclerView.Adapter<Sound_Items_Adapter.Custo
     public Sound_Items_Adapter.CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewtype) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_sound_layout,viewGroup,false);
         view.setLayoutParams(new RecyclerView.LayoutParams(Variables.screen_width-50, RecyclerView.LayoutParams.WRAP_CONTENT));
-        Sound_Items_Adapter.CustomViewHolder viewHolder = new Sound_Items_Adapter.CustomViewHolder(view);
+        Sound_Items_Adapter.CustomViewHolder viewHolder = new CustomViewHolder(view);
         return viewHolder;
     }
 
@@ -176,7 +177,7 @@ class Sound_Items_Adapter extends RecyclerView.Adapter<Sound_Items_Adapter.Custo
 
     }
 
-    class CustomViewHolder extends RecyclerView.ViewHolder {
+    static class CustomViewHolder extends RecyclerView.ViewHolder {
 
         ImageButton done,fav_btn;
         TextView sound_name,description_txt;
